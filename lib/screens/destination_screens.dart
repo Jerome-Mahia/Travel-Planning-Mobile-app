@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:travel_planner_app_cs_project/screens/settings_screen.dart';
 
 class DestinationScreen extends StatefulWidget {
   final Destination destination;
@@ -22,7 +23,11 @@ class _DestinationScreenState extends State<DestinationScreen>
 
     void _doSomething() async {
       Timer(const Duration(seconds: 3), () {
-        makePlanBtnController.success();
+        // makePlanBtnController.success();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => SettingsScreen()),
+        );
       });
     }
 
@@ -36,7 +41,7 @@ class _DestinationScreenState extends State<DestinationScreen>
                 tag: widget.destination.mainImageUrl,
                 child: Image(
                   image: AssetImage(widget.destination.detailsImageUrl),
-                  height: MediaQuery.of(context).size.height*0.4,
+                  height: MediaQuery.of(context).size.height * 0.4,
                   width: MediaQuery.of(context).size.width,
                   fit: BoxFit.cover,
                 ),
@@ -288,7 +293,7 @@ class _DestinationScreenState extends State<DestinationScreen>
                             successColor: Theme.of(context).primaryColor,
                             resetDuration: const Duration(seconds: 5),
                             controller: makePlanBtnController,
-                            onPressed: () =>_doSomething(),
+                            onPressed: () => _doSomething(),
                             resetAfterDuration: true,
                             valueColor: Colors.white,
                             borderRadius: 30,

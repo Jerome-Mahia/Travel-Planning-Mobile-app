@@ -5,15 +5,14 @@ import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:travel_planner_app_cs_project/screens/destination_screens.dart';
 import 'package:travel_planner_app_cs_project/widgets/bottom_navbar.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class FeedScreen extends StatefulWidget {
+  const FeedScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<FeedScreen> createState() => _FeedScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with TickerProviderStateMixin {
+class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
   late AnimationController _animationController;
 
   bool isAnimating = false;
@@ -25,35 +24,10 @@ class _HomeScreenState extends State<HomeScreen>
       vsync: this,
       duration: const Duration(seconds: 1),
     );
-    currentPage = 0;
-    tabController = TabController(length: 3, vsync: this);
-    tabController.animation!.addListener(
-      () {
-        final value = tabController.animation!.value.round();
-        if (value != currentPage && mounted) {
-          changePage(value);
-        }
-      },
-    );
   }
-
-  late int currentPage;
-  late TabController tabController;
-  final List<Color> colors = [
-    Colors.red,
-    Colors.yellow,
-    Colors.green,
-  ];
-
-  void changePage(int newPage) {
-    setState(() {
-      currentPage = newPage;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    TabController tabController = TabController(length: 3, vsync: this);
+    TabController tabController = TabController(length: 5, vsync: this);
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
@@ -88,29 +62,13 @@ class _HomeScreenState extends State<HomeScreen>
           ],
         ),
       ),
-      body: BottomBar(
-        currentPage: currentPage,
-        tabController: tabController,
-        colors: colors,
-        unselectedColor: Colors.grey,
-        barColor: Colors.white,
-        start: 10,
-        end: 2,
-        child: TabBarView(
-          controller: tabController,
-          dragStartBehavior: DragStartBehavior.down,
-          physics: const BouncingScrollPhysics(),
-          children: [
-            ListView(
+      body: ListView(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(
-                        height: 20,
-                      ),
                       const Text(
                         'Discover',
                         style: TextStyle(
@@ -154,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen>
                                 color: Color.fromRGBO(255, 238, 238, 1),
                               ),
                             ),
-                            hintText: 'Search your trip',
+                            hintText: 'Search for a destination',
                             suffixIcon: Container(
                               height: 10,
                               decoration: BoxDecoration(
@@ -209,13 +167,13 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                  margin: const EdgeInsets.symmetric(
+                      horizontal: 20.0, vertical: 10.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15.0),
                   ),
                   child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.8,
+                    height: MediaQuery.of(context).size.height * 0.35,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: all_destinations.length,
@@ -240,8 +198,11 @@ class _HomeScreenState extends State<HomeScreen>
                                     child: Image(
                                       image:
                                           AssetImage(destination.mainImageUrl),
-                                      height: 270.0,
-                                      width: 210.0,
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.35,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.55,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -424,9 +385,6 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
               ],
             ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -444,7 +402,6 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void dispose() {
     _animationController.dispose();
-    tabController.dispose();
     super.dispose();
   }
 }

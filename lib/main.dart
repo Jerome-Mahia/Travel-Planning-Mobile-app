@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'screens/home_screen.dart';
+import 'screens/navigation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
         ),
         primaryColor: const Color.fromRGBO(255, 69, 91, 1),
       ),
-      home: const HomeScreen(),
+      home: BottomNavBar(),
     );
   }
 }

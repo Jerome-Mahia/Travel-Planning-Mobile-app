@@ -6,7 +6,6 @@ class BottomBar extends StatefulWidget {
   final Widget child;
   final int currentPage;
   final TabController tabController;
-  final List<Color> colors;
   final Color unselectedColor;
   final Color barColor;
   final double end;
@@ -15,7 +14,6 @@ class BottomBar extends StatefulWidget {
     required this.child,
     required this.currentPage,
     required this.tabController,
-    required this.colors,
     required this.unselectedColor,
     required this.barColor,
     required this.end,
@@ -181,28 +179,22 @@ class _BottomBarState extends State<BottomBar>
                       controller: widget.tabController,
                       indicator: UnderlineTabIndicator(
                           borderSide: BorderSide(
-                              color: widget.currentPage == 0
-                                  ? widget.colors[0]
-                                  : widget.currentPage == 1
-                                      ? widget.colors[1]
-                                      : widget.currentPage == 2
-                                          ? widget.colors[2]
-                                          : widget.currentPage == 3
-                                              ? widget.colors[3]
-                                              : widget.currentPage == 4
-                                                  ? widget.colors[4]
-                                                  : widget.unselectedColor,
-                              width: 4),
+                            width: 3,
+                            color: Theme.of(context).primaryColor,
+                          ),
                           insets: const EdgeInsets.fromLTRB(16, 0, 16, 8)),
                       tabs: [
                         SizedBox(
                           height: 55,
                           width: 40,
                           child: Center(
-                              child: Icon(
-                            Icons.home,
+                              child: IconButton(
+                            onPressed: () {
+                              widget.tabController.animateTo(0);
+                            },
+                            icon: Icon(Icons.home),
                             color: widget.currentPage == 0
-                                ? widget.colors[0]
+                                ? Theme.of(context).primaryColor
                                 : widget.unselectedColor,
                           )),
                         ),
@@ -210,10 +202,13 @@ class _BottomBarState extends State<BottomBar>
                           height: 55,
                           width: 40,
                           child: Center(
-                              child: Icon(
-                            Icons.checklist,
+                              child: IconButton(
+                            icon:Icon(Icons.checklist),
+                            onPressed: () {
+                              widget.tabController.animateTo(1);
+                            },
                             color: widget.currentPage == 1
-                                ? widget.colors[1]
+                                ? Theme.of(context).primaryColor
                                 : widget.unselectedColor,
                           )),
                         ),
@@ -224,7 +219,7 @@ class _BottomBarState extends State<BottomBar>
                               child: Icon(
                             Icons.settings,
                             color: widget.currentPage == 2
-                                ? widget.colors[2]
+                                ? Theme.of(context).primaryColor
                                 : widget.unselectedColor,
                           )),
                         ),

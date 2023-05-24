@@ -1,8 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:image_pixels/image_pixels.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:travel_planner_app_cs_project/screens/planning_form_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/settings_screen.dart';
 
 class DestinationScreen extends StatefulWidget {
@@ -22,72 +24,80 @@ class _DestinationScreenState extends State<DestinationScreen>
         RoundedLoadingButtonController();
 
     void _doSomething() async {
-      Timer(const Duration(seconds: 3), () {
+      Timer(const Duration(seconds: 2), () {
         // makePlanBtnController.success();
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => SettingsScreen()),
+          MaterialPageRoute(builder: (context) => const PlanningFormScreen()),
         );
       });
     }
 
-    TabController tabController = TabController(length: 4, vsync: this);
-    return Scaffold(
-      body: ListView(
-        children: [
-          Stack(
+    TabController tabController = TabController(length: 3, vsync: this);
+    return SafeArea(
+      child: Scaffold(
+        body: SingleChildScrollView(
+          child: Column(
             children: [
-              Hero(
-                tag: widget.destination.mainImageUrl,
-                child: Image(
-                  image: AssetImage(widget.destination.detailsImageUrl),
-                  height: MediaQuery.of(context).size.height * 0.4,
-                  width: MediaQuery.of(context).size.width,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20.0,
-                  vertical: 30.0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_ios),
-                      color: Colors.white,
-                      iconSize: 30.0,
+              Stack(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.4,
+                    width: MediaQuery.of(context).size.width,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30),
+                      ),
                     ),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.favorite),
-                      color: Theme.of(context).primaryColor,
-                      iconSize: 35.0,
+                    child: Hero(
+                      tag: widget.destination.mainImageUrl,
+                      child: ImagePixels(
+                          imageProvider:
+                              AssetImage(widget.destination.detailsImageUrl),
+                          builder: (context, img) {
+                            return Image(
+                              image: AssetImage(
+                                  widget.destination.detailsImageUrl),
+                              height: MediaQuery.of(context).size.height * 0.4,
+                              width: MediaQuery.of(context).size.width,
+                              fit: BoxFit.cover,
+                            );
+                          }),
+                      // child: Image(
+                      //   image: AssetImage(widget.destination.detailsImageUrl),
+                      //   height: MediaQuery.of(context).size.height * 0.4,
+                      //   width: MediaQuery.of(context).size.width,
+                      //   fit: BoxFit.cover,
+                      // ),
                     ),
-                  ],
-                ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20.0,
+                      vertical: 30.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.arrow_back_ios),
+                          color: Colors.white,
+                          iconSize: 30.0,
+                        ),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.favorite),
+                          color: Theme.of(context).primaryColor,
+                          iconSize: 35.0,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-          Material(
-            elevation: 10,
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(50),
-              topRight: Radius.circular(50),
-            ),
-            child: Container(
-              height: 436,
-              width: 500,
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(50),
-                  topRight: Radius.circular(50),
-                ),
-              ),
-              child: Column(
+              Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(
@@ -109,7 +119,7 @@ class _DestinationScreenState extends State<DestinationScreen>
                               ),
                             ),
                             Text(
-                              '\$${widget.destination.price}',
+                              '\$\$\$',
                               style: TextStyle(
                                 fontSize: 32.0,
                                 fontWeight: FontWeight.bold,
@@ -124,24 +134,18 @@ class _DestinationScreenState extends State<DestinationScreen>
                         Padding(
                           padding: const EdgeInsets.only(left: 6.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               Wrap(
                                 children: [
                                   const Icon(
                                     Icons.star,
                                     color: Color.fromARGB(255, 254, 229, 0),
-                                    size: 20,
+                                    size: 25,
                                   ),
                                   Text('${widget.destination.rating} (2.7K)'),
                                 ],
                               ),
-                              const Text(
-                                '*Estimated Cost',
-                                style: TextStyle(
-                                  fontSize: 14.0,
-                                ),
-                              )
                             ],
                           ),
                         ),
@@ -167,9 +171,8 @@ class _DestinationScreenState extends State<DestinationScreen>
                                 radius: 4),
                             tabs: const [
                               Tab(text: "Overview"),
-                              Tab(text: "Details"),
+                              Tab(text: "Discover"),
                               Tab(text: "Reviews"),
-                              Tab(text: "Costs"),
                             ],
                           ),
                         ),
@@ -279,40 +282,41 @@ class _DestinationScreenState extends State<DestinationScreen>
                       ],
                     ),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          RoundedLoadingButton(
-                            height: 50.0,
-                            color: Theme.of(context).primaryColor,
-                            width: MediaQuery.of(context).size.width * 0.8,
-                            successColor: Theme.of(context).primaryColor,
-                            resetDuration: const Duration(seconds: 5),
-                            controller: makePlanBtnController,
-                            onPressed: () => _doSomething(),
-                            resetAfterDuration: true,
-                            valueColor: Colors.white,
-                            borderRadius: 30,
-                            child: const Text(
-                              'Start planning',
-                              style: TextStyle(
-                                color: Colors.white,
-                              ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        RoundedLoadingButton(
+                          height: 50.0,
+                          color: Theme.of(context).primaryColor,
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          successColor: Theme.of(context).primaryColor,
+                          resetDuration: const Duration(seconds: 5),
+                          controller: makePlanBtnController,
+                          onPressed: () => _doSomething(),
+                          resetAfterDuration: true,
+                          valueColor: Colors.white,
+                          borderRadius: 30,
+                          child: const Text(
+                            'Start planning',
+                            style: TextStyle(
+                              color: Colors.white,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
+              const SizedBox(
+                height: 20,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

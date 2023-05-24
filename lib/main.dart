@@ -16,8 +16,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Travel App Flutter U.I',
       theme: ThemeData(
+        useMaterial3: true,
         fontFamily: 'Nunito',
-        scaffoldBackgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+        scaffoldBackgroundColor: Colors.white,
         colorScheme: ColorScheme.fromSwatch().copyWith(
           primary: const Color.fromRGBO(255, 69, 91, 1),
         ),

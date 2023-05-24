@@ -35,6 +35,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ListView(
               children: [
                 Column(
+          children: [
+            SizedBox(
+              height: 16,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('John Doe',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    )),
+                SizedBox(
+                  height: 4,
+                ),
+                Text('johndoe@gmail.com',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                    )),
+              ],
+            ),
+            SizedBox(
+              height: 16,
+            ),
+          ],
+        ),
+                Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Center(

@@ -13,6 +13,7 @@ class _PlanningFormScreenState extends State<PlanningFormScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: const Text('Planning Form'),
         ),
         body: const Center(

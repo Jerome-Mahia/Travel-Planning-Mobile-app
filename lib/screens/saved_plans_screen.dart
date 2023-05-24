@@ -1,5 +1,4 @@
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:flutter/material.dart';
 
 class SavedPlanScreen extends StatefulWidget {
   const SavedPlanScreen({super.key});
@@ -11,6 +10,11 @@ class SavedPlanScreen extends StatefulWidget {
 class _SavedPlanScreenState extends State<SavedPlanScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Container(
+      color: Theme.of(context).primaryColor,
+      child: SafeArea(
+        child: Scaffold(),
+      ),
+    );
   }
 }

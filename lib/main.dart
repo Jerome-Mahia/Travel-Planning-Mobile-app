@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:travel_planner_app_cs_project/screens/login_screen.dart';
 
 import 'screens/navigation.dart';
 
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
         ),
         primaryColor: const Color.fromRGBO(255, 69, 91, 1),
       ),
-      home: BottomNavBar(),
+      home: LoginScreen(),
     );
   }
 }

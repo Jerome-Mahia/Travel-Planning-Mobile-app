@@ -20,18 +20,7 @@ class _DestinationScreenState extends State<DestinationScreen>
     with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    final RoundedLoadingButtonController makePlanBtnController =
-        RoundedLoadingButtonController();
-
-    void _doSomething() async {
-      Timer(const Duration(seconds: 2), () {
-        // makePlanBtnController.success();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const PlanningFormScreen()),
-        );
-      });
-    }
+    
 
     TabController tabController = TabController(length: 3, vsync: this);
     return SafeArea(
@@ -42,7 +31,7 @@ class _DestinationScreenState extends State<DestinationScreen>
               Stack(
                 children: [
                   Container(
-                    height: MediaQuery.of(context).size.height * 0.4,
+                    height: MediaQuery.of(context).size.height * 0.35,
                     width: MediaQuery.of(context).size.width,
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.only(
@@ -74,23 +63,50 @@ class _DestinationScreenState extends State<DestinationScreen>
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                      vertical: 30.0,
+                      horizontal: 15.0,
+                      vertical: 15.0,
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.arrow_back_ios),
-                          color: Colors.white,
-                          iconSize: 30.0,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.blueGrey.withOpacity(0.2),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: Icon(
+                                  Icons.arrow_back_ios,
+                                  color: Colors.white,
+                                  size: 25.0,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.favorite),
-                          color: Theme.of(context).primaryColor,
-                          iconSize: 35.0,
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(50),
+                              color: Colors.blueGrey.withOpacity(0.1),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Icon(
+                                Icons.favorite,
+                                color: Theme.of(context).primaryColor,
+                                size: 30.0,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -101,9 +117,9 @@ class _DestinationScreenState extends State<DestinationScreen>
                 children: [
                   Padding(
                     padding: const EdgeInsets.only(
-                      left: 20.0,
-                      right: 20,
-                      top: 10,
+                      left: 15.0,
+                      right: 15,
+                      top: 15,
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,7 +148,7 @@ class _DestinationScreenState extends State<DestinationScreen>
                           height: 5,
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(left: 6.0),
+                          padding: const EdgeInsets.only(left: 15.0),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -160,7 +176,7 @@ class _DestinationScreenState extends State<DestinationScreen>
                           alignment: Alignment.center,
                           child: TabBar(
                             labelPadding:
-                                const EdgeInsets.only(left: 20, right: 20),
+                                const EdgeInsets.only(left: 15, right: 15),
                             indicatorSize: TabBarIndicatorSize.label,
                             isScrollable: true,
                             controller: tabController,
@@ -180,8 +196,8 @@ class _DestinationScreenState extends State<DestinationScreen>
                     ],
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20.0, right: 20, bottom: 5),
+                    padding: const EdgeInsets.only(
+                        left: 15.0, right: 15, bottom: 15),
                     child: Text(
                       widget.destination.description,
                       style: const TextStyle(
@@ -190,7 +206,7 @@ class _DestinationScreenState extends State<DestinationScreen>
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(15.0),
+                    padding: const EdgeInsets.only(left: 15.0, right: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
@@ -243,7 +259,7 @@ class _DestinationScreenState extends State<DestinationScreen>
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(left: 76),
+                    padding: const EdgeInsets.only(left: 65),
                     child: Row(
                       children: const [
                         Text(
@@ -268,7 +284,7 @@ class _DestinationScreenState extends State<DestinationScreen>
                           ),
                         ),
                         SizedBox(
-                          width: 63,
+                          width: 50,
                         ),
                         Text(
                           'Sunny',
@@ -282,30 +298,47 @@ class _DestinationScreenState extends State<DestinationScreen>
                       ],
                     ),
                   ),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        RoundedLoadingButton(
-                          height: 50.0,
-                          color: Theme.of(context).primaryColor,
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          successColor: Theme.of(context).primaryColor,
-                          resetDuration: const Duration(seconds: 5),
-                          controller: makePlanBtnController,
-                          onPressed: () => _doSomething(),
-                          resetAfterDuration: true,
-                          valueColor: Colors.white,
-                          borderRadius: 30,
-                          child: const Text(
-                            'Start planning',
-                            style: TextStyle(
-                              color: Colors.white,
+                        Center(
+                          child: InkWell(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PlanningFormScreen(),
+                              ),
+                            ),
+                            child: Container(
+                              //width: 100.0,
+                              height: 55.0,
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                border: Border.all(
+                                  color: Theme.of(context).primaryColor,
+                                ),
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              child: const Center(
+                                child: Text(
+                                  'Start Planning',
+                                  style: TextStyle(
+                                    fontSize: 18.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
                         ),
+                        
                       ],
                     ),
                   ),

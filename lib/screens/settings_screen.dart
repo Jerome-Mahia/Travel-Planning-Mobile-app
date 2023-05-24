@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:travel_planner_app_cs_project/screens/login_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/navigation.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -9,107 +11,477 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  List<bool> isSelected = [false, false];
+  List<bool> togglevalue = [false, false];
+  bool isDark = false;
+
+  // Send the isDarkMode value to shared preferences
+  // setDarkModeBool(bool isDarkMode) async {
+  //   SharedPreferences mode = await SharedPreferences.getInstance();
+  //   await mode.setBool('isDarkMode', isDarkMode);
+  // }
+
+  // @override
+  // void initState() {
+  //   getDarkModeBool();
+  //   super.initState();
+  // }
+
+  // getDarkModeBool() async {
+  //   SharedPreferences mode = await SharedPreferences.getInstance();
+  //   bool isDarkMode = mode.getBool('isDarkMode') ?? false;
+  //   return isDarkMode;
+  // }
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        body: CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              snap: true,
-              pinned: true,
-              floating: true,
-              flexibleSpace: const FlexibleSpaceBar(
-                centerTitle: true,
-                title: Text(
-                  "Settings",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16.0,
-                  ),
-                ),
-              ),
-              expandedHeight: MediaQuery.of(context).size.height * 0.2,
-              backgroundColor: Colors.white, //<Widget>[]
-            ), //SliverAppBar
-            ListView(
-              children: [
-                Column(
-          children: [
-            SizedBox(
-              height: 16,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('John Doe',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    )),
-                SizedBox(
-                  height: 4,
-                ),
-                Text('johndoe@gmail.com',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
-                    )),
-              ],
-            ),
-            SizedBox(
-              height: 16,
-            ),
-          ],
-        ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
+    return Container(
+      color: Theme.of(context).primaryColor,
+      child: SafeArea(
+        child: Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: const Text('Settings'),
+          ),
+          body: SingleChildScrollView(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Column(
                   children: [
-                    Center(
-                      child: InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => BottomNavBar(),
-                          ),
-                        ),
-                        child: Container(
-                          //width: 100.0,
-                          height: 55.0,
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 255, 0, 0),
-                            border: Border.all(
-                              color: Color.fromARGB(255, 255, 0, 0),
-                            ),
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Wrap(
-                                children: [
-                                  Icon(Icons.security),
-                                  Text(
-                                    'Security',
-                                    style: TextStyle(
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+                    Container(
+                      constraints: BoxConstraints(
+                          minWidth: MediaQuery.of(context).size.width * 0.90,
+                          maxWidth: MediaQuery.of(context).size.width * 0.90,
+                          minHeight: 110,
+                          maxHeight: 110),
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: Colors.blueGrey.withOpacity(0.5),
+                          width: 1
                         ),
                       ),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Wrap(
+                              children: [
+                                CircleAvatar(
+                                  radius: 33,
+                                  backgroundImage: AssetImage(
+                                    "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "John Doe",
+                                      style: TextStyle(
+                                        //account titles
+                                        color: Colors.grey.shade800,
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      "johndoe@gmail.com",
+                                      style: TextStyle(
+                                        //account titles
+                                        color: Colors.grey.shade800,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            Icon(
+                              Icons.arrow_forward_ios,
+                              color: Theme.of(context).iconTheme.color,
+                              size: 25.0,
+                            ),
+                          ]),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Divider(
+                        color: Colors.blueGrey.withOpacity(0.2),
+                        thickness: 1,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Settings & Preferences',
+                          style: TextStyle(
+                            //account page subtitles
+                            fontSize: 17.0,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            // Navigator.push(
+                            //     context,
+                            //     MaterialPageRoute(
+                            //         builder: (context) => ()));
+                          },
+                          child: Container(
+                            constraints: BoxConstraints(
+                                minWidth:
+                                    MediaQuery.of(context).size.width * 0.90,
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.90,
+                                minHeight: 55,
+                                maxHeight: 55),
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: Colors.blueGrey.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(16)),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Wrap(
+                                    children: [
+                                      Icon(
+                                        Icons.notifications,
+                                        size: 22,
+                                        color: Theme.of(context).iconTheme.color,
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "Notifications",
+                                        style: TextStyle(
+                                          //account titles
+                                          color: Colors.black,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Theme.of(context).iconTheme.color,
+                                    size: 25.0,
+                                  ),
+                                ]),
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(
+                              minWidth: MediaQuery.of(context).size.width * 0.90,
+                              maxWidth: MediaQuery.of(context).size.width * 0.90,
+                              minHeight: 55,
+                              maxHeight: 55),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Colors.blueGrey.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Wrap(
+                                  children: [
+                                    Icon(
+                                      Icons.subscriptions,
+                                      size: 22,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      "Subscriptions",
+                                      style: TextStyle(
+                                        //account titles
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Theme.of(context).iconTheme.color,
+                                  size: 25.0,
+                                ),
+                              ]),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(
+                              minWidth: MediaQuery.of(context).size.width * 0.90,
+                              maxWidth: MediaQuery.of(context).size.width * 0.90,
+                              minHeight: 55,
+                              maxHeight: 55),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Colors.blueGrey.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Wrap(
+                                  children: [
+                                    Icon(
+                                      Icons.dark_mode,
+                                      size: 22,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      "Dark Mode",
+                                      style: TextStyle(
+                                        //account titles
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                CupertinoSwitch(
+                                  value: isDark,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      isDark = value;
+                                      // ref
+                                      //     .read(darkModeProvider.notifier)
+                                      //     .state = value;
+                                      // setDarkModeBool(
+                                      //     value); // Update the isDarkMode value in shared preferences
+                                    });
+                                  },
+                                  thumbColor: isDark
+                                      ? Colors.black
+                                      : Color.fromARGB(232, 255, 255, 255),
+                                  trackColor: Colors.black,
+                                  activeColor: Color.fromARGB(232, 255, 255, 255),
+                                ),
+                              ]),
+                        )
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Divider(
+                        color: Colors.blueGrey.withOpacity(0.2),
+                        thickness: 1,
+                      ),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Support & Help',
+                          style: TextStyle(
+                            //account page subtitles
+                            fontSize: 17.0,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(
+                              minWidth: MediaQuery.of(context).size.width * 0.90,
+                              maxWidth: MediaQuery.of(context).size.width * 0.90,
+                              minHeight: 55,
+                              maxHeight: 55),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Colors.blueGrey.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Wrap(
+                                  children: [
+                                    Icon(
+                                      Icons.security,
+                                      size: 22,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      "Privacy and Security",
+                                      style: TextStyle(
+                                        //account titles
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Theme.of(context).iconTheme.color,
+                                  size: 25.0,
+                                ),
+                              ]),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 15),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Container(
+                          constraints: BoxConstraints(
+                              minWidth: MediaQuery.of(context).size.width * 0.90,
+                              maxWidth: MediaQuery.of(context).size.width * 0.90,
+                              minHeight: 55,
+                              maxHeight: 55),
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                              color: Colors.blueGrey.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(16)),
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Wrap(
+                                  children: [
+                                    Icon(
+                                      Icons.info,
+                                      size: 22,
+                                      color: Theme.of(context).iconTheme.color,
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Text(
+                                      "About Us",
+                                      style: TextStyle(
+                                        //account titles
+                                        color: Colors.black,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Theme.of(context).iconTheme.color,
+                                  size: 25.0,
+                                ),
+                              ]),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginScreen()));
+                          },
+                          child: Container(
+                            constraints: BoxConstraints(
+                                minWidth:
+                                    MediaQuery.of(context).size.width * 0.90,
+                                maxWidth:
+                                    MediaQuery.of(context).size.width * 0.90,
+                                minHeight: 55,
+                                maxHeight: 55),
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(16)),
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Wrap(
+                                    children: [
+                                      const Icon(
+                                        Icons.logout,
+                                        size: 22,
+                                        color: Color.fromARGB(232, 255, 255, 255),
+                                      ),
+                                      SizedBox(
+                                        width: 5,
+                                      ),
+                                      Text(
+                                        "Logout",
+                                        style: TextStyle(
+                                          color:
+                                              Color.fromARGB(232, 255, 255, 255),
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Color.fromARGB(232, 255, 255, 255),
+                                    size: 25.0,
+                                  ),
+                                ]),
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 30),
                   ],
                 ),
-              ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
     );

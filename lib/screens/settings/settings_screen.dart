@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:travel_planner_app_cs_project/screens/login_screen.dart';
-import 'package:travel_planner_app_cs_project/screens/navigation.dart';
+import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
+import 'package:travel_planner_app_cs_project/widgets/navigation.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -39,6 +39,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: SafeArea(
         child: Scaffold(
           appBar: AppBar(
+            surfaceTintColor: Colors.white,
             centerTitle: true,
             title: const Text('Settings'),
           ),
@@ -59,9 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         color: Colors.transparent,
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                          color: Colors.blueGrey.withOpacity(0.5),
-                          width: 1
-                        ),
+                            color: Colors.blueGrey.withOpacity(0.5), width: 1),
                       ),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -157,14 +156,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 color: Colors.blueGrey.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(16)),
                             child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Wrap(
                                     children: [
                                       Icon(
                                         Icons.notifications,
                                         size: 22,
-                                        color: Theme.of(context).iconTheme.color,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
                                       ),
                                       SizedBox(
                                         width: 5,
@@ -197,8 +198,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Container(
                           constraints: BoxConstraints(
-                              minWidth: MediaQuery.of(context).size.width * 0.90,
-                              maxWidth: MediaQuery.of(context).size.width * 0.90,
+                              minWidth:
+                                  MediaQuery.of(context).size.width * 0.90,
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.90,
                               minHeight: 55,
                               maxHeight: 55),
                           padding: EdgeInsets.all(10),
@@ -245,8 +248,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Container(
                           constraints: BoxConstraints(
-                              minWidth: MediaQuery.of(context).size.width * 0.90,
-                              maxWidth: MediaQuery.of(context).size.width * 0.90,
+                              minWidth:
+                                  MediaQuery.of(context).size.width * 0.90,
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.90,
                               minHeight: 55,
                               maxHeight: 55),
                           padding: EdgeInsets.all(10),
@@ -293,7 +298,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       ? Colors.black
                                       : Color.fromARGB(232, 255, 255, 255),
                                   trackColor: Colors.black,
-                                  activeColor: Color.fromARGB(232, 255, 255, 255),
+                                  activeColor:
+                                      Color.fromARGB(232, 255, 255, 255),
                                 ),
                               ]),
                         )
@@ -329,8 +335,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Container(
                           constraints: BoxConstraints(
-                              minWidth: MediaQuery.of(context).size.width * 0.90,
-                              maxWidth: MediaQuery.of(context).size.width * 0.90,
+                              minWidth:
+                                  MediaQuery.of(context).size.width * 0.90,
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.90,
                               minHeight: 55,
                               maxHeight: 55),
                           padding: EdgeInsets.all(10),
@@ -377,8 +385,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Container(
                           constraints: BoxConstraints(
-                              minWidth: MediaQuery.of(context).size.width * 0.90,
-                              maxWidth: MediaQuery.of(context).size.width * 0.90,
+                              minWidth:
+                                  MediaQuery.of(context).size.width * 0.90,
+                              maxWidth:
+                                  MediaQuery.of(context).size.width * 0.90,
                               minHeight: 55,
                               maxHeight: 55),
                           padding: EdgeInsets.all(10),
@@ -443,14 +453,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 color: Colors.red,
                                 borderRadius: BorderRadius.circular(16)),
                             child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Wrap(
                                     children: [
                                       const Icon(
                                         Icons.logout,
                                         size: 22,
-                                        color: Color.fromARGB(232, 255, 255, 255),
+                                        color:
+                                            Color.fromARGB(232, 255, 255, 255),
                                       ),
                                       SizedBox(
                                         width: 5,
@@ -458,8 +470,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       Text(
                                         "Logout",
                                         style: TextStyle(
-                                          color:
-                                              Color.fromARGB(232, 255, 255, 255),
+                                          color: Color.fromARGB(
+                                              232, 255, 255, 255),
                                           fontSize: 16,
                                           fontWeight: FontWeight.w400,
                                         ),

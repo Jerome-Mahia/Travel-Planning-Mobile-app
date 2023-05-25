@@ -4,8 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_pixels/image_pixels.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:travel_planner_app_cs_project/screens/planning_form_screen.dart';
-import 'package:travel_planner_app_cs_project/screens/settings_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/planning_form_screen.dart';
 
 class DestinationScreen extends StatefulWidget {
   final Destination destination;
@@ -20,8 +19,6 @@ class _DestinationScreenState extends State<DestinationScreen>
     with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    
-
     TabController tabController = TabController(length: 3, vsync: this);
     return SafeArea(
       child: Scaffold(

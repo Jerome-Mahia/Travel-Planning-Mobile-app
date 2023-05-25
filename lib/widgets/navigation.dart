@@ -2,13 +2,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
-import 'package:travel_planner_app_cs_project/screens/destination_screens.dart';
-import 'package:travel_planner_app_cs_project/screens/feed_screen.dart';
-import 'package:travel_planner_app_cs_project/screens/saved_plans_screen.dart';
-import 'package:travel_planner_app_cs_project/screens/settings_screen.dart';
-import 'package:travel_planner_app_cs_project/widgets/bottom_navbar.dart';
+import 'package:travel_planner_app_cs_project/screens/home/destination_screens.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:travel_planner_app_cs_project/screens/home/feed_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/saved_plans_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/settings/settings_screen.dart';
 
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({super.key});

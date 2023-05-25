@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
-import 'package:travel_planner_app_cs_project/screens/login_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:travel_planner_app_cs_project/screens/navigation.dart';
 
 class ResetPasswordOTP extends StatefulWidget {
   const ResetPasswordOTP({super.key});
@@ -38,6 +37,19 @@ final RoundedLoadingButtonController makePlanBtnController =
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
+          surfaceTintColor: Colors.white,
+          elevation: 0.0,
+        ),
         body: Stack(
           children: [
             Padding(
@@ -61,8 +73,20 @@ final RoundedLoadingButtonController makePlanBtnController =
                           ),
                         ),
                         SizedBox(
-                          height: 30,
+                          height: 9,
                         ),
+                        Text(
+                              'Enter the OTP sent to your email address',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
                         Center(
                           child: OTPTextField(
                               controller: otpController,

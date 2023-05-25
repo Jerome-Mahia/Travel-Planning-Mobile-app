@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:travel_planner_app_cs_project/screens/reset_password_otp.dart';
+import 'package:travel_planner_app_cs_project/screens/authentication/reset_password_otp.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -35,6 +35,19 @@ final RoundedLoadingButtonController makePlanBtnController =
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
+          surfaceTintColor: Colors.white,
+          elevation: 0.0,
+        ),
         body: Stack(
             children: [
               Padding(
@@ -60,6 +73,18 @@ final RoundedLoadingButtonController makePlanBtnController =
                           SizedBox(
                             height: 9,
                           ),
+                          Text(
+                              'Please enter your email address to reset your password',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[700],
+                              ),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
                           TextFormField(
                             controller: emailController,
                             enabled: _isEnabled,

@@ -2,25 +2,24 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:travel_planner_app_cs_project/screens/navigation.dart';
-import 'package:travel_planner_app_cs_project/screens/registration_screen.dart';
-import 'package:travel_planner_app_cs_project/screens/reset_password_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegistrationScreen extends StatefulWidget {
+  const RegistrationScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _isEnabled = true;
   final _loginFormKey = GlobalKey<FormState>();
-
   final TextEditingController emailController = TextEditingController();
-
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController bioController = TextEditingController();
+  final TextEditingController fullnameController = TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
 final RoundedLoadingButtonController makePlanBtnController =
         RoundedLoadingButtonController();
 
@@ -29,14 +28,28 @@ final RoundedLoadingButtonController makePlanBtnController =
         // makePlanBtnController.success();
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const BottomNavBar()),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       });
     }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        appBar: AppBar(
+          leading: InkWell(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.black,
+            ),
+          ),
+          surfaceTintColor: Colors.white,
+          elevation: 0.0,
+        ),
         body: Stack(
           children: [
             Padding(
@@ -44,23 +57,60 @@ final RoundedLoadingButtonController makePlanBtnController =
               child: ListView(
                 children: [
                   SvgPicture.asset(
-                    'assets/images/login_svg.svg',
+                    'assets/images/sign_up_svg.svg',
                     height: MediaQuery.of(context).size.height * 0.36,
+                  ),
+                  Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 35,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 25,
                   ),
                   Form(
                     key: _loginFormKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Login',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 35,
+                        TextFormField(
+                          controller: usernameController,
+                          enabled: _isEnabled,
+                          keyboardType: TextInputType.text,
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please enter a username';
+                            } else {
+                              return null;
+                            }
+                          },
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 15.0),
+                            border: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                              ),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            hintText: 'Username',
+                            prefixIcon: const Icon(
+                              Icons.account_box_rounded,
+                              size: 20.0,
+                            ),
                           ),
                         ),
-                        SizedBox(
-                          height: 9,
+                        const SizedBox(
+                          height: 20.0,
                         ),
                         TextFormField(
                           controller: emailController,
@@ -136,6 +186,80 @@ final RoundedLoadingButtonController makePlanBtnController =
                           ),
                         ),
                         const SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          controller: fullnameController,
+                          enabled: _isEnabled,
+                          keyboardType: TextInputType.text,
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please enter your full names';
+                            } else {
+                              return null;
+                            }
+                          },
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 15.0),
+                            border: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                              ),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            hintText: 'Full name',
+                            prefixIcon: const Icon(
+                              Icons.person,
+                              size: 20.0,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                          controller: bioController,
+                          enabled: _isEnabled,
+                          keyboardType: TextInputType.text,
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please fill in bio';
+                            } else {
+                              return null;
+                            }
+                          },
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 15.0),
+                            border: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                              ),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            hintText: 'Bio',
+                            prefixIcon: const Icon(
+                              Icons.info_outline_rounded,
+                              size: 20.0,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
                           height: 38.0,
                         ),
                         RoundedLoadingButton(
@@ -150,7 +274,7 @@ final RoundedLoadingButtonController makePlanBtnController =
                           valueColor: Colors.white,
                           borderRadius: 15,
                           child: const Text(
-                            'Login',
+                            'Sign Up',
                             style: TextStyle(
                               fontSize: 18.0,
                               fontWeight: FontWeight.bold,
@@ -169,7 +293,7 @@ final RoundedLoadingButtonController makePlanBtnController =
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Forgot your Password?',
+                          'Already have an account?',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w200,
@@ -177,15 +301,15 @@ final RoundedLoadingButtonController makePlanBtnController =
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => ResetPasswordScreen(),
+                                builder: (_) => LoginScreen(),
                               ),
                             );
                           },
                           child: Text(
-                            'Reset Password',
+                            'Login',
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,
@@ -197,140 +321,7 @@ final RoundedLoadingButtonController makePlanBtnController =
                     ),
                   ),
                   SizedBox(
-                    height: 8,
-                  ),
-                  Center(
-                    child: Text('Or, login with...'),
-                  ),
-                  SizedBox(
-                    height: 20.0,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      GestureDetector(
-                        onTap: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => BottomNavBar(),
-                          ),
-                        ),
-                        child: Container(
-                          height: 60,
-                          width: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.grey.withOpacity(0.8),
-                              width: 0.3,
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Image.asset(
-                                'assets/icons/google.png',
-                                height: 40,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => BottomNavBar(),
-                          ),
-                        ),
-                        child: Container(
-                          height: 60,
-                          width: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.grey.withOpacity(0.8),
-                              width: 0.3,
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Image.asset(
-                                'assets/icons/facebook.png',
-                                height: 40,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      GestureDetector(
-                        onTap: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => BottomNavBar(),
-                          ),
-                        ),
-                        child: Container(
-                          height: 60,
-                          width: 100,
-                          decoration: BoxDecoration(
-                            color: Colors.transparent,
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Colors.grey.withOpacity(0.8),
-                              width: 0.3,
-                            ),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Center(
-                              child: Image.asset(
-                                'assets/icons/instagram.png',
-                                height: 40,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'New to HouseHunter?',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w200,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => RegistrationScreen(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            'Register',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
+                    height: 20,
                   ),
                 ],
               ),

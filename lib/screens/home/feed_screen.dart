@@ -2,8 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
-import 'package:travel_planner_app_cs_project/screens/destination_screens.dart';
-import 'package:travel_planner_app_cs_project/widgets/bottom_navbar.dart';
+import 'package:travel_planner_app_cs_project/screens/home/destination_screens.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -36,6 +35,7 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(80),
             child: AppBar(
+              surfaceTintColor: Colors.white,
               centerTitle: true,
               elevation: 0.0,
               leading: Padding(

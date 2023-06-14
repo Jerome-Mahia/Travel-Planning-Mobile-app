@@ -435,10 +435,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginScreen()));
+                            showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return AlertDialog(
+                                    title: Text(
+                                      'Are you sure you want to log out?',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    content: Text(
+                                        'Logging out will end your current session and you will need to sign in again to access your account.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: Text('Cancel',
+                                            style:
+                                                TextStyle(color: Colors.black)),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          void resetAppState(
+                                              BuildContext context) {
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) =>
+                                                          LoginScreen()),
+                                              (Route<dynamic> route) => false,
+                                            );
+                                          }
+
+                                          resetAppState(context);
+                                        },
+                                        child: Text('Log Out',
+                                            style:
+                                                TextStyle(color: Colors.red)),
+                                      ),
+                                    ],
+                                  );
+                                });
                           },
                           child: Container(
                             constraints: BoxConstraints(

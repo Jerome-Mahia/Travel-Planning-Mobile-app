@@ -29,11 +29,15 @@ class _SignInOptionScreenState extends State<SignInOptionScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        'Sign In options',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 35,
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Sign In options',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 35,
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -45,13 +49,16 @@ class _SignInOptionScreenState extends State<SignInOptionScreen> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Text(
-                              'Choose your preferred sign in option',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[700],
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                'Choose your preferred sign in option',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[700],
+                                ),
                               ),
                             ),
                             SizedBox(
@@ -148,9 +155,6 @@ class _SignInOptionScreenState extends State<SignInOptionScreen> {
                             ),
                           ],
                         ),
-                      ),
-                      const SizedBox(
-                        height: 10.0,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(10.0),

@@ -64,7 +64,7 @@ final RoundedLoadingButtonController makePlanBtnController =
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Reset Pasword',
+                            'Email Verification',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 35,
@@ -74,7 +74,7 @@ final RoundedLoadingButtonController makePlanBtnController =
                             height: 9,
                           ),
                           Text(
-                              'Please enter your email address to reset your password',
+                              'Please enter your email address to receive a password reset link via email',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 18.0,

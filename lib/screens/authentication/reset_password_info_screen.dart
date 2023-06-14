@@ -3,39 +3,51 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/registration_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/reset_password_screen.dart';
 import 'package:travel_planner_app_cs_project/widgets/navigation.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/sign_in_options.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class ResetPasswordFormScreen extends StatefulWidget {
+  const ResetPasswordFormScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ResetPasswordFormScreen> createState() =>
+      _ResetPasswordFormScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
   bool _isEnabled = true;
-  final _loginFormKey = GlobalKey<FormState>();
-
-  final TextEditingController emailController = TextEditingController();
+  final _resetPasswordFormKey = GlobalKey<FormState>();
 
   final TextEditingController passwordController = TextEditingController();
+
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   final RoundedLoadingButtonController makePlanBtnController =
       RoundedLoadingButtonController();
 
   void _doSomething(RoundedLoadingButtonController controller) async {
     Timer(const Duration(seconds: 2), () {
-      // makePlanBtnController.success();
-      if (_loginFormKey.currentState!.validate()) {
-        controller.success();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNavBar()),
-        ); // ref.read(authProvider.notifier).state = true;
+      if (_resetPasswordFormKey.currentState!.validate()) {
+        String newPassword = passwordController.text;
+        String confirmedPassword = confirmPasswordController.text;
+
+        if (newPassword == confirmedPassword) {
+          // Passwords match, proceed with success action
+          controller.success();
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        } else {
+          // Passwords do not match, show error message
+          controller.error();
+        }
       } else {
+        // Form validation failed, show error message
         controller.error();
       }
     });
@@ -48,12 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
         appBar: AppBar(
           leading: InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SignInOptionScreen(),
-                ),
-              );
+              Navigator.pop(context);
             },
             child: const Icon(
               Icons.arrow_back_ios,
@@ -70,16 +77,16 @@ class _LoginScreenState extends State<LoginScreen> {
               child: ListView(
                 children: [
                   SvgPicture.asset(
-                    'assets/images/login_svg.svg',
+                    'assets/images/sign_up_svg.svg',
                     height: MediaQuery.of(context).size.height * 0.36,
                   ),
                   Form(
-                    key: _loginFormKey,
+                    key: _resetPasswordFormKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Login',
+                          'Reset Password',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 35,
@@ -87,43 +94,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         SizedBox(
                           height: 9,
-                        ),
-                        TextFormField(
-                          controller: emailController,
-                          enabled: _isEnabled,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || !value.contains('@')) {
-                              return 'Please provide a valid email address';
-                            } else {
-                              return null;
-                            }
-                          },
-                          decoration: InputDecoration(
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 15.0),
-                            border: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: const BorderSide(
-                                width: 0.5,
-                              ),
-                            ),
-                            enabledBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: const BorderSide(
-                                width: 0.5,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            hintText: 'Email',
-                            prefixIcon: const Icon(
-                              Icons.email_rounded,
-                              size: 20.0,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20.0,
                         ),
                         TextFormField(
                           controller: passwordController,
@@ -162,6 +132,45 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         const SizedBox(
+                          height: 20.0,
+                        ),
+                        TextFormField(
+                          controller: confirmPasswordController,
+                          enabled: _isEnabled,
+                          validator: (value) {
+                            if (value == null || value.length < 8) {
+                              return 'Please provide a password more than 8 characters';
+                            } else {
+                              return null;
+                            }
+                          },
+                          obscureText: true,
+                          enableSuggestions: false,
+                          autocorrect: false,
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 15.0),
+                            border: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                              ),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            hintText: 'Confirm Password',
+                            prefixIcon: const Icon(
+                              Icons.lock,
+                              size: 20.0,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
                           height: 38.0,
                         ),
                         RoundedLoadingButton(
@@ -177,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           valueColor: Colors.white,
                           borderRadius: 15,
                           child: const Text(
-                            'Login',
+                            'Reset Password',
                             style: TextStyle(
                               fontSize: 18.0,
                               fontWeight: FontWeight.bold,
@@ -196,7 +205,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Forgot your Password?',
+                          'Already have an account?',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w200,
@@ -204,50 +213,15 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => ResetPasswordScreen(),
+                                builder: (_) => LoginScreen(),
                               ),
                             );
                           },
                           child: Text(
-                            'Reset Password',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                  Center(
-                    child: Text('Or'),
-                  ),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'New to HouseHunter?',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w200,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => RegistrationScreen(),
-                              ),
-                            );
-                          },
-                          child: Text(
-                            'Register',
+                            'Login',
                             style: TextStyle(
                               fontSize: 17,
                               fontWeight: FontWeight.bold,

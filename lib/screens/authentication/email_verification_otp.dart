@@ -6,16 +6,16 @@ import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
-import 'package:travel_planner_app_cs_project/screens/authentication/reset_password_info_screen.dart';
+import 'package:travel_planner_app_cs_project/widgets/navigation.dart';
 
-class ResetPasswordOTP extends StatefulWidget {
-  const ResetPasswordOTP({super.key});
+class EmailVerificationOTP extends StatefulWidget {
+  const EmailVerificationOTP({super.key});
 
   @override
-  State<ResetPasswordOTP> createState() => _ResetPasswordOTPState();
+  State<EmailVerificationOTP> createState() => _EmailVerificationOTPState();
 }
 
-class _ResetPasswordOTPState extends State<ResetPasswordOTP> {
+class _EmailVerificationOTPState extends State<EmailVerificationOTP> {
   bool _isEnabled = true;
   final _loginFormKey = GlobalKey<FormState>();
   OtpFieldController otpController = OtpFieldController();
@@ -30,7 +30,7 @@ final RoundedLoadingButtonController makePlanBtnController =
         // makePlanBtnController.success();
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const ResetPasswordFormScreen()),
+          MaterialPageRoute(builder: (context) => const BottomNavBar()),
         );
       });
     }
@@ -77,7 +77,7 @@ final RoundedLoadingButtonController makePlanBtnController =
                           height: 9,
                         ),
                         Text(
-                              'Kindly enter the password reset otp sent to your email address',
+                              'Kindly enter the email verification otp sent to your email address',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 18.0,
@@ -120,7 +120,7 @@ final RoundedLoadingButtonController makePlanBtnController =
                           valueColor: Colors.white,
                           borderRadius: 15,
                           child: const Text(
-                            'Confirm',
+                            'Verify',
                             style: TextStyle(
                               fontSize: 18.0,
                               fontWeight: FontWeight.bold,

@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:travel_planner_app_cs_project/screens/authentication/email_verification_otp.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
@@ -20,18 +23,67 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController bioController = TextEditingController();
   final TextEditingController fullnameController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
-final RoundedLoadingButtonController makePlanBtnController =
-        RoundedLoadingButtonController();
+  final RoundedLoadingButtonController makePlanBtnController =
+      RoundedLoadingButtonController();
+  Uint8List? _image;
 
-    void _doSomething() async {
-      Timer(const Duration(seconds: 2), () {
-        // makePlanBtnController.success();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginScreen()),
+  selectCameraImage() async {
+    Navigator.of(context).pop();
+    XFile? im = await ImagePicker().pickImage(source: ImageSource.camera);
+    setState(() {
+      _image = im as Uint8List?;
+    });
+  }
+
+  selectGalleryImage() async {
+    Navigator.of(context).pop();
+    XFile? im = await ImagePicker().pickImage(source: ImageSource.gallery);
+    setState(() {
+      _image = im as Uint8List?;
+    });
+  }
+
+  _selectImage(BuildContext parentContext) async {
+    return showDialog(
+      context: parentContext,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text('Upload Image'),
+          children: <Widget>[
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: const Text('Take a photo'),
+              onPressed: selectCameraImage,
+            ),
+            SimpleDialogOption(
+              padding: const EdgeInsets.all(20),
+              child: const Text('Choose from Gallery'),
+              onPressed: selectGalleryImage,
+            ),
+            Center(
+              child: SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text("Cancel", style: TextStyle(color: Colors.red)),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            )
+          ],
         );
-      });
-    }
+      },
+    );
+  }
+
+  void _doSomething() async {
+    Timer(const Duration(seconds: 2), () {
+      // makePlanBtnController.success();
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const EmailVerificationOTP()),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +92,10 @@ final RoundedLoadingButtonController makePlanBtnController =
         appBar: AppBar(
           leading: InkWell(
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
             },
             child: const Icon(
               Icons.arrow_back_ios,
@@ -56,10 +111,7 @@ final RoundedLoadingButtonController makePlanBtnController =
               padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
               child: ListView(
                 children: [
-                  SvgPicture.asset(
-                    'assets/images/sign_up_svg.svg',
-                    height: MediaQuery.of(context).size.height * 0.36,
-                  ),
+                  
                   Text(
                     'Sign Up',
                     style: TextStyle(
@@ -69,6 +121,36 @@ final RoundedLoadingButtonController makePlanBtnController =
                   ),
                   SizedBox(
                     height: 25,
+                  ),
+                  Center(
+                    child: Stack(
+                      children: [
+                        _image != null
+                            ? CircleAvatar(
+                                radius: 64,
+                                backgroundImage: MemoryImage(_image!),
+                                backgroundColor: Colors.grey,
+                              )
+                            : const CircleAvatar(
+                                radius: 64,
+                                backgroundImage: AssetImage(
+                                  "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                                ),
+                                backgroundColor: Colors.grey,
+                              ),
+                        Positioned(
+                          bottom: -10,
+                          left: 80,
+                          child: IconButton(
+                            onPressed: ()=>_selectImage(context),
+                            icon: const Icon(Icons.add_a_photo),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
                   ),
                   Form(
                     key: _loginFormKey,

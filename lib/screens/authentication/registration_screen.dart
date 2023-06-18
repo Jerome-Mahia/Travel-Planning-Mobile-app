@@ -4,6 +4,9 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/email_verification_otp.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -17,15 +20,14 @@ class RegistrationScreen extends StatefulWidget {
 
 class _RegistrationScreenState extends State<RegistrationScreen> {
   bool _isEnabled = true;
-  final _loginFormKey = GlobalKey<FormState>();
+  final _registrationFormKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController bioController = TextEditingController();
-  final TextEditingController fullnameController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
-  final RoundedLoadingButtonController makePlanBtnController =
+  final RoundedLoadingButtonController registerBtnController =
       RoundedLoadingButtonController();
   Uint8List? _image;
+  bool passToggle = true;
 
   selectCameraImage() async {
     Navigator.of(context).pop();
@@ -63,7 +65,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
             Center(
               child: SimpleDialogOption(
                 padding: const EdgeInsets.all(20),
-                child: const Text("Cancel", style: TextStyle(color: Colors.red)),
+                child:
+                    const Text("Cancel", style: TextStyle(color: Colors.red)),
                 onPressed: () {
                   Navigator.pop(context);
                 },
@@ -75,14 +78,27 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  void _doSomething() async {
+  void _doSomething(RoundedLoadingButtonController controller) async {
     Timer(const Duration(seconds: 2), () {
       // makePlanBtnController.success();
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const EmailVerificationOTP()),
-      );
+      if (_registrationFormKey.currentState!.validate()) {
+        controller.success();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const EmailVerificationOTP()),
+        ); // ref.read(authProvider.notifier).state = true;
+      } else {
+        controller.error();
+      }
     });
+  }
+
+  TextEditingController datePickedInput = TextEditingController();
+
+  @override
+  void initState() {
+    datePickedInput.text = "";
+    super.initState();
   }
 
   @override
@@ -111,7 +127,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
               padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
               child: ListView(
                 children: [
-                  
                   Text(
                     'Sign Up',
                     style: TextStyle(
@@ -122,38 +137,41 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   SizedBox(
                     height: 25,
                   ),
-                  Center(
-                    child: Stack(
-                      children: [
-                        _image != null
-                            ? CircleAvatar(
-                                radius: 64,
-                                backgroundImage: MemoryImage(_image!),
-                                backgroundColor: Colors.grey,
-                              )
-                            : const CircleAvatar(
-                                radius: 64,
-                                backgroundImage: AssetImage(
-                                  "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                  GestureDetector(
+                    onTap: () => _selectImage(context),
+                    child: Center(
+                      child: Stack(
+                        children: [
+                          _image != null
+                              ? CircleAvatar(
+                                  radius: 64,
+                                  backgroundImage: MemoryImage(_image!),
+                                  backgroundColor: Colors.grey,
+                                )
+                              : const CircleAvatar(
+                                  radius: 64,
+                                  backgroundImage: AssetImage(
+                                    "assets/images/profile_avatar.png",
+                                  ),
+                                  backgroundColor: Colors.grey,
                                 ),
-                                backgroundColor: Colors.grey,
-                              ),
-                        Positioned(
-                          bottom: -10,
-                          left: 80,
-                          child: IconButton(
-                            onPressed: ()=>_selectImage(context),
-                            icon: const Icon(Icons.add_a_photo),
-                          ),
-                        )
-                      ],
+                          Positioned(
+                            bottom: -10,
+                            left: 80,
+                            child: IconButton(
+                              onPressed: () => _selectImage(context),
+                              icon: const Icon(Icons.add_a_photo),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(
                     height: 10,
                   ),
                   Form(
-                    key: _loginFormKey,
+                    key: _registrationFormKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -162,7 +180,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           enabled: _isEnabled,
                           keyboardType: TextInputType.text,
                           validator: (value) {
-                            if (value == null) {
+                            if (value == null || value.isEmpty) {
                               return 'Please enter a username';
                             } else {
                               return null;
@@ -235,13 +253,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           controller: passwordController,
                           enabled: _isEnabled,
                           validator: (value) {
-                            if (value == null || value.length < 6) {
-                              return 'Please provide a password more than 6 characters';
+                            if (value == null || value.length < 8) {
+                              return 'Please provide a password with more than 8 characters';
                             } else {
                               return null;
                             }
                           },
-                          obscureText: true,
+                          obscureText: passToggle,
                           enableSuggestions: false,
                           autocorrect: false,
                           decoration: InputDecoration(
@@ -265,20 +283,72 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               Icons.lock,
                               size: 20.0,
                             ),
+                            suffixIcon: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  passToggle = !passToggle;
+                                });
+                              },
+                              child: Icon(
+                                passToggle
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(
                           height: 20,
                         ),
+                        IntlPhoneField(
+                          initialCountryCode: 'KE',
+                          invalidNumberMessage:
+                              'Please provide a valid number starting with \'07..\'',
+                          decoration: InputDecoration(
+                            contentPadding:
+                                const EdgeInsets.symmetric(vertical: 15.0),
+                            border: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                              ),
+                            ),
+                            enabledBorder: UnderlineInputBorder(
+                              borderRadius: BorderRadius.circular(10.0),
+                              borderSide: const BorderSide(
+                                width: 0.5,
+                                color: Colors.grey,
+                              ),
+                            ),
+                            hintText: 'Phone Number',
+                          ),
+                          onChanged: (phone) {
+                            print(phone.completeNumber);
+                          },
+                          onCountryChanged: (country) {
+                            print('Country changed to: ' + country.name);
+                          },
+                        ),
                         TextFormField(
-                          controller: fullnameController,
-                          enabled: _isEnabled,
-                          keyboardType: TextInputType.text,
+                          controller: datePickedInput,
                           validator: (value) {
-                            if (value == null) {
-                              return 'Please enter your full names';
+                            if (value == null || value.isEmpty) {
+                              return 'Please provide a valid date of birth';
                             } else {
-                              return null;
+                              DateTime currentDate = DateTime.now();
+                              DateTime enteredDate =
+                                  DateFormat.yMMMMd().parse(value);
+
+                              Duration difference =
+                                  currentDate.difference(enteredDate);
+                              int age = (difference.inDays / 365).floor();
+
+                              if (age >= 18) {
+                                return null; // Valid age
+                              } else {
+                                return 'You must be at least 18 years old';
+                              }
                             }
                           },
                           decoration: InputDecoration(
@@ -297,49 +367,30 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                                 color: Colors.grey,
                               ),
                             ),
-                            hintText: 'Full name',
+                            hintText: 'Date of Birth',
                             prefixIcon: const Icon(
-                              Icons.person,
+                              Icons.calendar_today,
                               size: 20.0,
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        TextFormField(
-                          controller: bioController,
-                          enabled: _isEnabled,
-                          keyboardType: TextInputType.text,
-                          validator: (value) {
-                            if (value == null) {
-                              return 'Please fill in bio';
-                            } else {
-                              return null;
+                          readOnly:
+                              true, // Set it to true, so that the user cannot edit the text
+                          onTap: () async {
+                            DateTime? pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1930),
+                              lastDate: DateTime(2100),
+                            );
+                            if (pickedDate != null) {
+                              String formattedPickedDate =
+                                  DateFormat.yMMMMd().format(pickedDate);
+                              setState(() {
+                                datePickedInput.text =
+                                    formattedPickedDate; // Set output date range to TextField value
+                              });
                             }
                           },
-                          decoration: InputDecoration(
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 15.0),
-                            border: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: const BorderSide(
-                                width: 0.5,
-                              ),
-                            ),
-                            enabledBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: const BorderSide(
-                                width: 0.5,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            hintText: 'Bio',
-                            prefixIcon: const Icon(
-                              Icons.info_outline_rounded,
-                              size: 20.0,
-                            ),
-                          ),
                         ),
                         const SizedBox(
                           height: 38.0,
@@ -350,8 +401,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           width: MediaQuery.of(context).size.width * 0.9,
                           successColor: Theme.of(context).primaryColor,
                           resetDuration: const Duration(seconds: 3),
-                          controller: makePlanBtnController,
-                          onPressed: () => _doSomething(),
+                          controller: registerBtnController,
+                          onPressed: () => _doSomething(registerBtnController),
                           resetAfterDuration: true,
                           valueColor: Colors.white,
                           borderRadius: 15,

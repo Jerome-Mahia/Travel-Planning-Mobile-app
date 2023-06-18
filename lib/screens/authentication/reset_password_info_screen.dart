@@ -6,7 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/registration_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/reset_password_screen.dart';
-import 'package:travel_planner_app_cs_project/widgets/navigation.dart';
+import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/sign_in_options.dart';
 
@@ -20,6 +20,7 @@ class ResetPasswordFormScreen extends StatefulWidget {
 
 class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
   bool _isEnabled = true;
+  bool passToggle = true;
   final _resetPasswordFormKey = GlobalKey<FormState>();
 
   final TextEditingController passwordController = TextEditingController();
@@ -105,7 +106,7 @@ class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
                               return null;
                             }
                           },
-                          obscureText: true,
+                          obscureText: passToggle,
                           enableSuggestions: false,
                           autocorrect: false,
                           decoration: InputDecoration(
@@ -129,6 +130,19 @@ class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
                               Icons.lock,
                               size: 20.0,
                             ),
+                            suffixIcon: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  passToggle = !passToggle;
+                                });
+                              },
+                              child: Icon(
+                                passToggle
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ),
                           ),
                         ),
                         const SizedBox(
@@ -144,7 +158,7 @@ class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
                               return null;
                             }
                           },
-                          obscureText: true,
+                          obscureText: passToggle,
                           enableSuggestions: false,
                           autocorrect: false,
                           decoration: InputDecoration(
@@ -167,6 +181,19 @@ class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
                             prefixIcon: const Icon(
                               Icons.lock,
                               size: 20.0,
+                            ),
+                            suffixIcon: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  passToggle = !passToggle;
+                                });
+                              },
+                              child: Icon(
+                                passToggle
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Theme.of(context).primaryColor,
+                              ),
                             ),
                           ),
                         ),

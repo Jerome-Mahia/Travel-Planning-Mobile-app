@@ -10,11 +10,13 @@ class SavedPlanScreen extends StatefulWidget {
 class _SavedPlanScreenState extends State<SavedPlanScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Theme.of(context).primaryColor,
-      child: SafeArea(
-        child: Scaffold(
-          
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Center(child: Text('Saved Plans')),
+        ),
+        body: const Center(
+          child: Text('Saved Plans'),
         ),
       ),
     );

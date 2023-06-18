@@ -2,11 +2,13 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
+import 'package:travel_planner_app_cs_project/screens/calendar/calendar_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/home/destination_screens.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:travel_planner_app_cs_project/screens/home/feed_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/saved_plans_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/search/search_destination_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/settings/settings_screen.dart';
 
 class BottomNavBar extends StatelessWidget {
@@ -17,6 +19,8 @@ class BottomNavBar extends StatelessWidget {
     List<Widget> _buildScreens() {
       return [
         const FeedScreen(),
+        const TripCalendarScreen(),
+        const SearchDestinationScreen(),
         const SavedPlanScreen(),
         const SettingsScreen(),
       ];
@@ -29,6 +33,17 @@ class BottomNavBar extends StatelessWidget {
           title: ("Home"),
           activeColorPrimary: Theme.of(context).primaryColor,
           inactiveColorPrimary: const Color.fromARGB(255, 10, 10, 10),
+        ),
+        PersistentBottomNavBarItem(
+          icon: const Icon(Icons.calendar_month),
+          title: ("Calendar"),
+          activeColorPrimary: Theme.of(context).primaryColor,
+          inactiveColorPrimary: const Color.fromARGB(255, 10, 10, 10),
+        ),
+        PersistentBottomNavBarItem(
+          icon: const Icon(Icons.search,color: Colors.white,),
+          title: ("Search"),
+          activeColorPrimary: Theme.of(context).primaryColor,
         ),
         PersistentBottomNavBarItem(
           icon: const Icon(Icons.book),
@@ -80,7 +95,7 @@ class BottomNavBar extends StatelessWidget {
         duration: Duration(milliseconds: 400),
       ),
       navBarStyle:
-          NavBarStyle.style9, // Choose the nav bar style with this property.
+          NavBarStyle.style16, // Choose the nav bar style with this property.
     );
   }
 }

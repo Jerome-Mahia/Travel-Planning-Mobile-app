@@ -3,12 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/sign_in_options.dart';
 
-import 'widgets/navigation.dart';
+import 'widgets/bottom_navbar_widget.dart';
 
 void main() {
   runApp(ProviderScope(child: const MyApp()));
 }
 
+final accountCreationProvider = StateProvider((ref) => false);
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 

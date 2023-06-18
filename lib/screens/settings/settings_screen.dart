@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
-import 'package:travel_planner_app_cs_project/widgets/navigation.dart';
+import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -46,13 +46,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
           body: SingleChildScrollView(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
                     Container(
                       constraints: BoxConstraints(
-                          minWidth: MediaQuery.of(context).size.width * 0.90,
-                          maxWidth: MediaQuery.of(context).size.width * 0.90,
+                          minWidth: MediaQuery.of(context).size.width * 0.93,
+                          maxWidth: MediaQuery.of(context).size.width * 0.93,
                           minHeight: 110,
                           maxHeight: 110),
                       padding: EdgeInsets.all(10),
@@ -146,9 +146,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Container(
                             constraints: BoxConstraints(
                                 minWidth:
-                                    MediaQuery.of(context).size.width * 0.90,
+                                    MediaQuery.of(context).size.width * 0.93,
                                 maxWidth:
-                                    MediaQuery.of(context).size.width * 0.90,
+                                    MediaQuery.of(context).size.width * 0.93,
                                 minHeight: 55,
                                 maxHeight: 55),
                             padding: EdgeInsets.all(10),
@@ -199,9 +199,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Container(
                           constraints: BoxConstraints(
                               minWidth:
-                                  MediaQuery.of(context).size.width * 0.90,
+                                  MediaQuery.of(context).size.width * 0.93,
                               maxWidth:
-                                  MediaQuery.of(context).size.width * 0.90,
+                                  MediaQuery.of(context).size.width * 0.93,
                               minHeight: 55,
                               maxHeight: 55),
                           padding: EdgeInsets.all(10),
@@ -249,9 +249,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Container(
                           constraints: BoxConstraints(
                               minWidth:
-                                  MediaQuery.of(context).size.width * 0.90,
+                                  MediaQuery.of(context).size.width * 0.93,
                               maxWidth:
-                                  MediaQuery.of(context).size.width * 0.90,
+                                  MediaQuery.of(context).size.width * 0.93,
                               minHeight: 55,
                               maxHeight: 55),
                           padding: EdgeInsets.all(10),
@@ -336,9 +336,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Container(
                           constraints: BoxConstraints(
                               minWidth:
-                                  MediaQuery.of(context).size.width * 0.90,
+                                  MediaQuery.of(context).size.width * 0.93,
                               maxWidth:
-                                  MediaQuery.of(context).size.width * 0.90,
+                                  MediaQuery.of(context).size.width * 0.93,
                               minHeight: 55,
                               maxHeight: 55),
                           padding: EdgeInsets.all(10),
@@ -386,9 +386,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         Container(
                           constraints: BoxConstraints(
                               minWidth:
-                                  MediaQuery.of(context).size.width * 0.90,
+                                  MediaQuery.of(context).size.width * 0.93,
                               maxWidth:
-                                  MediaQuery.of(context).size.width * 0.90,
+                                  MediaQuery.of(context).size.width * 0.93,
                               minHeight: 55,
                               maxHeight: 55),
                           padding: EdgeInsets.all(10),
@@ -482,9 +482,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: Container(
                             constraints: BoxConstraints(
                                 minWidth:
-                                    MediaQuery.of(context).size.width * 0.90,
+                                    MediaQuery.of(context).size.width * 0.93,
                                 maxWidth:
-                                    MediaQuery.of(context).size.width * 0.90,
+                                    MediaQuery.of(context).size.width * 0.93,
                                 minHeight: 55,
                                 maxHeight: 55),
                             padding: EdgeInsets.all(10),

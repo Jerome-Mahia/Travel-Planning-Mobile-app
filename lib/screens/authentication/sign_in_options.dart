@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/registration_screen.dart';
 
@@ -11,6 +15,8 @@ class SignInOptionScreen extends StatefulWidget {
 }
 
 class _SignInOptionScreenState extends State<SignInOptionScreen> {
+ 
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -92,55 +98,6 @@ class _SignInOptionScreenState extends State<SignInOptionScreen> {
                                       const Center(
                                         child: Text(
                                           'Sign in with Google',
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Center(
-                              child: InkWell(
-                                onTap: () {},
-                                child: Container(
-                                  //width: 100.0,
-                                  height: 55.0,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(15),
-                                    border: Border.all(
-                                      color: Colors.grey.withOpacity(0.8),
-                                      width: 0.5,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 20.0, right: 20.0),
-                                        child: Image.asset(
-                                          'assets/icons/facebook.png',
-                                          height: 30,
-                                          width: 30,
-                                        ),
-                                      ),
-                                      const Center(
-                                        child: Text(
-                                          'Sign in with Facebook',
                                           style: TextStyle(
                                             fontSize: 18.0,
                                             fontWeight: FontWeight.bold,

@@ -2,7 +2,6 @@
 from django.contrib import admin
 from django.urls import path,include
 from .views import *
-from .mobileClient import *
 
 urlpatterns = [
     path('register', RegisterView.as_view()),

@@ -48,7 +48,7 @@ class RegisterView(APIView):
         email = email.lower()
         password = data['password']
         phone = data['phone']
-        type = data['type']
+        #image=data['image']
         code = data['code']
 
         valid = VerificationCode.objects.filter(code=code, type='registration',email=email, expiry_date__gt =datetime.now()).exists()

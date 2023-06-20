@@ -10,13 +10,17 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+
 from datetime import timedelta
 import os
 from pathlib import Path
+import dj_database_url
+
 
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -26,12 +30,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-pl8)r=4)^vc*-5^o=9mu3fx)i1cmlg8p$5@5kk#o#(@hh9^1et'
-
+#SECRET_KEY = 'django-insecure-pl8)r=4)^vc*-5^o=9mu3fx)i1cmlg8p$5@5kk#o#(@hh9^1et'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
+
+
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 
 
 # Application definition
@@ -93,6 +102,15 @@ DATABASES = {
 }
 
 
+DATABASES = {
+    'default': dj_database_url.config(
+        # Feel free to alter this value to suit your needs.
+        default='postgresql://postgres:postgres@localhost:5432/mysite',
+        conn_max_age=600
+    )
+}
+
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -146,14 +164,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'mikemundati@gmail.com'
-EMAIL_HOST_PASSWORD = 'polygsndrvjwtmcf'
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
 
 
 cloudinary.config( 
-  cloud_name = 'dgcbtjq3c', 
-  api_key ='639626126975366', 
-  api_secret = 'sTF_BRNEIlRRmMWTGl2viZzxSII'
+  cloud_name = os.environ.get('CLOUD_NAME'), 
+  api_key =os.environ.get('API_KEY'), 
+  api_secret = os.environ.get('API_SECRET')
 )
 
 

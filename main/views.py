@@ -38,6 +38,29 @@ import os
 from django.contrib.postgres.search import SearchQuery,  SearchVector
 from .utils import *
 
+
+class RegisterSuperView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self,request, format=None):
+        data = request.data
+        name = data['name']
+        email = data['email']
+        email = email.lower()
+        password = data['password']
+        phone = data['phone']
+        
+        user = User.objects.create_superuser(name=name, email=email, password=password,phone=phone)
+        refresh = RefreshToken.for_user(user)
+
+        return Response (
+            {
+            'refresh': str(refresh),
+            'access': str(refresh.access_token)
+            },
+            status=status.HTTP_200_OK
+        )
+    
 class RegisterView(APIView):
     permission_classes = (permissions.AllowAny,)
 

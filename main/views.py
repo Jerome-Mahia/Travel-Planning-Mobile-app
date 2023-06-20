@@ -124,9 +124,9 @@ class SendCode(APIView):
     def post(self,request, format=None):
         data = request.data
         email = data['email']
-        type = data['type']
+        code_type = data['code_type']
         
-        if type == 'registration':
+        if code_type == 'registration':
             if not User.objects.filter(email=email).exists():               
                 code = createCode()
             
@@ -145,7 +145,7 @@ class SendCode(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-        elif type == 'resetpassword':
+        elif code_type == 'resetpassword':
             if  User.objects.filter(email=email).exists():
                 code = createCode()
                         
@@ -158,7 +158,11 @@ class SendCode(APIView):
 
                 send_mail("Reset password code", "Your code is " + code + " .It will expire in 10 minutes", "mikemundati@gmail.com",[ email], fail_silently=False)
 
-                return "Done"
+                return  Response(
+                   
+                    status=status.HTTP_200_OK
+                )
+            
             else:
                 return Response(
                     {'error': 'Invalid email'},

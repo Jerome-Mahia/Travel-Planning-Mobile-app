@@ -49,8 +49,9 @@ class RegisterSuperView(APIView):
         email = email.lower()
         password = data['password']
         phone = data['phone']
-        
-        user = User.objects.create_superuser(name=name, email=email, password=password,phone=phone)
+        dob = data['dob']
+
+        user = User.objects.create_superuser(name=name, email=email, password=password,phone=phone,dob=dob)
         refresh = RefreshToken.for_user(user)
 
         return Response (
@@ -71,7 +72,8 @@ class RegisterView(APIView):
         email = email.lower()
         password = data['password']
         phone = data['phone']
-        #image=data['image']
+        image=data['image']
+        dob = data['dob']
         code = data['code']
 
         valid = VerificationCode.objects.filter(code=code, type='registration',email=email, expiry_date__gt =datetime.now()).exists()
@@ -82,7 +84,7 @@ class RegisterView(APIView):
                 if not User.objects.filter(email=email).exists():
                     
                     
-                        user = User.objects.create_shop_owner(name=name, email=email, password=password,phone=phone)
+                        user = User.objects.create_user(name=name, email=email, password=password,phone=phone,dob=dob,image=image)
                         otp_delete = VerificationCode.objects.get(code=code, type='registration',email=email, expiry_date__gt =datetime.now())
                         otp_delete.delete()
                         refresh = RefreshToken.for_user(user)

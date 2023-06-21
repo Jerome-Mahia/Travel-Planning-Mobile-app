@@ -2,6 +2,8 @@
 from asyncio import events
 import email
 from django.core.mail import EmailMessage
+from django.template.loader import render_to_string
+
 from unicodedata import name
 import pytz
 from rest_framework.views import APIView
@@ -77,7 +79,7 @@ class RegisterView(APIView):
         code = data['code']
 
         valid = VerificationCode.objects.filter(code=code, type='registration',email=email, expiry_date__gt =datetime.now()).exists()
-        
+        print(valid)
         if valid:
             if len(password) >=8:
                 
@@ -137,8 +139,16 @@ class SendCode(APIView):
                 new_code = VerificationCode(email=email, code=code,type='registration' ,expiry_date=expiry_date)
                 new_code.save()
 
-                send_mail("Email Verification code", "Your verification code is " + code + " .It will expire in 10 minutes", "mikemundati@gmail.com",[ email], fail_silently=False)
-
+                message = render_to_string('main/verifyEmail.html', {'code': code})
+                email = EmailMessage('Email Verification code', message, 'mikemundati@gmail.com',to=[email])
+                email.fail_silently = False
+                email.content_subtype = 'html'
+                email.send()
+                #send_mail("Email Verification code", "Your verification code is " + code + " .It will expire in 10 minutes", "mikemundati@gmail.com",[ email], fail_silently=False)
+                return Response(
+                    {'success': 'Code sent successfully'},
+                    status=status.HTTP_200_OK
+                )
             else:
                 return Response(
                     {'error': 'User with this email already exists'},
@@ -156,13 +166,19 @@ class SendCode(APIView):
                 new_code = VerificationCode(email=email, code=code,type='resetpassword' ,expiry_date=expiry_date)
                 new_code.save()
 
-                send_mail("Reset password code", "Your code is " + code + " .It will expire in 10 minutes", "mikemundati@gmail.com",[ email], fail_silently=False)
+                message = render_to_string('main/resetPassword.html', {'code': code})
+                email = EmailMessage('Email Verification code', message, 'mikemundati@gmail.com',to=[email])
+                email.fail_silently = False
+                email.content_subtype = 'html'
+                email.send()
 
-                return  Response(
-                   
+                #send_mail("Reset password code", "Your code is " + code + " .It will expire in 10 minutes", "mikemundati@gmail.com",[ email], fail_silently=False)
+
+                return Response(
+                    {'success': 'Code sent successfully'},
                     status=status.HTTP_200_OK
                 )
-            
+                    
             else:
                 return Response(
                     {'error': 'Invalid email'},
@@ -172,10 +188,7 @@ class SendCode(APIView):
         else:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(
-            {'success': 'Code sent successfully'},
-            status=status.HTTP_200_OK
-        )
+        
 
 
 class ResetPassword(APIView):

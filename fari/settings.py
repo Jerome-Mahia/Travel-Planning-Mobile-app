@@ -75,7 +75,7 @@ ROOT_URLCONF = 'fari.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -105,13 +105,13 @@ DATABASES = {
 DATABASES = {
     'default': dj_database_url.config(
         # Feel free to alter this value to suit your needs.
-        default='postgresql://postgres:postgres@localhost:5432/mysite',
-       conn_max_age=600
-   )
+       default='postgresql://postgres:postgres@localhost:5432/mysite',
+      conn_max_age=600
+  )
 }
 
 
-# Password validation
+#Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -165,6 +165,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'mikemundati@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+#EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 
 
@@ -172,6 +173,7 @@ cloudinary.config(
   cloud_name = os.environ.get('CLOUD_NAME'), 
   api_key =os.environ.get('API_KEY'), 
   api_secret = os.environ.get('API_SECRET')
+  
 )
 
 

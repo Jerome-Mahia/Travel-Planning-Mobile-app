@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "164068339368",
+    "project_id": "fari-travel-app",
+    "storage_bucket": "fari-travel-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:164068339368:android:0035aa639a949a6acbdc9d",
+        "android_client_info": {
+          "package_name": "com.example.travel_planner_app_cs_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "164068339368-vhe5p9gfq5drkj8k7cod0ib4hh7iom54.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuRsAI4VJKfatP6SD--uV0lS9UH4TUzyI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "164068339368-vhe5p9gfq5drkj8k7cod0ib4hh7iom54.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

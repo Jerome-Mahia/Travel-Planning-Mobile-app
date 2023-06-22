@@ -1,18 +1,35 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travel_planner_app_cs_project/main.dart';
+import 'package:travel_planner_app_cs_project/models/registration.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
 
 class EmailVerificationOTP extends ConsumerStatefulWidget {
-  const EmailVerificationOTP({super.key});
+  const EmailVerificationOTP(
+      this._image,
+      this.usernameController,
+      this.emailController,
+      this.passwordController,
+      this.phoneController,
+      this.datePicked,
+      {super.key});
+
+  final XFile? _image;
+  final String usernameController;
+  final String emailController;
+  final String passwordController;
+  final String phoneController;
+  final String datePicked;
 
   @override
   _EmailVerificationOTPState createState() => _EmailVerificationOTPState();
@@ -21,29 +38,48 @@ class EmailVerificationOTP extends ConsumerStatefulWidget {
 class _EmailVerificationOTPState extends ConsumerState<EmailVerificationOTP> {
   bool _isEnabled = true;
   final _loginFormKey = GlobalKey<FormState>();
-  OtpFieldController otpController = OtpFieldController();
-  final TextEditingController emailController = TextEditingController();
 
-  final TextEditingController passwordController = TextEditingController();
-  final RoundedLoadingButtonController makePlanBtnController =
+  final OtpFieldController otpController = OtpFieldController();
+
+  final RoundedLoadingButtonController verifyOtpBtnController =
       RoundedLoadingButtonController();
 
-  setAccountCreationBool() async {
-    SharedPreferences mode = await SharedPreferences.getInstance();
-    bool isAccountPresent = await mode.setBool('isAccountPresent', true);
-    return isAccountPresent;
+  void _doSomething(RoundedLoadingButtonController controller) async {
+    try {
+      if (_loginFormKey.currentState!.validate()) {
+        registerUser(
+          context,
+          widget._image,
+          widget.usernameController,
+          widget.emailController,
+          widget.phoneController,
+          widget.passwordController,
+          widget.datePicked,
+          otpController.toString(),
+        );
+        final startTime = DateTime.now();
+        final endTime = DateTime.now();
+        final executionDuration = endTime.difference(startTime);
+        if (executionDuration > Duration(seconds: 8)) {
+          controller.error();
+          controller.reset();
+          return;
+        }
+        ref.read(accountCreationProvider.notifier).state = true;
+      }
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
-  void _doSomething() async {
-    Timer(const Duration(seconds: 2), () {
-      // makePlanBtnController.success();
-      setAccountCreationBool();
-      ref.read(accountCreationProvider.notifier).state = true;
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-    });
+  static SnackBar customSnackBar({required String content}) {
+    return SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        content,
+        style: TextStyle(color: Colors.redAccent, letterSpacing: 0.5),
+      ),
+    );
   }
 
   @override
@@ -103,7 +139,7 @@ class _EmailVerificationOTPState extends ConsumerState<EmailVerificationOTP> {
                         Center(
                           child: OTPTextField(
                               controller: otpController,
-                              length: 5,
+                              length: 6,
                               width: MediaQuery.of(context).size.width,
                               textFieldAlignment: MainAxisAlignment.spaceAround,
                               fieldWidth: 45,
@@ -125,9 +161,8 @@ class _EmailVerificationOTPState extends ConsumerState<EmailVerificationOTP> {
                           color: Theme.of(context).primaryColor,
                           width: MediaQuery.of(context).size.width * 0.9,
                           successColor: Theme.of(context).primaryColor,
-                          resetDuration: const Duration(seconds: 3),
-                          controller: makePlanBtnController,
-                          onPressed: () => _doSomething(),
+                          controller: verifyOtpBtnController,
+                          onPressed: () => _doSomething(verifyOtpBtnController),
                           resetAfterDuration: true,
                           valueColor: Colors.white,
                           borderRadius: 15,

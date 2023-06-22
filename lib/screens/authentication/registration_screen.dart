@@ -1,39 +1,47 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
+import 'package:travel_planner_app_cs_project/models/sendcode.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/email_verification_otp.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-class RegistrationScreen extends StatefulWidget {
+class RegistrationScreen extends ConsumerStatefulWidget {
   const RegistrationScreen({super.key});
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  _RegistrationScreenState createState() => _RegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
   bool _isEnabled = true;
   final _registrationFormKey = GlobalKey<FormState>();
+  final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController usernameController = TextEditingController();
-  final RoundedLoadingButtonController registerBtnController =
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController datePickedInput = TextEditingController();
+
+  final RoundedLoadingButtonController verifyOtpBtnController =
       RoundedLoadingButtonController();
-  Uint8List? _image;
+  XFile? _image;
   bool passToggle = true;
 
   selectCameraImage() async {
     Navigator.of(context).pop();
     XFile? im = await ImagePicker().pickImage(source: ImageSource.camera);
     setState(() {
-      _image = im as Uint8List?;
+      _image = im;
     });
   }
 
@@ -41,7 +49,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     Navigator.of(context).pop();
     XFile? im = await ImagePicker().pickImage(source: ImageSource.gallery);
     setState(() {
-      _image = im as Uint8List?;
+      _image = im;
     });
   }
 
@@ -50,7 +58,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
       context: parentContext,
       builder: (BuildContext context) {
         return SimpleDialog(
-          title: const Text('Upload Image'),
+          title: Center(child: const Text('Upload Image')),
           children: <Widget>[
             SimpleDialogOption(
               padding: const EdgeInsets.all(20),
@@ -78,23 +86,6 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     );
   }
 
-  void _doSomething(RoundedLoadingButtonController controller) async {
-    Timer(const Duration(seconds: 2), () {
-      // makePlanBtnController.success();
-      if (_registrationFormKey.currentState!.validate()) {
-        controller.success();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const EmailVerificationOTP()),
-        ); // ref.read(authProvider.notifier).state = true;
-      } else {
-        controller.error();
-      }
-    });
-  }
-
-  TextEditingController datePickedInput = TextEditingController();
-
   @override
   void initState() {
     datePickedInput.text = "";
@@ -103,6 +94,46 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String datePicked = ref.watch(datePickedProvider).toString();
+
+    void _doSomething(RoundedLoadingButtonController controller) async {
+      try {
+        if (_registrationFormKey.currentState!.validate()) {
+          sendEmailVerification(emailController.text);
+          final startTime = DateTime.now();
+          final endTime = DateTime.now();
+          final executionDuration = endTime.difference(startTime);
+          if (executionDuration > Duration(seconds: 10)) {
+            controller.error();
+            controller.reset();
+            return;
+          }
+
+          print(_image);
+          print(usernameController.text);
+          print(emailController.text);
+          print(passwordController.text);
+          print(phoneController.text);
+          print(datePicked);
+
+          controller.success();
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => EmailVerificationOTP(
+                    _image,
+                    usernameController.text,
+                    emailController.text,
+                    passwordController.text,
+                    phoneController.text,
+                    datePicked)),
+          ); // ref.read(authProvider.notifier).state = true;
+        }
+      } catch (e) {
+        throw Exception(e);
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -145,7 +176,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           _image != null
                               ? CircleAvatar(
                                   radius: 64,
-                                  backgroundImage: MemoryImage(_image!),
+                                  backgroundImage: MemoryImage(
+                                    File(_image!.path).readAsBytesSync(),
+                                  ),
                                   backgroundColor: Colors.grey,
                                 )
                               : const CircleAvatar(
@@ -162,7 +195,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               onPressed: () => _selectImage(context),
                               icon: const Icon(Icons.add_a_photo),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
@@ -250,6 +283,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           height: 20.0,
                         ),
                         TextFormField(
+                          keyboardType: TextInputType.text,
                           controller: passwordController,
                           enabled: _isEnabled,
                           validator: (value) {
@@ -298,10 +332,34 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             ),
                           ),
                         ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              size: 20.0,
+                              color: const Color.fromARGB(255, 0, 104, 190),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Password must be at least 8 characters',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                color: const Color.fromARGB(255, 0, 104, 190),
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(
                           height: 20,
                         ),
                         IntlPhoneField(
+                          controller: phoneController,
                           initialCountryCode: 'KE',
                           invalidNumberMessage:
                               'Please provide a valid number starting with \'07..\'',
@@ -330,7 +388,31 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                             print('Country changed to: ' + country.name);
                           },
                         ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              size: 20.0,
+                              color: const Color.fromARGB(255, 0, 104, 190),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Provide a phone number starting with \'07..\'',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                color: const Color.fromARGB(255, 0, 104, 190),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20.0,
+                        ),
                         TextFormField(
+                          keyboardType: TextInputType.datetime,
                           controller: datePickedInput,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -339,6 +421,11 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                               DateTime currentDate = DateTime.now();
                               DateTime enteredDate =
                                   DateFormat.yMMMMd().parse(value);
+                              String jsonDate =
+                                  DateFormat('yyyy-MM-dd').format(enteredDate);
+
+                              ref.read(datePickedProvider.notifier).state =
+                                  jsonDate;
 
                               Duration difference =
                                   currentDate.difference(enteredDate);
@@ -400,9 +487,8 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           color: Theme.of(context).primaryColor,
                           width: MediaQuery.of(context).size.width * 0.9,
                           successColor: Theme.of(context).primaryColor,
-                          resetDuration: const Duration(seconds: 3),
-                          controller: registerBtnController,
-                          onPressed: () => _doSomething(registerBtnController),
+                          controller: verifyOtpBtnController,
+                          onPressed: () => _doSomething(verifyOtpBtnController),
                           resetAfterDuration: true,
                           valueColor: Colors.white,
                           borderRadius: 15,

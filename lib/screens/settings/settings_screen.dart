@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/authentication/sign_in_options.dart';
+import 'package:travel_planner_app_cs_project/utils/authentication.dart';
 import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -32,6 +34,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   //   bool isDarkMode = mode.getBool('isDarkMode') ?? false;
   //   return isDarkMode;
   // }
+  bool _isSigningOut = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -457,16 +460,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       ),
                                       TextButton(
                                         onPressed: () {
-                                          void resetAppState(
-                                              BuildContext context) {
-                                            Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          LoginScreen()),
-                                              (Route<dynamic> route) => false,
-                                            );
+                                          Future<void> resetAppState(
+                                              BuildContext context) async {
+                                            setState(() {
+                                              _isSigningOut = true;
+                                            });
+                                            await Authentication.signOut(
+                                                context: context);
+                                            setState(() {
+                                              _isSigningOut = false;
+                                            });
+                                            Navigator.of(context)
+                            .pushReplacement(_routeToSignInScreen());
                                           }
 
                                           resetAppState(context);
@@ -535,6 +540,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Route _routeToSignInScreen() {
+    return PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          SignInOptionScreen(),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        var begin = Offset(-1.0, 0.0);
+        var end = Offset.zero;
+        var curve = Curves.ease;
+
+        var tween =
+            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+        return SlideTransition(
+          position: animation.drive(tween),
+          child: child,
+        );
+      },
     );
   }
 }

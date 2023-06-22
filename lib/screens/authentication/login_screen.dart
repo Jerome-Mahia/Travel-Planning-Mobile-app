@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travel_planner_app_cs_project/main.dart';
+import 'package:travel_planner_app_cs_project/models/login.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/registration_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/reset_password_screen.dart';
 import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
@@ -31,18 +32,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       RoundedLoadingButtonController();
 
   void _doSomething(RoundedLoadingButtonController controller) async {
-    Timer(const Duration(seconds: 2), () {
-      // makePlanBtnController.success();
+    try {
       if (_loginFormKey.currentState!.validate()) {
-        controller.success();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const BottomNavBar()),
-        ); // ref.read(authProvider.notifier).state = true;
-      } else {
-        controller.error();
+        loginUser(context, emailController.text, passwordController.text);
+        final startTime = DateTime.now();
+        final endTime = DateTime.now();
+        final executionDuration = endTime.difference(startTime);
+        if (executionDuration > Duration(seconds: 10)) {
+          controller.error();
+          controller.reset();
+          return;
+        }
       }
-    });
+    } catch (e) {
+      throw Exception(e);
+    }
   }
 
   bool passToggle = true;
@@ -81,12 +85,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  static SnackBar customSnackBar({required String content}) {
+    return SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        content,
+        style: TextStyle(color: Colors.redAccent, letterSpacing: 0.5),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Future<bool> isAccountCreated() async {
       SharedPreferences mode = await SharedPreferences.getInstance();
       bool isAccountPresent = mode.getBool('isAccountPresent') ?? false;
-      print('isAccountPresent: $isAccountPresent');
+      // print('isAccountPresent: $isAccountPresent');
       return isAccountPresent;
     }
 
@@ -95,9 +109,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return FutureBuilder<bool>(
       future: isAccountCreated(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        snapshot.data == true || isCreated == true
-            ? Future.delayed(Duration.zero, () => _authenticate())
-            : Container();
+        if ((snapshot.data == true || isCreated == true) &&
+        ModalRoute.of(context)?.settings.name == '/login_screen') {
+      Future.delayed(Duration.zero, () => _authenticate());
+    }
         return SafeArea(
           child: Scaffold(
             appBar: AppBar(
@@ -239,7 +254,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               width: MediaQuery.of(context).size.width * 0.9,
                               successColor: Colors.green,
                               errorColor: Colors.red,
-                              resetDuration: const Duration(seconds: 4),
                               controller: makePlanBtnController,
                               onPressed: () =>
                                   _doSomething(makePlanBtnController),

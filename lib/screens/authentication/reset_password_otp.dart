@@ -22,18 +22,30 @@ class _ResetPasswordOTPState extends State<ResetPasswordOTP> {
   final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
-final RoundedLoadingButtonController makePlanBtnController =
-        RoundedLoadingButtonController();
+  final RoundedLoadingButtonController makePlanBtnController =
+      RoundedLoadingButtonController();
 
-    void _doSomething() async {
-      Timer(const Duration(seconds: 2), () {
-        // makePlanBtnController.success();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ResetPasswordFormScreen()),
-        );
-      });
-    }
+  void _doSomething() async {
+    Timer(const Duration(seconds: 2), () {
+      // makePlanBtnController.success();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => const ResetPasswordFormScreen()),
+      );
+    });
+  }
+
+  static SnackBar customSnackBar({required String content}) {
+    return SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        content,
+        style: TextStyle(color: Colors.redAccent, letterSpacing: 0.5),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -77,21 +89,21 @@ final RoundedLoadingButtonController makePlanBtnController =
                           height: 9,
                         ),
                         Text(
-                              'Kindly enter the password reset otp sent to your email address',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
+                          'Kindly enter the password reset otp sent to your email address',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.grey[700],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Center(
                           child: OTPTextField(
                               controller: otpController,
-                              length: 5,
+                              length: 6,
                               width: MediaQuery.of(context).size.width,
                               textFieldAlignment: MainAxisAlignment.spaceAround,
                               fieldWidth: 45,
@@ -129,33 +141,33 @@ final RoundedLoadingButtonController makePlanBtnController =
                           ),
                         ),
                         SizedBox(
-                    height: 20,
-                  ),
-                  Center(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Didn\'t receive?',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w200,
+                          height: 20,
+                        ),
+                        Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Didn\'t receive?',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w200,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {},
+                                child: Text(
+                                  'Resend Code',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
                         ),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text(
-                            'Resend Code',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
                       ],
                     ),
                   ),

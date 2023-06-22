@@ -1,11 +1,15 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/registration_screen.dart';
+import 'package:travel_planner_app_cs_project/utils/authentication.dart';
+import 'package:travel_planner_app_cs_project/widgets/google_sign_in_button.dart';
 
 class SignInOptionScreen extends StatefulWidget {
   const SignInOptionScreen({super.key});
@@ -15,8 +19,6 @@ class SignInOptionScreen extends StatefulWidget {
 }
 
 class _SignInOptionScreenState extends State<SignInOptionScreen> {
- 
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -70,45 +72,21 @@ class _SignInOptionScreenState extends State<SignInOptionScreen> {
                             SizedBox(
                               height: 20,
                             ),
-                            Center(
-                              child: InkWell(
-                                onTap: () {},
-                                child: Container(
-                                  //width: 100.0,
-                                  height: 55.0,
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(15),
-                                    border: Border.all(
-                                      color: Colors.grey.withOpacity(0.8),
-                                      width: 0.5,
-                                    ),
+                            FutureBuilder(
+                              future: Authentication.initializeFirebase(
+                                  context: context),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                } else if (snapshot.connectionState ==
+                                    ConnectionState.done) {
+                                  return google_sign_in_button();
+                                }
+                                return CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Theme.of(context).primaryColor,
                                   ),
-                                  child: Row(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                            left: 20.0, right: 20.0),
-                                        child: Image.asset(
-                                          'assets/icons/google.png',
-                                          height: 30,
-                                          width: 30,
-                                        ),
-                                      ),
-                                      const Center(
-                                        child: Text(
-                                          'Sign in with Google',
-                                          style: TextStyle(
-                                            fontSize: 18.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
+                                );
+                              },
                             ),
                           ],
                         ),

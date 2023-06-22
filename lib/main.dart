@@ -10,6 +10,7 @@ void main() {
 }
 
 final accountCreationProvider = StateProvider((ref) => false);
+final datePickedProvider = StateProvider((ref) => '');
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 

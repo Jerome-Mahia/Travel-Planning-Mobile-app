@@ -52,8 +52,9 @@ class RegisterSuperView(APIView):
         password = data['password']
         phone = data['phone']
         dob = data['dob']
+        image=['image']
 
-        user = User.objects.create_superuser(name=name, email=email, password=password,phone=phone,dob=dob)
+        user = User.objects.create_superuser(name=name, image=image,email=email, password=password,phone=phone,dob=dob)
         refresh = RefreshToken.for_user(user)
 
         return Response (
@@ -250,17 +251,8 @@ class GoogleLoginApi( APIView):
     def post(self, request):
        
         data = request.data
-        code = data['code']
-        
-        access_token = google_get_access_token(code=code)
-        if access_token == 'Failed to obtain access token from Google.':
-            return Response(
-           
-            status=status.HTTP_401_UNAUTHORIZED
-        )
-        user_data = google_get_user_info(access_token=access_token)
-        email = user_data['email']
-        name = user_data['name']
+        email=data['email']
+        name=data['name']
 
         try:    
             #login
@@ -277,7 +269,7 @@ class GoogleLoginApi( APIView):
             #create account
             password = createPassword()
             
-            user = User.objects.create_user(name=name, email=email, password=password,phone='')
+            user = User.objects.create_user(name=name, email=email, password=password)
             refresh = RefreshToken.for_user(user)
 
             return Response ({

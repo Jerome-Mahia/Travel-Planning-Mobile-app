@@ -251,7 +251,6 @@ class GoogleLoginApi( APIView):
        
         data = request.data
         code = data['code']
-        type = data['type']
         
         access_token = google_get_access_token(code=code)
         if access_token == 'Failed to obtain access token from Google.':
@@ -277,24 +276,13 @@ class GoogleLoginApi( APIView):
         except:
             #create account
             password = createPassword()
-            if type == 'shop_owner':
-                user = User.objects.create_shop_owner(name=name, email=email, password=password,phone='')
-                refresh = RefreshToken.for_user(user)
+            
+            user = User.objects.create_user(name=name, email=email, password=password,phone='')
+            refresh = RefreshToken.for_user(user)
 
-                return Response ({
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token)
-                    },
-                    status=status.HTTP_201_CREATED
-                )    
-
-            elif type == 'client':
-                user = User.objects.create_user(name=name, email=email, password=password,phone='')
-                refresh = RefreshToken.for_user(user)
-
-                return Response ({
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token)
-                    },
-                    status=status.HTTP_201_CREATED
-                )    
+            return Response ({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token)
+                },
+                status=status.HTTP_201_CREATED
+            ) 

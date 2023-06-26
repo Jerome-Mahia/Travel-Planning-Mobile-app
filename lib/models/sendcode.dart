@@ -27,7 +27,7 @@ class SendCode {
       };
 }
 
-sendEmailVerification(String email) async {
+sendEmailVerification(BuildContext context,String email) async {
   try {
     final response = await http.post(
       Uri.parse("https://fari-jcuo.onrender.com/main/sendcode"),
@@ -40,7 +40,7 @@ sendEmailVerification(String email) async {
       }),
     );
     if (response.statusCode == 200) {
-      return true;
+      return SnackBar(content: Text('Email successfully sent to $email'));
     } else {
       throw Exception(response.reasonPhrase);
     }

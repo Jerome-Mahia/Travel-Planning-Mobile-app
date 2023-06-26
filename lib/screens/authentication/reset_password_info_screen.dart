@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
+import 'package:travel_planner_app_cs_project/models/reset_password.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/registration_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/reset_password_screen.dart';
@@ -10,15 +13,15 @@ import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart'
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/sign_in_options.dart';
 
-class ResetPasswordFormScreen extends StatefulWidget {
+class ResetPasswordFormScreen extends ConsumerStatefulWidget {
   const ResetPasswordFormScreen({super.key});
-
   @override
-  State<ResetPasswordFormScreen> createState() =>
+  _ResetPasswordFormScreenState createState() =>
       _ResetPasswordFormScreenState();
 }
 
-class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
+class _ResetPasswordFormScreenState
+    extends ConsumerState<ResetPasswordFormScreen> {
   bool _isEnabled = true;
   bool passToggle = true;
   final _resetPasswordFormKey = GlobalKey<FormState>();
@@ -27,32 +30,8 @@ class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
 
   final TextEditingController confirmPasswordController =
       TextEditingController();
-  final RoundedLoadingButtonController makePlanBtnController =
+  final RoundedLoadingButtonController resetPasswordBtnController =
       RoundedLoadingButtonController();
-
-  void _doSomething(RoundedLoadingButtonController controller) async {
-    Timer(const Duration(seconds: 2), () {
-      if (_resetPasswordFormKey.currentState!.validate()) {
-        String newPassword = passwordController.text;
-        String confirmedPassword = confirmPasswordController.text;
-
-        if (newPassword == confirmedPassword) {
-          // Passwords match, proceed with success action
-          controller.success();
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-          );
-        } else {
-          // Passwords do not match, show error message
-          controller.error();
-        }
-      } else {
-        // Form validation failed, show error message
-        controller.error();
-      }
-    });
-  }
 
   static SnackBar customSnackBar({required String content}) {
     return SnackBar(
@@ -66,6 +45,42 @@ class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    _doSomething(RoundedLoadingButtonController controller) async {
+      if (_resetPasswordFormKey.currentState!.validate()) {
+        String newPassword = passwordController.text;
+        String confirmedPassword = confirmPasswordController.text;
+        String email = ref.watch(emailProvider).toString();
+        String otpInput = ref.watch(otpControllerProvider).toString();
+        print(email);
+        print(otpInput);
+        print(confirmedPassword);
+
+        if (newPassword == confirmedPassword) {
+          // Passwords match, proceed with success action
+          resetPassword(
+            context,
+            email,
+            confirmedPassword,
+            otpInput,
+          );
+        } else {
+          // Passwords do not match, show error message
+          SnackBar snackBar = SnackBar(
+            backgroundColor: Colors.black,
+            content: Text(
+              'Passwords do not match',
+              style: TextStyle(color: Colors.redAccent, letterSpacing: 0.5),
+            ),
+          );
+          controller.error();
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      } else {
+        // Form validation failed, show error message
+        controller.error();
+      }
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -155,6 +170,29 @@ class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
                             ),
                           ),
                         ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              size: 20.0,
+                              color: const Color.fromARGB(255, 0, 104, 190),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Password must be at least 8 characters',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                color: const Color.fromARGB(255, 0, 104, 190),
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(
                           height: 20.0,
                         ),
@@ -207,6 +245,29 @@ class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
                             ),
                           ),
                         ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              size: 20.0,
+                              color: const Color.fromARGB(255, 0, 104, 190),
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              'Passwords must match with each other',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                color: const Color.fromARGB(255, 0, 104, 190),
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(
                           height: 38.0,
                         ),
@@ -217,8 +278,9 @@ class _ResetPasswordFormScreenState extends State<ResetPasswordFormScreen> {
                           successColor: Colors.green,
                           errorColor: Colors.red,
                           resetDuration: const Duration(seconds: 4),
-                          controller: makePlanBtnController,
-                          onPressed: () => _doSomething(makePlanBtnController),
+                          controller: resetPasswordBtnController,
+                          onPressed: () =>
+                              _doSomething(resetPasswordBtnController),
                           resetAfterDuration: true,
                           valueColor: Colors.white,
                           borderRadius: 15,

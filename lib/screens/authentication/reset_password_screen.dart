@@ -1,32 +1,34 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/models/sendcode.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/reset_password_otp.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 
-class ResetPasswordScreen extends StatefulWidget {
+class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
   @override
-  State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
+  _ResetPasswordScreenState createState() => _ResetPasswordScreenState();
 }
 
-class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
+class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   bool _isEnabled = true;
   final _loginFormKey = GlobalKey<FormState>();
 
   final TextEditingController emailController = TextEditingController();
 
-  final TextEditingController passwordController = TextEditingController();
   final RoundedLoadingButtonController resetPasswordBtnController =
       RoundedLoadingButtonController();
 
   void _doSomething(RoundedLoadingButtonController controller) async {
     try {
       sendPasswordResetCode(context, emailController.text);
-
+      ref.read(emailProvider.notifier).state = emailController.text;
+      print(ref.read(emailProvider.notifier).state);
       final startTime = DateTime.now();
       final endTime = DateTime.now();
       final executionDuration = endTime.difference(startTime);

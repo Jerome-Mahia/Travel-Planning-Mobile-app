@@ -1,7 +1,7 @@
-import 'dart:async';
-import 'dart:typed_data';
+
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
@@ -44,7 +44,23 @@ class _EmailVerificationOTPState extends ConsumerState<EmailVerificationOTP> {
   final RoundedLoadingButtonController verifyOtpBtnController =
       RoundedLoadingButtonController();
 
-  void _doSomething(RoundedLoadingButtonController controller) async {
+  
+
+  static SnackBar customSnackBar({required String content}) {
+    return SnackBar(
+      backgroundColor: Colors.black,
+      content: Text(
+        content,
+        style: TextStyle(color: Colors.redAccent, letterSpacing: 0.5),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    String otpInput = ref.watch(otpControllerProvider).toString();
+
+    void _doSomething(RoundedLoadingButtonController controller) async {
     try {
       if (_loginFormKey.currentState!.validate()) {
         registerUser(
@@ -55,8 +71,17 @@ class _EmailVerificationOTPState extends ConsumerState<EmailVerificationOTP> {
           widget.phoneController,
           widget.passwordController,
           widget.datePicked,
-          otpController.toString(),
+          otpInput,
         );
+
+        print(widget._image);
+        print(widget.usernameController);
+        print(widget.emailController);
+        print(widget.phoneController);
+        print(widget.passwordController);
+        print(widget.datePicked);
+        print(otpInput);
+
         final startTime = DateTime.now();
         final endTime = DateTime.now();
         final executionDuration = endTime.difference(startTime);
@@ -71,19 +96,7 @@ class _EmailVerificationOTPState extends ConsumerState<EmailVerificationOTP> {
       throw Exception(e);
     }
   }
-
-  static SnackBar customSnackBar({required String content}) {
-    return SnackBar(
-      backgroundColor: Colors.black,
-      content: Text(
-        content,
-        style: TextStyle(color: Colors.redAccent, letterSpacing: 0.5),
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -138,20 +151,25 @@ class _EmailVerificationOTPState extends ConsumerState<EmailVerificationOTP> {
                         ),
                         Center(
                           child: OTPTextField(
-                              controller: otpController,
-                              length: 6,
-                              width: MediaQuery.of(context).size.width,
-                              textFieldAlignment: MainAxisAlignment.spaceAround,
-                              fieldWidth: 45,
-                              fieldStyle: FieldStyle.box,
-                              outlineBorderRadius: 15,
-                              style: TextStyle(fontSize: 17),
-                              onChanged: (pin) {
-                                print("Changed: " + pin);
-                              },
-                              onCompleted: (pin) {
-                                print("Completed: " + pin);
-                              }),
+                            controller: otpController,
+                            length: 6,
+                            width: MediaQuery.of(context).size.width,
+                            textFieldAlignment: MainAxisAlignment.spaceAround,
+                            fieldWidth: 45,
+                            fieldStyle: FieldStyle.box,
+                            outlineBorderRadius: 15,
+                            style: TextStyle(fontSize: 17),
+                            onChanged: (pin) {
+                              print("Changed: " + pin);
+                            },
+                            onCompleted: (pin) {
+                              ref.read(otpControllerProvider.notifier).state =
+                                  pin.toString();
+                            },
+                            inputFormatter: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                          ),
                         ),
                         const SizedBox(
                           height: 38.0,

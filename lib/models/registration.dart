@@ -11,6 +11,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/home/feed_screen.dart';
+import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
 
 Registration registrationFromJson(String str) =>
     Registration.fromJson(json.decode(str));
@@ -46,34 +48,43 @@ setAccountCreationBool() async {
 registerUser(BuildContext context, XFile? image, String username, String email,
     String phone, String password, String dob, String code) async {
   try {
-    File imageFile = File(image!.path);
-    List<int> imageBytes = imageFile.readAsBytesSync();
-    String base64Image = base64Encode(imageBytes);
-    final response = await http.post(
-      Uri.parse("https://fari-jcuo.onrender.com/main/register"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, dynamic>{
-        'image': base64Image,
-        'name': username,
-        'email': email,
-        'password': password,
-        'phone': phone,
-        'dob': dob,
-        'code': code,
-      }),
-    );
-    if (response.statusCode == 200) {
-      setAccountCreationBool();
-      return Navigator.push(
+    File? imageFile = image != null ? File(image!.path) : null;
+List<int>? imageBytes = imageFile != null ? imageFile.readAsBytesSync() : null;
+
+final request = http.MultipartRequest(
+  'POST',
+  Uri.parse("https://fari-jcuo.onrender.com/main/register"),
+);
+
+if (imageBytes != null) {
+  request.files.add(
+    http.MultipartFile.fromBytes(
+      'image',
+      imageBytes,
+      filename: 'image.jpg',
+    ),
+  );
+}
+
+request.fields['name'] = username;
+request.fields['email'] = email;
+request.fields['password'] = password;
+request.fields['phone'] = phone;
+request.fields['dob'] = dob;
+request.fields['code'] = code;
+
+final response = await request.send();
+if (response.statusCode == 200) {
+  setAccountCreationBool();
+  return Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        MaterialPageRoute(builder: (context) => const BottomNavBar()),
+        (Route<dynamic> route) => false,
       );
-    } else {
-      print(response.statusCode.toString());
-      throw Exception('Failed to register user');
-    }
+} else {
+  print(response.statusCode.toString());
+  throw Exception('Failed to register user');
+}
   } catch (e) {
     print(e.toString());
     throw Exception('Failed to register user: $e');

@@ -60,3 +60,4 @@ List all_destinations = [
   _sydney,
   _taj_mahal,
 ];
+

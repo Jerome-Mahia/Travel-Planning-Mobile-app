@@ -1,39 +1,37 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:otp_text_field/otp_text_field.dart';
 import 'package:otp_text_field/style.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/login_screen.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/reset_password_info_screen.dart';
 
-class ResetPasswordOTP extends StatefulWidget {
+class ResetPasswordOTP extends ConsumerStatefulWidget {
   const ResetPasswordOTP({super.key});
 
   @override
-  State<ResetPasswordOTP> createState() => _ResetPasswordOTPState();
+  _ResetPasswordOTPState createState() => _ResetPasswordOTPState();
 }
 
-class _ResetPasswordOTPState extends State<ResetPasswordOTP> {
+class _ResetPasswordOTPState extends ConsumerState<ResetPasswordOTP> {
   bool _isEnabled = true;
   final _loginFormKey = GlobalKey<FormState>();
   OtpFieldController otpController = OtpFieldController();
-  final TextEditingController emailController = TextEditingController();
 
   final TextEditingController passwordController = TextEditingController();
   final RoundedLoadingButtonController makePlanBtnController =
       RoundedLoadingButtonController();
 
   void _doSomething() async {
-    Timer(const Duration(seconds: 2), () {
-      // makePlanBtnController.success();
-      Navigator.push(
+    Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => const ResetPasswordFormScreen()),
+            builder: (context) =>  ResetPasswordFormScreen()),
       );
-    });
   }
 
   static SnackBar customSnackBar({required String content}) {
@@ -114,7 +112,8 @@ class _ResetPasswordOTPState extends State<ResetPasswordOTP> {
                                 print("Changed: " + pin);
                               },
                               onCompleted: (pin) {
-                                print("Completed: " + pin);
+                                ref.read(otpControllerProvider.notifier).state =
+                                  pin.toString();
                               }),
                         ),
                         const SizedBox(

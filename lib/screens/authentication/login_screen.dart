@@ -105,14 +105,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
 
     bool isCreated = ref.watch(accountCreationProvider);
-
+    bool hasExecuted = false;
     return FutureBuilder<bool>(
       future: isAccountCreated(),
       builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-        if ((snapshot.data == true || isCreated == true) &&
-        ModalRoute.of(context)?.settings.name == '/login_screen') {
-      Future.delayed(Duration.zero, () => _authenticate());
-    }
+        if (!hasExecuted && (snapshot.data == true || isCreated == true) ||
+            ModalRoute.of(context)?.settings.name == '/login') {
+          Future.delayed(Duration.zero, () => _authenticate());
+          hasExecuted = true;
+        }
         return SafeArea(
           child: Scaffold(
             appBar: AppBar(

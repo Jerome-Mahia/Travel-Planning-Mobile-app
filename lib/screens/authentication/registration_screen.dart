@@ -99,7 +99,7 @@ class _RegistrationScreenState extends ConsumerState<RegistrationScreen> {
     void _doSomething(RoundedLoadingButtonController controller) async {
       try {
         if (_registrationFormKey.currentState!.validate()) {
-          sendEmailVerification(emailController.text);
+          sendEmailVerification(context,emailController.text);
           final startTime = DateTime.now();
           final endTime = DateTime.now();
           final executionDuration = endTime.difference(startTime);

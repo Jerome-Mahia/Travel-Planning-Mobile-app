@@ -51,13 +51,9 @@ class _PlanningFormScreenState extends ConsumerState<PlanningFormScreen> {
         ),
         body: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(top: 20.0, left: 20, right: 20),
+            padding: const EdgeInsets.all(10),
             child: Column(
               children: [
-                SvgPicture.asset(
-                  'assets/images/trip_plan_svg.svg',
-                  height: MediaQuery.of(context).size.height * 0.36,
-                ),
                 Form(
                   key: _planFormKey,
                   child: Align(

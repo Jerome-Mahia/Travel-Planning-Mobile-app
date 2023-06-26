@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:travel_planner_app_cs_project/screens/home/destination_screens.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
 import 'package:travel_planner_app_cs_project/widgets/home_appbar_widget.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -46,13 +47,15 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('No', style: TextStyle(color: Colors.black, fontSize: 20)),
+                    child: Text('No',
+                        style: TextStyle(color: Colors.black, fontSize: 20)),
                   ),
                   TextButton(
                     onPressed: () {
                       SystemNavigator.pop();
                     },
-                    child: Text('Yes', style: TextStyle(color: Colors.red, fontSize: 20)),
+                    child: Text('Yes',
+                        style: TextStyle(color: Colors.red, fontSize: 20)),
                   ),
                 ],
               );
@@ -151,79 +154,92 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
                           itemCount: 1,
                           itemBuilder: (context, index) {
                             Destination trip = all_destinations[index];
-                            return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxWidth:
-                                        MediaQuery.of(context).size.width *
-                                            0.28,
-                                    maxHeight:
-                                        MediaQuery.of(context).size.width *
-                                            0.28,
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TripDetailScreen(),
                                   ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                    child: Image.asset(
-                                      trip.mainImageUrl,
-                                      fit: BoxFit.cover,
+                                );
+                              },
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth:
+                                          MediaQuery.of(context).size.width *
+                                              0.28,
+                                      maxHeight:
+                                          MediaQuery.of(context).size.width *
+                                              0.28,
                                     ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          10, 10, 0, 0),
-                                      child: Text(
-                                        'Trip to ${trip.title}',
-                                        style: TextStyle(
-                                          fontSize: 20.0,
-                                          fontWeight: FontWeight.w500,
-                                        ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      child: Image.asset(
+                                        trip.mainImageUrl,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
-                                    Container(
-                                      width: MediaQuery.of(context).size.width *
-                                          0.5,
-                                      child: Padding(
+                                  ),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Padding(
                                         padding: const EdgeInsets.fromLTRB(
-                                            5, 10, 0, 0),
-                                        child: Row(
-                                          children: [
-                                            Wrap(
-                                              children: [
-                                                CircleAvatar(
-                                                  radius: 15,
-                                                  backgroundImage: AssetImage(
-                                                    "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width: 3,
-                                                ),
-                                                Text(
-                                                  'Apr 3 - 8',
-                                                  style: TextStyle(
-                                                    fontSize: 18.0,
-                                                    fontWeight: FontWeight.w500,
-                                                    color: Colors.grey[700],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                            10, 10, 0, 0),
+                                        child: Text(
+                                          'Trip to ${trip.title}',
+                                          style: TextStyle(
+                                            fontSize: 20.0,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                      Container(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.5,
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              5, 10, 0, 0),
+                                          child: Row(
+                                            children: [
+                                              Wrap(
+                                                children: [
+                                                  CircleAvatar(
+                                                    radius: 15,
+                                                    backgroundImage: AssetImage(
+                                                      "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                                                    ),
+                                                  ),
+                                                  SizedBox(
+                                                    width: 3,
+                                                  ),
+                                                  Text(
+                                                    'Apr 3 - 8',
+                                                    style: TextStyle(
+                                                      fontSize: 18.0,
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      color: Colors.grey[700],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             );
                           }),
                     ),

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -11,20 +12,21 @@ class TripDetailScreen extends StatefulWidget {
 }
 
 class _TripDetailScreenState extends State<TripDetailScreen> {
-  bool isLoading = false;
-  // void startTimer() {
-  //   Timer.periodic(const Duration(seconds: 5), (t) {
-  //     setState(() {
-  //       isLoading = false; //set loading to false
-  //     });
-  //     t.cancel(); //stops the timer
-  //   });
-  // }
-  // @override
-  // void initState() {
-  //   startTimer();  //start the timer on loading
-  //   super.initState();
-  // }
+  bool isLoading = true;
+  void startTimer() {
+    Timer.periodic(const Duration(seconds: 4), (t) {
+      setState(() {
+        isLoading = false; //set loading to false
+      });
+      t.cancel(); //stops the timer
+    });
+  }
+
+  @override
+  void initState() {
+    startTimer(); //start the timer on loading
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,43 +35,62 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              // isLoading
-              //     ? SizedBox(
-              //         height: MediaQuery.of(context).size.height / 1.3,
-              //         child: Center(
-              //           child: Align(
-              //             alignment: Alignment.center,
-              //             child: LoadingAnimationWidget.inkDrop(
-              //               color: Theme.of(context).primaryColor,
-              //               size: MediaQuery.of(context).size.height * 0.1,
-              //             ),
-              //           ),
-              //         ),
-              //       )
-              //     :
-              SizedBox(
-                height: MediaQuery.of(context).size.height / 1,
-                child: CustomScrollView(
-                  shrinkWrap: true,
-                  slivers: <Widget>[
-                    SliverPersistentHeader(
-                      pinned: true,
-                      floating: true,
-                      delegate: CustomSliverDelegate(
-                        expandedHeight: 180,
+              isLoading
+                  ? SizedBox(
+                      height: MediaQuery.of(context).size.height / 1.3,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            LoadingAnimationWidget.inkDrop(
+                              color: Theme.of(context).primaryColor,
+                              size: MediaQuery.of(context).size.height * 0.1,
+                            ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Retrieving your itinerary...',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : SizedBox(
+                      height: MediaQuery.of(context).size.height / 1,
+                      child: CustomScrollView(
+                        shrinkWrap: true,
+                        slivers: <Widget>[
+                          SliverPersistentHeader(
+                            pinned: true,
+                            floating: true,
+                            delegate: CustomSliverDelegate(
+                              expandedHeight: 180,
+                              child: Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: Image.asset(
+                                      'path_to_your_image.jpg',
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SliverList.builder(
+                            itemCount: 20,
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                title: Text("Index $index"),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
-                    SliverList.builder(
-                      itemCount: 20,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text("Index $index"),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
             ],
           ),
         ),
@@ -81,10 +102,12 @@ class _TripDetailScreenState extends State<TripDetailScreen> {
 class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final bool hideTitleWhenExpanded;
+  final Widget child;
 
-  CustomSliverDelegate({
+  const CustomSliverDelegate({
     required this.expandedHeight,
     this.hideTitleWhenExpanded = true,
+    required this.child,
   });
 
   @override
@@ -101,9 +124,20 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
           SizedBox(
             height: appBarSize < kToolbarHeight ? kToolbarHeight : appBarSize,
             child: AppBar(
-              backgroundColor: Theme.of(context).primaryColor,
+              backgroundColor: Colors.white,
+              flexibleSpace: appBarSize > kToolbarHeight
+                  ? Image(
+                      image: AssetImage('assets/images/sydney.jpg'),
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                    )
+                  : null,
               leading: IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: Icon(
+                  Icons.arrow_back,
+                  color:
+                      appBarSize > kToolbarHeight ? Colors.white : Colors.black,
+                ),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
@@ -122,11 +156,45 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
             child: Opacity(
               opacity: percent,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 30 * percent),
-                child: Card(
-                  elevation: 20.0,
-                  child: Center(
-                    child: Text("Trip to Naivasha"),
+                padding: EdgeInsets.symmetric(horizontal: 10 * percent),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.white.withOpacity(0.8),
+                            Colors.white.withOpacity(0.5),
+                          ],
+                          begin: AlignmentDirectional.topStart,
+                          end: AlignmentDirectional.bottomEnd,
+                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        border: Border.all(
+                          width: 1.5,
+                          color: Colors.grey.withOpacity(0.5),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                "Trip to Naivasha",
+                                style: TextStyle(
+                                  fontSize: 25,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),

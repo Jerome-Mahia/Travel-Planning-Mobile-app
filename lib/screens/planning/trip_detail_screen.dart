@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:travel_planner_app_cs_project/models/step_guide.dart';
 import 'package:travel_planner_app_cs_project/screens/home/feed_screen.dart';
 
 class TripDetailScreen extends StatefulWidget {
@@ -26,8 +27,6 @@ class _TripDetailScreenState extends State<TripDetailScreen>
     });
   }
 
-  ScrollController scrollController = ScrollController();
-
   late AnimationController _animationController;
 
   bool isAnimating = false;
@@ -36,20 +35,6 @@ class _TripDetailScreenState extends State<TripDetailScreen>
   void initState() {
     startTimer(); //start the timer on loading
     super.initState();
-    scrollController.addListener(() {
-      //scroll listener
-      double startOffset = scrollController.position.minScrollExtent;
-
-      if (scrollController.offset >= startOffset) {
-        setState(() {
-          showTab = false;
-        });
-      } else {
-        setState(() {
-          showTab = false;
-        });
-      }
-    });
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
@@ -58,10 +43,11 @@ class _TripDetailScreenState extends State<TripDetailScreen>
 
   @override
   void dispose() {
-    scrollController.dispose();
-    scrollController.removeListener(() {});
+    _animationController.dispose();
     super.dispose();
   }
+
+  List steps = [];
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +83,6 @@ class _TripDetailScreenState extends State<TripDetailScreen>
                   : SizedBox(
                       height: MediaQuery.of(context).size.height / 1,
                       child: CustomScrollView(
-                        controller: scrollController,
                         shrinkWrap: true,
                         slivers: <Widget>[
                           SliverPersistentHeader(
@@ -105,63 +90,100 @@ class _TripDetailScreenState extends State<TripDetailScreen>
                             floating: true,
                             delegate: CustomSliverDelegate(
                               expandedHeight: 180,
-                              tabBar: TabBar(
-                                labelStyle: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                labelPadding:
-                                    const EdgeInsets.only(left: 15, right: 15),
-                                indicatorSize: TabBarIndicatorSize.label,
-                                isScrollable: true,
-                                controller: tabController,
-                                labelColor: Theme.of(context).primaryColor,
-                                unselectedLabelColor: Colors.grey[600],
-                                indicator: CircleTabIndicator(
-                                  color: Theme.of(context).primaryColor,
-                                  radius: 4,
-                                ),
-                                tabs: const [
-                                  Tab(text: "Overview"),
-                                  Tab(text: "Itinerary"),
-                                  Tab(text: "Budget"),
-                                ],
-                              ),
+                              // tabBar: TabBar(
+                              //   labelStyle: const TextStyle(
+                              //     fontSize: 15,
+                              //     fontWeight: FontWeight.w400,
+                              //   ),
+                              //   labelPadding:
+                              //       const EdgeInsets.only(left: 15, right: 15),
+                              //   indicatorSize: TabBarIndicatorSize.label,
+                              //   isScrollable: true,
+                              //   controller: tabController,
+                              //   labelColor: Theme.of(context).primaryColor,
+                              //   unselectedLabelColor: Colors.grey[600],
+                              //   indicator: CircleTabIndicator(
+                              //     color: Theme.of(context).primaryColor,
+                              //     radius: 4,
+                              //   ),
+                              //   tabs: const [
+                              //     Tab(text: "Overview"),
+                              //     Tab(text: "Itinerary"),
+                              //     Tab(text: "Budget"),
+                              //   ],
+                              // ),
                             ),
                           ),
-                          SliverFillRemaining(
-                            child: Column(
-                              children: [
-                                TabBar(
-                                  labelStyle: const TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                  labelPadding: const EdgeInsets.only(
-                                      left: 15, right: 15),
-                                  indicatorSize: TabBarIndicatorSize.label,
-                                  isScrollable: false,
-                                  controller: tabController,
-                                  labelColor: Theme.of(context).primaryColor,
-                                  unselectedLabelColor: Colors.grey[600],
-                                  indicator: CircleTabIndicator(
-                                    color: Theme.of(context).primaryColor,
-                                    radius: 4,
-                                  ),
-                                  tabs: const [
-                                    Tab(text: "Overview"),
-                                    Tab(text: "Itinerary"),
-                                    Tab(text: "Budget"),
-                                  ],
-                                ),
-                                Center(
-                                  child: Text(
-                                    'The showTab value is $showTab'
-                                  ),
-                                ),
+                          SliverToBoxAdapter(
+                            child: TabBar(
+                              labelStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              labelPadding:
+                                  const EdgeInsets.only(left: 15, right: 15),
+                              controller: tabController,
+                              indicatorSize: TabBarIndicatorSize.label,
+                              isScrollable: false,
+                              labelColor: Theme.of(context).primaryColor,
+                              unselectedLabelColor: Colors.grey[600],
+                              indicator: CircleTabIndicator(
+                                color: Theme.of(context).primaryColor,
+                                radius: 4,
+                              ),
+                              tabs: const [
+                                Tab(text: "Overview"),
+                                Tab(text: "Itinerary"),
+                                Tab(text: "Budget"),
                               ],
                             ),
                           ),
+                          // SliverList(
+                          //   delegate: SliverChildBuilderDelegate(
+                          //     (context, index) {
+                          //       StepGuide guide = guides[index];
+                          //       return SingleChildScrollView(
+                          //         physics: AlwaysScrollableScrollPhysics(),
+                          //         child: Padding(
+                          //           padding: const EdgeInsets.all(10.0),
+                          //           child: Container(
+                          //             decoration: BoxDecoration(
+                          //               color: Colors.white,
+                          //               borderRadius: BorderRadius.circular(10),
+                          //               border: Border.all(
+                          //                   color: Colors.grey[300]!),
+                          //             ),
+                          //             child: Padding(
+                          //               padding: const EdgeInsets.all(10.0),
+                          //               child: Column(
+                          //                 children: [
+                          //                   Text(
+                          //                     guide.title,
+                          //                     style: TextStyle(
+                          //                       fontSize: 18,
+                          //                       fontWeight: FontWeight.bold,
+                          //                       color: Colors.black,
+                          //                     ),
+                          //                   ),
+                          //                   SizedBox(height: 8),
+                          //                   Text(
+                          //                     guide.description,
+                          //                     style: TextStyle(
+                          //                       fontSize: 16,
+                          //                       fontWeight: FontWeight.w400,
+                          //                       color: Colors.black,
+                          //                     ),
+                          //                   ),
+                          //                 ],
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ),
+                          //       );
+                          //     },
+                          //     childCount: guides.length,
+                          //   ),
+                          // ),
                         ],
                       ),
                     ),
@@ -176,12 +198,12 @@ class _TripDetailScreenState extends State<TripDetailScreen>
 class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final bool hideTitleWhenExpanded;
-  final TabBar tabBar;
+  // final TabBar tabBar;
 
   const CustomSliverDelegate({
     required this.expandedHeight,
     this.hideTitleWhenExpanded = true,
-    required this.tabBar,
+    // required this.tabBar,
   });
 
   @override
@@ -204,7 +226,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
               preferredSize: Size.fromHeight(expandedHeight),
               child: AppBar(
                 scrolledUnderElevation: 0,
-                bottom: appBarSize < kToolbarHeight ? tabBar : null,
+                // bottom: appBarSize < kToolbarHeight ? tabBar : null,
                 backgroundColor: Colors.white,
                 flexibleSpace: appBarSize > kToolbarHeight
                     ? Image(
@@ -284,6 +306,20 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                           return Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: <Widget>[
+                                              Center(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    "Trip Settings",
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
                                               ListTile(
                                                 leading: new Icon(Icons.edit),
                                                 title:
@@ -342,22 +378,84 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                             SizedBox(
                               height: 10,
                             ),
-                            ElevatedButton(
-                              onPressed: () {},
-                              child: Text(
-                                'Share Trip',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    'Share Trip',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Theme.of(context).primaryColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
                                 ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                primary: Theme.of(context).primaryColor,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                                GestureDetector(
+                                  onTap: () {
+                                    showModalBottomSheet(
+                                        context: context,
+                                        builder: (context) {
+                                          return Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              Center(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    "Trip Collaborators",
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              ListTile(
+                                                leading: new Icon(
+                                                    Icons.person_add_alt),
+                                                title: new Text(
+                                                    'Invite trip mates',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    )),
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                              ListTile(
+                                                leading: CircleAvatar(
+                                                  radius: 16,
+                                                  backgroundImage: AssetImage(
+                                                    "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                                                  ),
+                                                ),
+                                                title: Text(
+                                                  'John Doe (You)',
+                                                ),
+                                              ),
+                                            ],
+                                          );
+                                        });
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 18,
+                                    backgroundImage: AssetImage(
+                                      "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                                    ),
+                                  ),
                                 ),
-                              ),
+                              ],
                             ),
                           ],
                         ),
@@ -381,6 +479,6 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-    return false;
+    return true;
   }
 }

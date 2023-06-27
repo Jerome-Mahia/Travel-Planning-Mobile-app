@@ -1,6 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:travel_planner_app_cs_project/screens/calendar/calendar_screen.dart';
@@ -12,9 +13,14 @@ import 'package:travel_planner_app_cs_project/screens/planning/saved_plans_scree
 import 'package:travel_planner_app_cs_project/screens/search/search_destination_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/settings/settings_screen.dart';
 
-class BottomNavBar extends StatelessWidget {
+class BottomNavBar extends ConsumerStatefulWidget {
   const BottomNavBar({super.key});
 
+  @override
+  _BottomNavBarState createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends ConsumerState<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     List<Widget> _buildScreens() {
@@ -98,6 +104,7 @@ class BottomNavBar extends StatelessWidget {
         controller: controller,
         screens: _buildScreens(),
         items: _navBarsItems(),
+        // hideNavigationBar: ,
         confineInSafeArea: true,
         backgroundColor: Colors.white, // Default is Colors.white.
         handleAndroidBackButtonPress: true, // Default is true.

@@ -1,10 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:http/http.dart' as http;
+import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
 
 class SavedPlanScreen extends StatefulWidget {
   const SavedPlanScreen({super.key});
@@ -46,14 +46,26 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                         leading: new Icon(Icons.info),
                                         title: new Text('View Overview'),
                                         onTap: () {
-                                          Navigator.pop(context);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TripDetailScreen(),
+                                            ),
+                                          );
                                         },
                                       ),
                                       ListTile(
                                         leading: new Icon(Icons.edit),
                                         title: new Text('Edit Plan'),
                                         onTap: () {
-                                          Navigator.pop(context);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TripDetailScreen(),
+                                            ),
+                                          );
                                         },
                                       ),
                                       ListTile(
@@ -79,6 +91,7 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                                             Offset.zero) &
                                                     box.size);
                                           }
+
                                           _onShare(context);
                                         },
                                       ),

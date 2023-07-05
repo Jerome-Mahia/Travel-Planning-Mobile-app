@@ -8,6 +8,7 @@ import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:travel_planner_app_cs_project/screens/home/destination_screens.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
 import 'package:travel_planner_app_cs_project/widgets/home_appbar_widget.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -164,11 +165,13 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                             Destination trip = all_destinations[index];
                             return GestureDetector(
                               onTap: () {
-                                Navigator.push(
+                                PersistentNavBarNavigator.pushNewScreen(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TripDetailScreen(),
-                                  ),
+                                  screen: TripDetailScreen(),
+                                  withNavBar:
+                                      false, // OPTIONAL VALUE. True by default.
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.cupertino,
                                 );
                                 ref.read(hideNavBarProvider.notifier).state =
                                     true;

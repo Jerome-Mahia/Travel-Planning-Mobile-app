@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -5,6 +7,7 @@ import 'package:travel_planner_app_cs_project/data/data.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:http/http.dart' as http;
 import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class SavedPlanScreen extends StatefulWidget {
   const SavedPlanScreen({super.key});
@@ -19,7 +22,7 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Center(child: Text('Saved Plans')),
+          title: const Center(child: Text('Saved Trips')),
         ),
         body: SingleChildScrollView(
           child: Padding(
@@ -44,27 +47,17 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                     children: <Widget>[
                                       ListTile(
                                         leading: new Icon(Icons.info),
-                                        title: new Text('View Overview'),
+                                        title: new Text('View Trip Details'),
                                         onTap: () {
-                                          Navigator.push(
+                                          PersistentNavBarNavigator
+                                              .pushNewScreen(
                                             context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  TripDetailScreen(),
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      ListTile(
-                                        leading: new Icon(Icons.edit),
-                                        title: new Text('Edit Plan'),
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  TripDetailScreen(),
-                                            ),
+                                            screen: TripDetailScreen(),
+                                            withNavBar:
+                                                false, // OPTIONAL VALUE. True by default.
+                                            pageTransitionAnimation:
+                                                PageTransitionAnimation
+                                                    .cupertino,
                                           );
                                         },
                                       ),
@@ -84,6 +77,16 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                             final box =
                                                 context.findRenderObject()
                                                     as RenderBox?;
+                                            // final bytes = await load(trip.mainImageUrl);
+                                            // final list =
+                                            //     bytes.buffer.asUint8List();
+
+                                            // final tempDir =
+                                            //     await getTemporaryDirectory();
+                                            // final file = await File(
+                                            //         '${tempDir.path}/image.jpg')
+                                            //     .create();
+                                            // file.writeAsBytesSync(list);
                                             await Share.share(
                                                 'Check out this trip to ${trip.title} on Travel Planner App! ${trip.mainImageUrl}',
                                                 sharePositionOrigin: box!

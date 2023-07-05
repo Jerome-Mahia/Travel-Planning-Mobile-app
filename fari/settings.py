@@ -94,6 +94,7 @@ WSGI_APPLICATION = 'fari.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -101,10 +102,9 @@ DATABASES = {
     }
 }
 
-
 DATABASES = {
    'default': dj_database_url.config(
-        # Feel free to alter this value to suit your needs.
+         #Feel free to alter this value to suit your needs.
        default='postgresql://postgres:postgres@localhost:5432/mysite',
       conn_max_age=600
   )

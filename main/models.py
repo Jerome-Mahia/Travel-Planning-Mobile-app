@@ -80,3 +80,42 @@ class VerificationCode(models.Model):
     type = models.CharField(max_length=20, choices=Type.choices, default=Type.REGISTRATION)
     date_created = models.DateTimeField(auto_now_add=True)
     expiry_date = models.DateTimeField(null=True)
+
+class Itinerary(models.Model):
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    collaborators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='colaborators',blank=True)
+    title = models.CharField(max_length=255)
+    notes = models.TextField(null=True, blank=True)
+    destination = models.CharField(max_length=255)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    tokens = models.IntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='updated_by',null=True, blank=True)
+    #is_public = models.BooleanField(default=False)
+    def __str__(self):
+        return self.title + " for " + self.owner.email
+
+
+class ItineraryDay(models.Model):
+    itinerary = models.ForeignKey(Itinerary, on_delete=models.CASCADE)
+    date = models.DateField()
+    name = models.CharField(max_length=255)
+    morning_activity = models.TextField(null=True, blank=True)
+    afternoon_activity = models.TextField(null=True, blank=True)
+    evening_activity = models.TextField(null=True, blank=True)
+    morning_budget = models.IntegerField(default=0)
+    afternoon_budget = models.IntegerField(default=0)
+    evening_budget = models.IntegerField(default=0)
+    morning_lat = models.FloatField(null=True, blank=True,default=0.0)
+    morning_long = models.FloatField(null=True, blank=True,default=0.0)
+    afternoon_lat = models.FloatField(null=True, blank=True,default=0.0)
+    afternoon_long = models.FloatField(null=True, blank=True,default=0.0)
+    evening_lat = models.FloatField(null=True, blank=True,default=0.0)
+    evening_long = models.FloatField(null=True, blank=True,default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='day_updated_by',null=True, blank=True)
+    def __str__(self):
+        return self.name

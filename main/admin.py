@@ -56,7 +56,7 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('email', 'name',  )
+    list_display = ('email', 'name', 'id' )
     list_filter = ('is_staff',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
@@ -79,7 +79,14 @@ class UserAdmin(BaseUserAdmin):
 class VerificationCodeAdmin(admin.ModelAdmin):
     list_display = ('email', 'code', 'type', 'expiry_date')
 
+class ItineraryAdmin(admin.ModelAdmin):
+    list_display = ('owner','title','destination','start_date','end_date','updated_at')
+
+class ItineraryDayAdmin(admin.ModelAdmin):
+    list_display = ('name','itinerary', 'date')
 
 
 admin.site.register(User, UserAdmin,)
 admin.site.register(VerificationCode, VerificationCodeAdmin,)
+admin.site.register(Itinerary,ItineraryAdmin)
+admin.site.register(ItineraryDay,ItineraryDayAdmin)

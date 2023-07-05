@@ -39,7 +39,9 @@ import os
 
 from django.contrib.postgres.search import SearchQuery,  SearchVector
 from .utils import *
+import openai
 
+import json
 
 class RegisterSuperView(APIView):
     permission_classes = (permissions.AllowAny,)
@@ -277,4 +279,86 @@ class GoogleLoginApi( APIView):
                 'access': str(refresh.access_token)
                 },
                 status=status.HTTP_201_CREATED
+            ) 
+        
+
+class CreateItinerary(APIView):
+    def post(self, request):
+        data = request.data
+        user = request.user
+        title = data['title']
+        notes = data['notes']
+        destination = data['destination']
+        start_date = data['start_date']
+        end_date = data['end_date']
+        collaborators = data['collaborators']
+        budget = data['budget']
+        age = data['age']
+        fun = data['fun']
+
+
+        if end_date > start_date and datetime.strptime(start_date, '%Y-%m-%d').date() >= date.today():
+            days = (datetime.strptime(end_date, '%Y-%m-%d').date() - datetime.strptime(start_date, '%Y-%m-%d').date()).days + 1
+            if days > 5:
+                return Response(
+                    {'error': 'Itinerary cannot be more than 5 days'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            prompt = f"""you are a travel planner Create a brief {budget} {age} {fun} {days} day itinerary for a trip to {destination},Kenya
+            including the budget for each activity in kshs and if applicable the location of each activity in latitude and longitude format.
+            Format the itinerary as a json object with the days as the keys for example day1.
+            Each key should have a value that is a list of 3 objects.
+            Each object having activity,budget and location as keys.
+            The first object should describe in detail the activites  to be done in the morning the 2nd in the afternoon and 3rd in the evening.
+            Do not include morning,evening or afternoon in the activity description.
+            """
+            messages = [{"role": "user", "content": prompt}]
+            try:
+                openai.api_key = os.environ.get('openai_key')
+                response = openai.ChatCompletion.create(
+                    model="gpt-3.5-turbo",
+                    messages=messages,
+                    temperature=0.4, 
+                )
+            except:
+                return Response (
+                    {'error': 'Something went wrong'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            print(response['usage'])
+            print(response.choices[0].message["content"])
+
+            itinerary = Itinerary(owner=user,title=title,notes=notes,destination=destination,start_date=start_date,end_date=end_date,tokens=response['usage']['total_tokens'])
+            itinerary.save()
+            if collaborators != 'none':
+                for collaborator in collaborators:
+                    collaborator = User.objects.get(id=collaborator)
+                    if collaborator != user:
+                        itinerary.collaborators.add(collaborator)
+
+            content = json.loads(response.choices[0].message["content"])
+            
+            for i in range(days):
+                it_date = datetime.strptime(start_date, '%Y-%m-%d').date() + timedelta(days=i)
+                day_name = 'day'+str(i+1)
+                try:
+                    itinerary_day = ItineraryDay(itinerary=itinerary,date=it_date,name='day_name',morning_activity=content[day_name][0]['activity'],morning_budget=content[day_name][0]['budget'],morning_lat=content[day_name][0]['location']['latitude'],morning_long=content[day_name][0]['location']['longitude'],afternoon_activity=content[day_name][1]['activity'],afternoon_budget=content[day_name][1]['budget'],afternoon_lat=content[day_name][1]['location']['latitude'],afternoon_long=content[day_name][1]['location']['longitude'],evening_activity=content[day_name][2]['activity'],evening_budget=content[day_name][2]['budget'],evening_lat=content[day_name][2]['location']['latitude'],evening_long=content[day_name][2]['location']['longitude'])
+                except:
+                    return Response (
+                        {'error': 'Something went wrong'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                itinerary_day.save()
+
+        else:
+            return Response (
+                {'error': 'Invalid dates'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        return Response (
+            
+                {'success': 'Itinerary created successfully'},
+                status=status.HTTP_201_CREATED
+        
             ) 

@@ -2,20 +2,25 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/models/step_guide.dart';
 import 'package:travel_planner_app_cs_project/screens/home/feed_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/budget_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/itinerary_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/overview_screen.dart';
 
-class TripDetailScreen extends StatefulWidget {
+class TripDetailScreen extends ConsumerStatefulWidget {
   const TripDetailScreen({super.key});
 
   @override
-  State<TripDetailScreen> createState() => _TripDetailScreenState();
+  _TripDetailScreenState createState() => _TripDetailScreenState();
 }
 
-class _TripDetailScreenState extends State<TripDetailScreen>
+class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
     with TickerProviderStateMixin {
   bool isLoading = true;
   void startTimer() {
@@ -51,6 +56,9 @@ class _TripDetailScreenState extends State<TripDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    bool hideTitleWhenExpanded = true;
+    final proportion = 2 - (expandedHeight / appBarSize);
+    final percent = proportion < 0 || proportion > 1 ? 0.0 : proportion;  g g
     TabController tabController = TabController(length: 3, vsync: this);
     return SafeArea(
       child: Scaffold(
@@ -59,7 +67,7 @@ class _TripDetailScreenState extends State<TripDetailScreen>
             children: [
               isLoading
                   ? SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.3,
+                      height: MediaQuery.of(context).size.height / 1.1,
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -80,111 +88,65 @@ class _TripDetailScreenState extends State<TripDetailScreen>
                         ),
                       ),
                     )
-                  : SizedBox(
-                      height: MediaQuery.of(context).size.height / 1,
-                      child: CustomScrollView(
-                        shrinkWrap: true,
-                        slivers: <Widget>[
-                          SliverPersistentHeader(
-                            pinned: true,
-                            floating: true,
-                            delegate: CustomSliverDelegate(
-                              expandedHeight: 180,
-                              // tabBar: TabBar(
-                              //   labelStyle: const TextStyle(
-                              //     fontSize: 15,
-                              //     fontWeight: FontWeight.w400,
-                              //   ),
-                              //   labelPadding:
-                              //       const EdgeInsets.only(left: 15, right: 15),
-                              //   indicatorSize: TabBarIndicatorSize.label,
-                              //   isScrollable: true,
-                              //   controller: tabController,
-                              //   labelColor: Theme.of(context).primaryColor,
-                              //   unselectedLabelColor: Colors.grey[600],
-                              //   indicator: CircleTabIndicator(
-                              //     color: Theme.of(context).primaryColor,
-                              //     radius: 4,
-                              //   ),
-                              //   tabs: const [
-                              //     Tab(text: "Overview"),
-                              //     Tab(text: "Itinerary"),
-                              //     Tab(text: "Budget"),
-                              //   ],
-                              // ),
-                            ),
-                          ),
-                          SliverToBoxAdapter(
-                            child: TabBar(
-                              labelStyle: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
+                  : SingleChildScrollView(
+                      child: SizedBox(
+                        height: MediaQuery.of(context).size.height / 1.1,
+                        child: NestedScrollView(
+                          headerSliverBuilder:
+                              (BuildContext context, bool value) {
+                            return <Widget>[
+                              SliverPersistentHeader(
+                                pinned: true,
+                                floating: false,
+                                delegate: CustomSliverDelegate(
+                                  expandedHeight: 180,
+                                ),
                               ),
-                              labelPadding:
-                                  const EdgeInsets.only(left: 15, right: 15),
-                              controller: tabController,
-                              indicatorSize: TabBarIndicatorSize.label,
-                              isScrollable: false,
-                              labelColor: Theme.of(context).primaryColor,
-                              unselectedLabelColor: Colors.grey[600],
-                              indicator: CircleTabIndicator(
-                                color: Theme.of(context).primaryColor,
-                                radius: 4,
+                            ];
+                          },
+                          body: CustomScrollView(
+                            slivers: <Widget>[
+                              Opacity(
+                                opacity:
+                                    hideTitleWhenExpanded ? 1.0 - percent : 1.0,
+                                child: SliverToBoxAdapter(
+                                  child: TabBar(
+                                    labelStyle: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                    labelPadding: const EdgeInsets.only(
+                                        left: 15, right: 15),
+                                    controller: tabController,
+                                    indicatorSize: TabBarIndicatorSize.label,
+                                    isScrollable: false,
+                                    labelColor: Theme.of(context).primaryColor,
+                                    unselectedLabelColor: Colors.grey[600],
+                                    indicator: CircleTabIndicator(
+                                      color: Theme.of(context).primaryColor,
+                                      radius: 4,
+                                    ),
+                                    tabs: const [
+                                      Tab(text: "Overview"),
+                                      Tab(text: "Itinerary"),
+                                      Tab(text: "Budget"),
+                                    ],
+                                  ),
+                                ),
                               ),
-                              tabs: const [
-                                Tab(text: "Overview"),
-                                Tab(text: "Itinerary"),
-                                Tab(text: "Budget"),
-                              ],
-                            ),
+                              SliverFillRemaining(
+                                child: TabBarView(
+                                  controller: tabController,
+                                  children: [
+                                    OverviewTab(),
+                                    ItineraryTab(),
+                                    BudgetTab(),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          // SliverList(
-                          //   delegate: SliverChildBuilderDelegate(
-                          //     (context, index) {
-                          //       StepGuide guide = guides[index];
-                          //       return SingleChildScrollView(
-                          //         physics: AlwaysScrollableScrollPhysics(),
-                          //         child: Padding(
-                          //           padding: const EdgeInsets.all(10.0),
-                          //           child: Container(
-                          //             decoration: BoxDecoration(
-                          //               color: Colors.white,
-                          //               borderRadius: BorderRadius.circular(10),
-                          //               border: Border.all(
-                          //                   color: Colors.grey[300]!),
-                          //             ),
-                          //             child: Padding(
-                          //               padding: const EdgeInsets.all(10.0),
-                          //               child: Column(
-                          //                 children: [
-                          //                   Text(
-                          //                     guide.title,
-                          //                     style: TextStyle(
-                          //                       fontSize: 18,
-                          //                       fontWeight: FontWeight.bold,
-                          //                       color: Colors.black,
-                          //                     ),
-                          //                   ),
-                          //                   SizedBox(height: 8),
-                          //                   Text(
-                          //                     guide.description,
-                          //                     style: TextStyle(
-                          //                       fontSize: 16,
-                          //                       fontWeight: FontWeight.w400,
-                          //                       color: Colors.black,
-                          //                     ),
-                          //                   ),
-                          //                 ],
-                          //               ),
-                          //             ),
-                          //           ),
-                          //         ),
-                          //       );
-                          //     },
-                          //     childCount: guides.length,
-                          //   ),
-                          // ),
-                        ],
+                        ),
                       ),
                     ),
             ],
@@ -213,7 +175,13 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
     final cardTopPosition = expandedHeight / 1.75 - shrinkOffset;
     final proportion = 2 - (expandedHeight / appBarSize);
     final percent = proportion < 0 || proportion > 1 ? 0.0 : proportion;
-    if (appBarSize < kToolbarHeight) {}
+
+    void showNav() {
+      final hideNavBar =
+          ProviderContainer().read(hideNavBarProvider.notifier).state = false;
+      print(hideNavBar);
+    }
+
     return SizedBox(
       height: expandedHeight + expandedHeight / 2,
       child: Stack(
@@ -222,34 +190,61 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
             height: appBarSize < kToolbarHeight
                 ? (kToolbarHeight * 1.7)
                 : appBarSize,
-            child: PreferredSize(
-              preferredSize: Size.fromHeight(expandedHeight),
-              child: AppBar(
-                scrolledUnderElevation: 0,
-                // bottom: appBarSize < kToolbarHeight ? tabBar : null,
-                backgroundColor: Colors.white,
-                flexibleSpace: appBarSize > kToolbarHeight
-                    ? Image(
-                        image: AssetImage('assets/images/sydney.jpg'),
-                        fit: BoxFit.cover,
-                        width: double.infinity,
-                      )
-                    : null,
-                leading: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: appBarSize > kToolbarHeight
-                        ? Colors.white
-                        : Colors.black,
+            child: DefaultTabController(
+              length: 3,
+              child: PreferredSize(
+                preferredSize: Size.fromHeight(expandedHeight),
+                child: AppBar(
+                  scrolledUnderElevation: 0,
+                  // bottom: appBarSize < kToolbarHeight ? tabBar : null,
+                  backgroundColor: Colors.white,
+                  flexibleSpace: appBarSize > kToolbarHeight
+                      ? Image(
+                          image: AssetImage('assets/images/sydney.jpg'),
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                        )
+                      : null,
+                  leading: IconButton(
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: appBarSize > kToolbarHeight
+                          ? Colors.white
+                          : Colors.black,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      showNav();
+                    },
                   ),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-                elevation: 0.0,
-                title: Opacity(
-                  opacity: hideTitleWhenExpanded ? 1.0 - percent : 1.0,
-                  child: Text("Trip to Naivasha"),
+                  elevation: 0.0,
+                  title: Opacity(
+                    opacity: hideTitleWhenExpanded ? 1.0 - percent : 1.0,
+                    child: Text("Trip to Naivasha"),
+                  ),
+                  bottom: appBarSize < kToolbarHeight
+                      ? TabBar(
+                          labelStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          labelPadding:
+                              const EdgeInsets.only(left: 15, right: 15),
+                          indicatorSize: TabBarIndicatorSize.label,
+                          isScrollable: false,
+                          labelColor: Theme.of(context).primaryColor,
+                          unselectedLabelColor: Colors.grey[600],
+                          indicator: CircleTabIndicator(
+                            color: Theme.of(context).primaryColor,
+                            radius: 4,
+                          ),
+                          tabs: const [
+                            Tab(text: "Overview"),
+                            Tab(text: "Itinerary"),
+                            Tab(text: "Budget"),
+                          ],
+                        )
+                      : null,
                 ),
               ),
             ),

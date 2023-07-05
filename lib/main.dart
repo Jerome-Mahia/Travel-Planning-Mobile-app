@@ -9,6 +9,8 @@ void main() {
   runApp(ProviderScope(child: const MyApp()));
 }
 
+
+final hideNavBarProvider = StateProvider((ref) => false);
 final accountCreationProvider = StateProvider((ref) => false);
 final datePickedProvider = StateProvider((ref) => '');
 final otpControllerProvider = StateProvider((ref) => '');

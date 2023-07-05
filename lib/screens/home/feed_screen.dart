@@ -1,26 +1,34 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:travel_planner_app_cs_project/screens/home/destination_screens.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
 import 'package:travel_planner_app_cs_project/widgets/home_appbar_widget.dart';
 
-class FeedScreen extends StatefulWidget {
+class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
 
   @override
-  State<FeedScreen> createState() => _FeedScreenState();
+  _FeedScreenState createState() => _FeedScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
+class _FeedScreenState extends ConsumerState<FeedScreen>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
 
   bool isAnimating = false;
 
+  showNav() {
+    ref.read(hideNavBarProvider.notifier).state = false;
+  }
+
   @override
   void initState() {
+    showNav();
     super.initState();
     _animationController = AnimationController(
       vsync: this,
@@ -162,6 +170,8 @@ class _FeedScreenState extends State<FeedScreen> with TickerProviderStateMixin {
                                     builder: (context) => TripDetailScreen(),
                                   ),
                                 );
+                                ref.read(hideNavBarProvider.notifier).state =
+                                    true;
                               },
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,

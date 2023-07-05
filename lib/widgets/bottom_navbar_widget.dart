@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:travel_planner_app_cs_project/screens/calendar/calendar_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/home/destination_screens.dart';
@@ -21,8 +22,10 @@ class BottomNavBar extends ConsumerStatefulWidget {
 }
 
 class _BottomNavBarState extends ConsumerState<BottomNavBar> {
+  
   @override
   Widget build(BuildContext context) {
+
     List<Widget> _buildScreens() {
       return [
         const FeedScreen(),
@@ -48,7 +51,10 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
           inactiveColorPrimary: const Color.fromARGB(255, 10, 10, 10),
         ),
         PersistentBottomNavBarItem(
-          icon: const Icon(Icons.search,color: Colors.white,),
+          icon: const Icon(
+            Icons.search,
+            color: Colors.white,
+          ),
           title: ("Search"),
           activeColorPrimary: Theme.of(context).primaryColor,
         ),
@@ -71,6 +77,8 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
 
     controller = PersistentTabController(initialIndex: 0);
 
+    
+
     return WillPopScope(
       onWillPop: () async {
         return await showDialog(
@@ -87,13 +95,15 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: Text('No', style: TextStyle(color: Colors.black,fontSize: 20)),
+                    child: Text('No',
+                        style: TextStyle(color: Colors.black, fontSize: 20)),
                   ),
                   TextButton(
                     onPressed: () {
                       SystemNavigator.pop();
                     },
-                    child: Text('Yes', style: TextStyle(color: Colors.red,fontSize: 20)),
+                    child: Text('Yes',
+                        style: TextStyle(color: Colors.red, fontSize: 20)),
                   ),
                 ],
               );
@@ -104,7 +114,7 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
         controller: controller,
         screens: _buildScreens(),
         items: _navBarsItems(),
-        // hideNavigationBar: ,
+        // hideNavigationBar: ref.watch(hideNavBarProvider)==true?true:false,
         confineInSafeArea: true,
         backgroundColor: Colors.white, // Default is Colors.white.
         handleAndroidBackButtonPress: true, // Default is true.
@@ -115,7 +125,8 @@ class _BottomNavBarState extends ConsumerState<BottomNavBar> {
             true, // Recommended to set 'resizeToAvoidBottomInset' as true while using this argument. Default is true.
         decoration: NavBarDecoration(
           borderRadius: BorderRadius.circular(10.0),
-          colorBehindNavBar: const Color.fromARGB(255, 236, 228, 228).withOpacity(0.3),
+          colorBehindNavBar:
+              const Color.fromARGB(255, 236, 228, 228).withOpacity(0.3),
         ),
         popAllScreensOnTapOfSelectedTab: true,
         popActionScreens: PopActionScreensType.all,

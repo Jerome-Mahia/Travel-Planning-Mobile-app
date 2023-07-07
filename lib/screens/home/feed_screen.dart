@@ -312,13 +312,16 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                               child: Stack(
                                 children: [
                                   GestureDetector(
-                                    onTap: () => Navigator.push(
+                                    onTap: () =>
+                                        PersistentNavBarNavigator.pushNewScreen(
                                       context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              DestinationScreen(
-                                                destination: destination,
-                                              )),
+                                      screen: DestinationScreen(
+                                        destination: destination,
+                                      ),
+                                      withNavBar:
+                                          false, // OPTIONAL VALUE. True by default.
+                                      pageTransitionAnimation:
+                                          PageTransitionAnimation.cupertino,
                                     ),
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(15.0),

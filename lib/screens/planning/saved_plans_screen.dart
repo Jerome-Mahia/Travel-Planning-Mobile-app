@@ -77,22 +77,18 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                             final box =
                                                 context.findRenderObject()
                                                     as RenderBox?;
-                                            // final bytes = await load(trip.mainImageUrl);
-                                            // final list =
-                                            //     bytes.buffer.asUint8List();
+                                            void sharePressed() {
+                                              Share.shareFiles(
+                                                  [(trip.mainImageUrl)],
+                                                  text:
+                                                      'Check out this amazing trip to ${trip.title} on Fari Travel Planner App!',
+                                                  sharePositionOrigin: box!
+                                                          .localToGlobal(
+                                                              Offset.zero) &
+                                                      box.size);
+                                            }
 
-                                            // final tempDir =
-                                            //     await getTemporaryDirectory();
-                                            // final file = await File(
-                                            //         '${tempDir.path}/image.jpg')
-                                            //     .create();
-                                            // file.writeAsBytesSync(list);
-                                            await Share.share(
-                                                'Check out this trip to ${trip.title} on Travel Planner App! ${trip.mainImageUrl}',
-                                                sharePositionOrigin: box!
-                                                        .localToGlobal(
-                                                            Offset.zero) &
-                                                    box.size);
+                                            sharePressed();
                                           }
 
                                           _onShare(context);

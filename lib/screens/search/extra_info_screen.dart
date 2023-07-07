@@ -16,10 +16,12 @@ class ExtraInfoScreen extends StatefulWidget {
 }
 
 List<Item> selectedItems = [];
-double _value1 = 0.0;
-double _value2 = 0.0;
-double _value3 = 0.0;
-double _value4 = 0.0;
+
+String? valueChoose;
+
+String agetypeDropdownValue = "Select one";
+String excitementtypeDropdownValue = "Select one";
+String budgettypeDropdownValue = "Select one";
 
 class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
   TextEditingController destinationInput = TextEditingController();
@@ -143,7 +145,7 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                       Align(
                         alignment: Alignment.topLeft,
                         child: const Text(
-                          'Budget',
+                          'Customize your trip',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -175,157 +177,190 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                         ),
                       ),
                       SizedBox(
-                        height: 20,
-                      ),
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: const Text(
-                          'What experiences are you looking for?',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 44, 38, 38),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'Outdoors activities',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                        ),
-                      ),
-                      SfSlider(
-                        min: 0.0,
-                        max: 5.0,
-                        activeColor: Theme.of(context).primaryColor,
-                        value: _value1,
-                        interval: 1,
-                        showTicks: true,
-                        showLabels: true,
-                        enableTooltip: true,
-                        minorTicksPerInterval: 1,
-                        stepSize: 1.0,
-                        onChanged: (dynamic value) {
-                          setState(() {
-                            _value1 = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(
                         height: 10,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'Art and culture',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[700],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Age Restriction',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[700],
+                              ),
                             ),
                           ),
-                        ),
+                          DropdownButton<String>(
+                            hint: Text("Select one"),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.grey,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                            isExpanded: false,
+                            dropdownColor: Color.fromARGB(232, 255, 255, 255),
+                            icon: Icon(Icons.arrow_drop_down),
+                            iconSize: 30,
+                            value: agetypeDropdownValue,
+                            style: TextStyle(color: Colors.white),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                agetypeDropdownValue = newValue!;
+                              });
+                            },
+                            items: [
+                              DropdownMenuItem<String>(
+                                  value: 'Select one',
+                                  child: Text(
+                                    "Select one",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  )),
+                              DropdownMenuItem<String>(
+                                  value: 'Kid friendly',
+                                  child: Text(
+                                    "Kid friendly",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  )),
+                              DropdownMenuItem<String>(
+                                  value: 'Adults only',
+                                  child: Text(
+                                    "Adults only",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  )),
+                            ],
+                          ),
+                        ],
                       ),
-                      SfSlider(
-                        min: 0.0,
-                        max: 5.0,
-                        activeColor: Theme.of(context).primaryColor,
-                        value: _value2,
-                        interval: 1,
-                        showTicks: true,
-                        showLabels: true,
-                        enableTooltip: true,
-                        minorTicksPerInterval: 1,
-                        stepSize: 1.0,
-                        onChanged: (dynamic value) {
-                          setState(() {
-                            _value2 = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(
+                      SizedBox(
                         height: 10,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'History and heritage',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[700],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Outdoors activities',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[700],
+                              ),
                             ),
                           ),
-                        ),
+                          DropdownButton<String>(
+                            hint: Text("Select one"),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.grey,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                            isExpanded: false,
+                            dropdownColor: Color.fromARGB(232, 255, 255, 255),
+                            icon: Icon(Icons.arrow_drop_down),
+                            iconSize: 30,
+                            value: excitementtypeDropdownValue,
+                            style: TextStyle(color: Colors.white),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                excitementtypeDropdownValue = newValue!;
+                              });
+                            },
+                            items: [
+                              DropdownMenuItem<String>(
+                                  value: 'Select one',
+                                  child: Text(
+                                    "Select one",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  )),
+                              DropdownMenuItem<String>(
+                                  value: 'Fun',
+                                  child: Text(
+                                    "Fun",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  )),
+                              DropdownMenuItem<String>(
+                                  value: 'Educational',
+                                  child: Text(
+                                    "Educational",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  )),
+                            ],
+                          ),
+                        ],
                       ),
-                      SfSlider(
-                        min: 0.0,
-                        max: 5.0,
-                        activeColor: Theme.of(context).primaryColor,
-                        value: _value3,
-                        interval: 1,
-                        showTicks: true,
-                        showLabels: true,
-                        enableTooltip: true,
-                        minorTicksPerInterval: 1,
-                        stepSize: 1.0,
-                        onChanged: (dynamic value) {
-                          setState(() {
-                            _value3 = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(
+                      SizedBox(
                         height: 10,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10.0),
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Text(
-                            'Kid friendly',
-                            style: TextStyle(
-                              fontSize: 18.0,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[700],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Price',
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey[700],
+                              ),
                             ),
                           ),
-                        ),
-                      ),
-                      SfSlider(
-                        min: 0.0,
-                        max: 5.0,
-                        activeColor: Theme.of(context).primaryColor,
-                        value: _value4,
-                        interval: 1,
-                        showTicks: true,
-                        showLabels: true,
-                        enableTooltip: true,
-                        minorTicksPerInterval: 1,
-                        stepSize: 1.0,
-                        onChanged: (dynamic value) {
-                          setState(() {
-                            _value4 = value;
-                          });
-                        },
+                          DropdownButton<String>(
+                            hint: Text("Select one"),
+                            underline: Container(
+                              height: 2,
+                              color: Colors.grey,
+                            ),
+                            borderRadius: BorderRadius.circular(15),
+                            isExpanded: false,
+                            dropdownColor: Color.fromARGB(232, 255, 255, 255),
+                            icon: Icon(Icons.arrow_drop_down),
+                            iconSize: 30,
+                            value: budgettypeDropdownValue,
+                            style: TextStyle(color: Colors.white),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                budgettypeDropdownValue = newValue!;
+                              });
+                            },
+                            items: [
+                              DropdownMenuItem<String>(
+                                  value: 'Select one',
+                                  child: Text(
+                                    "Select one",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  )),
+                              DropdownMenuItem<String>(
+                                  value: 'Budget friendly',
+                                  child: Text(
+                                    "Budget friendly",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  )),
+                              DropdownMenuItem<String>(
+                                  value: 'Luxury',
+                                  child: Text(
+                                    "Luxury",
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 18),
+                                  )),
+                            ],
+                          ),
+                        ],
                       ),
                       const SizedBox(
-                        height: 38.0,
+                        height: 20.0,
                       ),
                       Padding(
                         padding: const EdgeInsets.all(10.0),
@@ -353,7 +388,7 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                                   ),
                                   child: const Center(
                                     child: Text(
-                                      'Generate my trip',
+                                      'Start planning',
                                       style: TextStyle(
                                         fontSize: 18.0,
                                         fontWeight: FontWeight.bold,
@@ -368,7 +403,7 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                         ),
                       ),
                       const SizedBox(
-                        height: 30,
+                        height: 20,
                       ),
                     ],
                   ),

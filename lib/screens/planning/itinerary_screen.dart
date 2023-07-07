@@ -32,19 +32,13 @@ class _ItineraryTabState extends State<ItineraryTab> {
                     margin: const EdgeInsets.all(10.0),
                     width: MediaQuery.of(context).size.width / 1.5,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color:
+                          Color.fromARGB(255, 226, 225, 225).withOpacity(0.4),
                       borderRadius: BorderRadius.circular(15.0),
                       // border: Border.all(
                       //   width: 1.0,
                       //   color: Colors.grey,
                       // ),
-                      boxShadow: [
-                        BoxShadow(
-                          offset: const Offset(0, 1),
-                          blurRadius: 5,
-                          color: Colors.black.withOpacity(0.3),
-                        ),
-                      ],
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(10.0),
@@ -85,10 +79,11 @@ class _ItineraryTabState extends State<ItineraryTab> {
               padding: const EdgeInsets.all(10.0),
               child: Align(
                 alignment: Alignment.topLeft,
-                child: const Text(
+                child: Text(
                   'Itinerary',
                   style: TextStyle(
-                    fontSize: 20.0,
+                    color: Colors.black,
+                    fontSize: 35.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -100,15 +95,18 @@ class _ItineraryTabState extends State<ItineraryTab> {
             ListView.builder(
               itemCount: dates.length,
               shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               itemBuilder: (context, i) {
                 return ExpansionTile(
                   maintainState: true,
-                  tilePadding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+                  tilePadding:
+                      EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
                   title: Text(
                     dates[i].title,
                     style: TextStyle(
-                        fontSize: 20.0,
-                        fontWeight: FontWeight.bold,),
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   children: <Widget>[
                     Column(

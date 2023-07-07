@@ -61,36 +61,39 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
     TabController tabController = TabController(length: 3, vsync: this);
     return SafeArea(
       child: Scaffold(
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              isLoading
-                  ? SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.1,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            LoadingAnimationWidget.inkDrop(
-                              color: Theme.of(context).primaryColor,
-                              size: MediaQuery.of(context).size.height * 0.1,
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Retrieving your itinerary...',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )
-                  : SingleChildScrollView(
-                      child: SizedBox(
+        body: ListView(
+          shrinkWrap: true,
+          children: [
+            Column(
+              children: [
+                isLoading
+                    ? SizedBox(
                         height: MediaQuery.of(context).size.height / 1.1,
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              LoadingAnimationWidget.inkDrop(
+                                color: Theme.of(context).primaryColor,
+                                size: MediaQuery.of(context).size.height * 0.1,
+                              ),
+                              SizedBox(height: 16),
+                              Text(
+                                'Retrieving your itinerary...',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : SizedBox(
+                        height: MediaQuery.of(context).size.height,
                         child: NestedScrollView(
+                          scrollBehavior: const MaterialScrollBehavior()
+                              .copyWith(scrollbars: false),
                           headerSliverBuilder:
                               (BuildContext context, bool value) {
                             return <Widget>[
@@ -126,6 +129,7 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
                             ];
                           },
                           body: CustomScrollView(
+                            shrinkWrap: true,
                             slivers: <Widget>[
                               SliverFillRemaining(
                                 child: TabBarView(
@@ -141,9 +145,9 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
                           ),
                         ),
                       ),
-                    ),
-            ],
-          ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -197,7 +201,12 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                         : Colors.black,
                   ),
                   onPressed: () {
-                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => FeedScreen(),
+                      ),
+                    );
                   },
                 ),
                 elevation: 0.0,
@@ -244,8 +253,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   "Trip to Naivasha",
@@ -265,8 +273,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                               Center(
                                                 child: Padding(
                                                   padding:
-                                                      const EdgeInsets.all(
-                                                          8.0),
+                                                      const EdgeInsets.all(8.0),
                                                   child: Text(
                                                     "Trip Settings",
                                                     style: TextStyle(
@@ -278,29 +285,16 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                                 ),
                                               ),
                                               ListTile(
-                                                leading:
-                                                    new Icon(Icons.edit),
-                                                title: new Text(
-                                                    'Edit trip title'),
+                                                leading: new Icon(Icons.edit),
+                                                title:
+                                                    new Text('Edit trip title'),
                                                 onTap: () {
                                                   Navigator.pop(context);
                                                 },
                                               ),
                                               ListTile(
-                                                leading:
-                                                    new Icon(Icons.share),
-                                                title: new Text('Share'),
-                                                onTap: () async {
-                                                  Navigator.pop(context);
-                                                  await Share.share(
-                                                      'check out my website https://example.com');
-                                                },
-                                              ),
-                                              ListTile(
-                                                leading:
-                                                    new Icon(Icons.delete),
-                                                title:
-                                                    new Text('Delete trip'),
+                                                leading: new Icon(Icons.delete),
+                                                title: new Text('Delete trip'),
                                                 onTap: () {
                                                   Navigator.pop(context);
                                                 },
@@ -340,11 +334,13 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                               height: 10,
                             ),
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () async {
+                                    await Share.share(
+                                        'check out our website https://fari-jcuo.onrender.com/');
+                                  },
                                   child: Text(
                                     'Share Trip',
                                     style: TextStyle(
@@ -356,8 +352,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                   style: ElevatedButton.styleFrom(
                                     primary: Theme.of(context).primaryColor,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(20),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                 ),
@@ -372,8 +367,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                               Center(
                                                 child: Padding(
                                                   padding:
-                                                      const EdgeInsets.all(
-                                                          8.0),
+                                                      const EdgeInsets.all(8.0),
                                                   child: Text(
                                                     "Trip Collaborators",
                                                     style: TextStyle(
@@ -400,8 +394,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                               ListTile(
                                                 leading: CircleAvatar(
                                                   radius: 16,
-                                                  backgroundImage:
-                                                      AssetImage(
+                                                  backgroundImage: AssetImage(
                                                     "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
                                                   ),
                                                 ),
@@ -440,10 +433,10 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
   double get maxExtent => expandedHeight + expandedHeight / 2;
 
   @override
-  double get minExtent => kToolbarHeight+50;
+  double get minExtent => kToolbarHeight + 50;
 
   @override
   bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) {
-    return true;
+    return false;
   }
 }

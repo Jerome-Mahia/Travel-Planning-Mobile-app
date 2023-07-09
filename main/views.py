@@ -282,7 +282,7 @@ class GoogleLoginApi( APIView):
             ) 
         
 
-class CreateItinerary(APIView):
+class CreateGetItinerary(APIView):
     def post(self, request):
         data = request.data
         user = request.user
@@ -362,3 +362,47 @@ class CreateItinerary(APIView):
                 status=status.HTTP_201_CREATED
         
             ) 
+    
+    def get(self, request):
+        user = request.user
+        itineraries = Itinerary.objects.filter(owner=user)
+        itineraries = ItinerarySerializer(itineraries, many=True)
+
+        collaborating = Itinerary.objects.filter(collaborators__id=user.id)
+        #print(collaborating)
+        
+        collaborating = ItinerarySerializer(collaborating, many=True)
+        return Response (         
+            {'itineraries': itineraries.data,'collaborating': collaborating.data},
+            status=status.HTTP_200_OK   
+        ) 
+
+class GetItineraryDetails(APIView):
+    def get(self, request, pk):
+        user = request.user
+        itinerary = Itinerary.objects.get(id=pk)
+        if itinerary.owner == user or user in itinerary.collaborators.all():
+            #itinerary = ItinerarySerializer(itinerary)
+            collaborators = []
+            for user in itinerary.collaborators.all():
+                collaborator = {"name":user.name,"id":user.id}
+                collaborators.append(collaborator)
+            
+            updated_at = itinerary.updated_at.strftime("%d-%m-%Y, %H:%M:%S")
+            updated_by = User.objects.filter(id=itinerary.updated_by)
+            
+            days = ItineraryDay.objects.filter(itinerary=itinerary)
+            days = ItineraryDaySerializer(days,many=True)
+
+            itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":updated_by}
+            
+            
+            return Response (         
+                {'itinerary': itinerary,"collaborators":collaborators,"days":days.data},
+                status=status.HTTP_200_OK   
+            ) 
+        else:
+            return Response (         
+                {'error': 'You are not allowed to view this itinerary'},
+                status=status.HTTP_403_FORBIDDEN   
+            )

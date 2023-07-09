@@ -80,7 +80,7 @@ class VerificationCodeAdmin(admin.ModelAdmin):
     list_display = ('email', 'code', 'type', 'expiry_date')
 
 class ItineraryAdmin(admin.ModelAdmin):
-    list_display = ('owner','title','destination','start_date','end_date','updated_at')
+    list_display = ('owner','title','destination','start_date','end_date','id')
 
 class ItineraryDayAdmin(admin.ModelAdmin):
     list_display = ('name','itinerary', 'date')

@@ -9,5 +9,6 @@ urlpatterns = [
     path('sendcode', SendCode.as_view()),
     path('google-login', GoogleLoginApi.as_view()),
     path('reset-password', ResetPassword.as_view()),
-    path('create-itinerary', CreateItinerary.as_view()),
+    path('create-get-itinerary', CreateGetItinerary.as_view()),
+    path('get-itinerary-details/<str:pk>', GetItineraryDetails.as_view()),
 ]

@@ -3,15 +3,19 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/data/step_guide.dart';
 import 'package:travel_planner_app_cs_project/screens/home/feed_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/map/trip_map_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/budget_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/itinerary_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/overview_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/spotify/spotify_screen.dart';
+import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
 
 class TripDetailScreen extends ConsumerStatefulWidget {
   const TripDetailScreen({super.key});
@@ -53,7 +57,7 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
   }
 
   List steps = [];
-
+  ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   @override
   Widget build(BuildContext context) {
     bool hideTitleWhenExpanded = true;
@@ -61,94 +65,175 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
     TabController tabController = TabController(length: 3, vsync: this);
     return SafeArea(
       child: Scaffold(
-        body: ListView(
-          shrinkWrap: true,
-          children: [
-            Column(
-              children: [
-                isLoading
-                    ? SizedBox(
-                        height: MediaQuery.of(context).size.height / 1.1,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              LoadingAnimationWidget.inkDrop(
-                                color: Theme.of(context).primaryColor,
-                                size: MediaQuery.of(context).size.height * 0.1,
+        floatingActionButton: isLoading == false
+            ? Align(
+                alignment: Alignment.bottomRight,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: SizedBox(
+                        height: 60,
+                        width: 60,
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const TripMapScreen(),
                               ),
-                              SizedBox(height: 16),
-                              Text(
-                                'Retrieving your itinerary...',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    : SizedBox(
-                        height: MediaQuery.of(context).size.height,
-                        child: NestedScrollView(
-                          scrollBehavior: const MaterialScrollBehavior()
-                              .copyWith(scrollbars: false),
-                          headerSliverBuilder:
-                              (BuildContext context, bool value) {
-                            return <Widget>[
-                              SliverPersistentHeader(
-                                pinned: true,
-                                floating: false,
-                                delegate: CustomSliverDelegate(
-                                  expandedHeight: 180,
-                                  tabBar: TabBar(
-                                    labelStyle: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    labelPadding: const EdgeInsets.only(
-                                        left: 15, right: 15),
-                                    controller: tabController,
-                                    indicatorSize: TabBarIndicatorSize.label,
-                                    isScrollable: false,
-                                    labelColor: Theme.of(context).primaryColor,
-                                    unselectedLabelColor: Colors.grey[600],
-                                    indicator: CircleTabIndicator(
-                                      color: Theme.of(context).primaryColor,
-                                      radius: 4,
-                                    ),
-                                    tabs: const [
-                                      Tab(text: "Overview"),
-                                      Tab(text: "Itinerary"),
-                                      Tab(text: "Budget"),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ];
+                            );
                           },
-                          body: CustomScrollView(
-                            shrinkWrap: true,
-                            slivers: <Widget>[
-                              SliverFillRemaining(
-                                child: TabBarView(
-                                  controller: tabController,
-                                  children: [
-                                    OverviewTab(),
-                                    ItineraryTab(),
-                                    BudgetTab(),
-                                  ],
-                                ),
-                              ),
-                            ],
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: Icon(
+                              Icons.map_rounded,
+                              color: Colors.white,
+                              size: 30,
+                            ),
                           ),
                         ),
                       ),
-              ],
-            ),
-          ],
-        ),
+                    ),
+                    SizedBox(height: 16),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: SizedBox(
+                        height: 50,
+                        child: SpeedDial(
+                          shape: const CircleBorder(),
+                          backgroundColor: Theme.of(context).primaryColor,
+                          animationCurve: Curves.easeInOut,
+                          overlayColor: Colors.black,
+                          overlayOpacity: 0.4,
+                          openCloseDial: isDialOpen,
+                          children: [
+                            SpeedDialChild(
+                              shape: const CircleBorder(),
+                              child: IconButton(
+                                onPressed: () async {
+                                  isDialOpen.value = false;
+                                },
+                                icon: Icon(
+                                  Icons.airplane_ticket,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 30,
+                                ),
+                              ),
+                              label: 'Add Flight Ticket',
+                            ),
+                            SpeedDialChild(
+                              shape: const CircleBorder(),
+                              child: IconButton(
+                                onPressed: () async {
+                                  isDialOpen.value = false;
+                                },
+                                icon: Icon(
+                                  Icons.local_activity,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 30,
+                                ),
+                              ),
+                              label: 'Add Ticket',
+                            ),
+                            SpeedDialChild(
+                              shape: const CircleBorder(),
+                              child: IconButton(
+                                onPressed: () async {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SpotifyScreen(),
+                                    ),
+                                  );
+                                  isDialOpen.value = false;
+                                },
+                                icon: FaIcon(
+                                  FontAwesomeIcons.spotify,
+                                  color: Theme.of(context).primaryColor,
+                                  size: 30,
+                                ),
+                              ),
+                              label: 'Add Spotify Playlist',
+                            ),
+                          ],
+                          label: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            : Container(),
+        body: isLoading
+            ? SizedBox(
+                height: MediaQuery.of(context).size.height / 1.1,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      LoadingAnimationWidget.inkDrop(
+                        color: Theme.of(context).primaryColor,
+                        size: MediaQuery.of(context).size.height * 0.1,
+                      ),
+                      SizedBox(height: 16),
+                      Text(
+                        'Retrieving your itinerary...',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            : NestedScrollView(
+                scrollBehavior:
+                    const MaterialScrollBehavior().copyWith(scrollbars: false),
+                headerSliverBuilder: (BuildContext context, bool value) {
+                  return <Widget>[
+                    SliverPersistentHeader(
+                      pinned: true,
+                      floating: false,
+                      delegate: CustomSliverDelegate(
+                        expandedHeight: 180,
+                        tabBar: TabBar(
+                          labelStyle: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          labelPadding:
+                              const EdgeInsets.only(left: 15, right: 15),
+                          controller: tabController,
+                          indicatorSize: TabBarIndicatorSize.label,
+                          isScrollable: false,
+                          labelColor: Theme.of(context).primaryColor,
+                          unselectedLabelColor: Colors.grey[600],
+                          indicator: CircleTabIndicator(
+                            color: Theme.of(context).primaryColor,
+                            radius: 4,
+                          ),
+                          tabs: const [
+                            Tab(text: "Overview"),
+                            Tab(text: "Itinerary"),
+                            Tab(text: "Budget"),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ];
+                },
+                body: OverviewTab(),
+              ),
       ),
     );
   }
@@ -204,7 +289,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FeedScreen(),
+                        builder: (context) => BottomNavBar(),
                       ),
                     );
                   },
@@ -283,14 +368,6 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                                     ),
                                                   ),
                                                 ),
-                                              ),
-                                              ListTile(
-                                                leading: new Icon(Icons.edit),
-                                                title:
-                                                    new Text('Edit trip title'),
-                                                onTap: () {
-                                                  Navigator.pop(context);
-                                                },
                                               ),
                                               ListTile(
                                                 leading: new Icon(Icons.delete),

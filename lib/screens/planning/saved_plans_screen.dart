@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
@@ -8,6 +10,7 @@ import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:http/http.dart' as http;
 import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:travel_planner_app_cs_project/screens/spotify/now_playing_screen.dart';
 
 class SavedPlanScreen extends StatefulWidget {
   const SavedPlanScreen({super.key});
@@ -62,36 +65,50 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                         },
                                       ),
                                       ListTile(
-                                        leading: new Icon(Icons.music_note),
+                                        leading: new FaIcon(
+                                            FontAwesomeIcons.spotify),
                                         title: new Text('Play Spotify'),
                                         onTap: () {
-                                          Navigator.pop(context);
+                                          Navigator.push(context, 
+                                          MaterialPageRoute(builder: (context) => NowPlaying()));
                                         },
                                       ),
                                       ListTile(
                                         leading: new Icon(Icons.share),
                                         title: new Text('Share'),
                                         onTap: () async {
-                                          void _onShare(
-                                              BuildContext context) async {
-                                            final box =
-                                                context.findRenderObject()
-                                                    as RenderBox?;
-                                            void sharePressed() {
-                                              Share.shareFiles(
-                                                  [(trip.mainImageUrl)],
-                                                  text:
-                                                      'Check out this amazing trip to ${trip.title} on Fari Travel Planner App!',
-                                                  sharePositionOrigin: box!
-                                                          .localToGlobal(
-                                                              Offset.zero) &
-                                                      box.size);
-                                            }
+                                          // final box = context.findRenderObject()
+                                          //     as RenderBox?;
 
-                                            sharePressed();
-                                          }
+                                          // var asset =
+                                          //     "assets/images/${trip.shareImageUrl}";
 
-                                          _onShare(context);
+                                          // ByteData imagebyte =
+                                          //     await rootBundle.load(asset);
+                                          // final temp =
+                                          //     await getTemporaryDirectory();
+                                          // final path =
+                                          //     '${temp.path}/temp_image_name.png';
+                                          // File(path).writeAsBytesSync(
+                                          //     imagebyte.buffer.asUint8List());
+                                          // await Share.shareXFiles([
+                                          //   XFile(path, mimeType: 'image/jpg'),
+                                          // ],
+                                          //     sharePositionOrigin: box!
+                                          //             .localToGlobal(
+                                          //                 Offset.zero) &
+                                          //         box.size,
+                                          //     text:
+                                          //         'Check out this amazing trip to ${trip.title} on Fari Travel Planner App!');
+                                          final String imageAssets =
+                                              trip.detailsImageUrl;
+                                          Image.asset(imageAssets);
+                                          final ByteData data = await rootBundle
+                                              .load(imageAssets);
+                                          final buffer = data.buffer;
+                                          Share.shareFiles([imageAssets],
+                                              subject:
+                                                  'Check out this amazing trip to ${trip.title} on Fari Travel Planner App!');
                                         },
                                       ),
                                     ],

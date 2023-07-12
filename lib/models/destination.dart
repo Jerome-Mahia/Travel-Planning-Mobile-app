@@ -7,6 +7,7 @@ class Destination {
   final double rating;
   final String description;
   final String detailsImageUrl;
+  final String shareImageUrl;
   final String duration;
   final String distance;
   final String temperature;
@@ -18,6 +19,7 @@ class Destination {
     required this.rating,
     required this.description,
     required this.detailsImageUrl,
+    required this.shareImageUrl,
     required this.duration,
     required this.distance,
     required this.temperature,

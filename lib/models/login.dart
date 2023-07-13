@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:travel_planner_app_cs_project/models/get_user_details.dart';
 import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -56,9 +57,10 @@ loginUser(BuildContext context, String email, String password) async {
     );
     if (response.statusCode == 200) {
       var token = jsonDecode(response.body)['access'];
-      print(retrieveToken().toString());
+      
       // Write value
       await storage.write(key: 'access token', value: token);
+
       return Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const BottomNavBar()),

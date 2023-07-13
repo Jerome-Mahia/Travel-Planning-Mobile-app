@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:travel_planner_app_cs_project/models/login.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
 
 // To parse this JSON data, do
 //
@@ -41,16 +42,16 @@ createItinerary(
     String startDate,
     String endDate,
     List<int> collaborators,
-    String budgetType,
+    int budget,
     String ageRestriction,
     String funLevel) async {
   try {
-    var _accessToken = retrieveToken();
+    final Accesstoken = await retrieveToken();
     final response = await http.post(
       Uri.parse("https://fari-jcuo.onrender.com/main/create-get-itinerary"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ${_accessToken.toString()}',
+        'Authorization': 'Bearer ${Accesstoken.toString()}',
       },
       body: jsonEncode(<String, dynamic>{
         "title": title,
@@ -59,17 +60,22 @@ createItinerary(
         "start_date": startDate,
         "end_date": endDate,
         "collaborators": collaborators,
-        "budget": budgetType,
+        "budget": budget,
         "age": ageRestriction,
         "fun": funLevel,
       }),
     );
+    print(Accesstoken.toString());
     if (response.statusCode == 201) {
-      bool isLoading = false;
-      return isLoading;
+      return Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => TripDetailScreen(),
+        ),
+      );
     } else {
-      SnackBar(content: Text('Unable to create itinerary'));
-      return Navigator.pop(context);
+      print(response.statusCode);
+      return SnackBar(content: Text('Unable to create itinerary'));
     }
   } catch (e) {
     print(e.toString());

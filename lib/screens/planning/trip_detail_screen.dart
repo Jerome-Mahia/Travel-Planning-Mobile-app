@@ -30,22 +30,22 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
     with TickerProviderStateMixin {
   bool isLoading = true;
   void retrieveItinerary() {
-    if(getItineraryDetails(context) == null){
+    // if(getItineraryDetails(context) == null){
+    //   setState(() {
+    //     isLoading = true;
+    //   });
+    // }
+    // else{
+    //   setState(() {
+    //     isLoading = false;
+    //   });
+    // }
+    Timer.periodic(const Duration(seconds: 4), (t) {
       setState(() {
-        isLoading = true;
+        isLoading = false; //set loading to false
       });
-    }
-    else{
-      setState(() {
-        isLoading = false;
-      });
-    }
-    // Timer.periodic(const Duration(seconds: 4), (t) {
-      // setState(() {
-      //   isLoading = false; //set loading to false
-      // });
-    //   t.cancel(); //stops the timer
-    // });
+      t.cancel(); //stops the timer
+    });
   }
 
   late AnimationController _animationController;

@@ -5,6 +5,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:travel_planner_app_cs_project/models/login.dart';
 
 FetchEveryItinerary fetchEveryItineraryFromJson(String str) =>
     FetchEveryItinerary.fromJson(json.decode(str));
@@ -38,6 +39,7 @@ class Itinerary {
   int id;
   String title;
   String notes;
+  int budget;
   String destination;
   DateTime startDate;
   DateTime endDate;
@@ -52,6 +54,7 @@ class Itinerary {
     required this.id,
     required this.title,
     required this.notes,
+    required this.budget,
     required this.destination,
     required this.startDate,
     required this.endDate,
@@ -67,6 +70,7 @@ class Itinerary {
         id: json["id"],
         title: json["title"],
         notes: json["notes"],
+        budget: json["budget"],
         destination: json["destination"],
         startDate: DateTime.parse(json["start_date"]),
         endDate: DateTime.parse(json["end_date"]),
@@ -82,6 +86,7 @@ class Itinerary {
         "id": id,
         "title": title,
         "notes": notes,
+        "budget": budget,
         "destination": destination,
         "start_date":
             "${startDate.year.toString().padLeft(4, '0')}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}",
@@ -96,21 +101,21 @@ class Itinerary {
       };
 }
 
-getEveryItinerary(BuildContext context) async {
+Future<List<Itinerary>> getEveryItinerary(BuildContext context) async {
   try {
+    final Accesstoken = await retrieveToken();
     final response = await http.get(
       Uri.parse("https://fari-jcuo.onrender.com/main/create-get-itinerary"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ',
+        'Authorization': 'Bearer ${Accesstoken.toString()}',
       },
     );
-    if (response.statusCode == 201) {
-      bool isLoading = false;
-      return isLoading;
+    if (response.statusCode == 200) {
+      final List result = jsonDecode(response.body)['itineraries'];
+      return result.map((itinerary) => Itinerary.fromJson(itinerary)).toList();
     } else {
-      SnackBar(content: Text('Unable to create itinerary'));
-      return Navigator.pop(context);
+      throw Exception('Failed to retrieve all the itineraries');
     }
   } catch (e) {
     print(e.toString());

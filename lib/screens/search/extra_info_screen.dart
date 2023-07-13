@@ -32,7 +32,7 @@ String excitementtypeDropdownValue = "Select one";
 String budgettypeDropdownValue = "Select one";
 
 class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
-  TextEditingController destinationInput = TextEditingController();
+  TextEditingController budgetInput = TextEditingController();
   final _planFormKey = GlobalKey<FormState>();
 
   final RoundedLoadingButtonController makePlanBtnController =
@@ -148,9 +148,43 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                   // SizedBox(
                   //   height: 20,
                   // ),
+
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      TextFormField(
+                        controller: budgetInput,
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          border: UnderlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            borderSide: const BorderSide(
+                              color: Colors.grey,
+                              width: 0.5,
+                            ),
+                          ),
+                          icon: Icon(
+                            Icons.monetization_on,
+                            size: 20.0,
+                          ), // Icon of text field
+                          labelText:
+                              "Set your total budget", // Label text of field
+                          labelStyle: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 16.0,
+                              letterSpacing: 0.5),
+                        ),
+                        validator: (value) {
+                          // Validate if the value is not empty
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your budget';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -218,7 +252,7 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                           Align(
                             alignment: Alignment.topLeft,
                             child: Text(
-                              'Outdoors activities',
+                              'Purpose of the trip',
                               style: TextStyle(
                                 fontSize: 18.0,
                                 fontWeight: FontWeight.w500,
@@ -255,7 +289,7 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                               DropdownMenuItem<String>(
                                   value: 'fun',
                                   child: Text(
-                                    "Fun",
+                                    "For fun",
                                     style: TextStyle(
                                         color: Colors.black, fontSize: 18),
                                   )),
@@ -263,67 +297,6 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                                   value: 'Educational',
                                   child: Text(
                                     "Educational",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 18),
-                                  )),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Text(
-                              'Price',
-                              style: TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.grey[700],
-                              ),
-                            ),
-                          ),
-                          DropdownButton<String>(
-                            hint: Text("Select one"),
-                            underline: Container(
-                              height: 2,
-                              color: Colors.grey,
-                            ),
-                            borderRadius: BorderRadius.circular(15),
-                            isExpanded: false,
-                            dropdownColor: Color.fromARGB(232, 255, 255, 255),
-                            icon: Icon(Icons.arrow_drop_down),
-                            iconSize: 30,
-                            value: budgettypeDropdownValue,
-                            style: TextStyle(color: Colors.white),
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                budgettypeDropdownValue = newValue!;
-                              });
-                            },
-                            items: [
-                              DropdownMenuItem<String>(
-                                  value: 'Select one',
-                                  child: Text(
-                                    "Select one",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 18),
-                                  )),
-                              DropdownMenuItem<String>(
-                                  value: 'budget friendly',
-                                  child: Text(
-                                    "Budget friendly",
-                                    style: TextStyle(
-                                        color: Colors.black, fontSize: 18),
-                                  )),
-                              DropdownMenuItem<String>(
-                                  value: 'Luxury',
-                                  child: Text(
-                                    "Luxury",
                                     style: TextStyle(
                                         color: Colors.black, fontSize: 18),
                                   )),
@@ -343,6 +316,8 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                             Center(
                               child: InkWell(
                                 onTap: () {
+                                  var budget = budgetInput.text;
+                                  int budgetInt = int.parse(budget);
                                   createItinerary(
                                     context,
                                     'Trip to ${widget.destination}',
@@ -351,15 +326,9 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                                     widget.startDate,
                                     widget.endDate,
                                     [],
+                                    budgetInt,
                                     agetypeDropdownValue,
                                     excitementtypeDropdownValue,
-                                    budgettypeDropdownValue,
-                                  );
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => TripDetailScreen(),
-                                    ),
                                   );
                                 },
                                 child: Container(

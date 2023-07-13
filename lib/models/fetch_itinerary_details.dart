@@ -5,6 +5,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:travel_planner_app_cs_project/models/login.dart';
 
 FetchItineraryDetails fetchItineraryDetailsFromJson(String str) =>
     FetchItineraryDetails.fromJson(json.decode(str));
@@ -174,11 +175,12 @@ class Itinerary {
 
 getItineraryDetails(BuildContext context) async {
   try {
+    final Accesstoken = await retrieveToken();
     final response = await http.get(
       Uri.parse("https://fari-jcuo.onrender.com/main/get-itinerary-details/5"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ',
+        'Authorization': 'Bearer ${Accesstoken.toString()}',
       },
     );
     if (response.statusCode == 200) {

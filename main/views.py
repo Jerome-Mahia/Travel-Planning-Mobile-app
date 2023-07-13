@@ -319,10 +319,9 @@ class CreateGetItinerary(APIView):
         start_date = data['start_date']
         end_date = data['end_date']
         collaborators = data['collaborators']
-        budget = data['budget_type']
         age = data['age']
         fun = data['fun']
-        budget1 = data['budget']
+        budget = data['budget']
 
 
         if end_date > start_date and datetime.strptime(start_date, '%Y-%m-%d').date() >= date.today():
@@ -332,7 +331,7 @@ class CreateGetItinerary(APIView):
                     {'error': 'Itinerary cannot be more than 5 days'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            prompt = f"""you are a travel planner Create a brief {budget} {age} {fun} {days} day itinerary for a trip to {destination},Kenya
+            prompt = f"""you are a travel planner Create a brief {age} {fun} {days} day itinerary for a trip to {destination},Kenya
             including the budget for each activity in kshs and if applicable the location of each activity in latitude and longitude format.
             Format the itinerary as a json object with the days as the keys for example day1.
             Each key should have a value that is a list of 3 objects.
@@ -350,13 +349,13 @@ class CreateGetItinerary(APIView):
                 )
             except:
                 return Response (
-                    {'error': 'Something went wrong'},
+                    {'error': 'Something went wrong gpt'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
             print(response['usage'])
             print(response.choices[0].message["content"])
 
-            itinerary = Itinerary(owner=user,title=title,notes=notes,budget=budget1,destination=destination,start_date=start_date,end_date=end_date,tokens=response['usage']['total_tokens'])
+            itinerary = Itinerary(owner=user,title=title,notes=notes,budget=budget,destination=destination,start_date=start_date,end_date=end_date,tokens=response['usage']['total_tokens'])
             itinerary.save()
             if collaborators != 'none':
                 for collaborator in collaborators:

@@ -281,6 +281,33 @@ class GoogleLoginApi( APIView):
                 status=status.HTTP_201_CREATED
             ) 
         
+class GetEditUserDetails(APIView):
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(
+            serializer.data,
+                        status=status.HTTP_200_OK)
+    
+    def post(self, request):
+        user = request.user
+        data = request.data
+        name = data['name']      
+        dob = data['dob']
+        phone = data['phone']
+        image = data['image']
+
+        user.name = name     
+        user.dob = dob
+        user.phone = phone
+        if image != 'null':
+            user.image = image 
+        
+        user.save()
+        serializer = UserSerializer(user)
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK)
 
 class CreateGetItinerary(APIView):
     def post(self, request):
@@ -292,9 +319,10 @@ class CreateGetItinerary(APIView):
         start_date = data['start_date']
         end_date = data['end_date']
         collaborators = data['collaborators']
-        budget = data['budget']
+        budget = data['budget_type']
         age = data['age']
         fun = data['fun']
+        budget1 = data['budget']
 
 
         if end_date > start_date and datetime.strptime(start_date, '%Y-%m-%d').date() >= date.today():
@@ -328,7 +356,7 @@ class CreateGetItinerary(APIView):
             print(response['usage'])
             print(response.choices[0].message["content"])
 
-            itinerary = Itinerary(owner=user,title=title,notes=notes,destination=destination,start_date=start_date,end_date=end_date,tokens=response['usage']['total_tokens'])
+            itinerary = Itinerary(owner=user,title=title,notes=notes,budget=budget1,destination=destination,start_date=start_date,end_date=end_date,tokens=response['usage']['total_tokens'])
             itinerary.save()
             if collaborators != 'none':
                 for collaborator in collaborators:
@@ -377,7 +405,7 @@ class CreateGetItinerary(APIView):
             status=status.HTTP_200_OK   
         ) 
 
-class GetItineraryDetails(APIView):
+class GetEditItineraryDetails(APIView):
     def get(self, request, pk):
         user = request.user
         itinerary = Itinerary.objects.get(id=pk)
@@ -389,13 +417,15 @@ class GetItineraryDetails(APIView):
                 collaborators.append(collaborator)
             
             updated_at = itinerary.updated_at.strftime("%d-%m-%Y, %H:%M:%S")
-            updated_by = User.objects.filter(id=itinerary.updated_by)
-
+            
             days = ItineraryDay.objects.filter(itinerary=itinerary).order_by('date')
             days = ItineraryDaySerializer(days,many=True)
 
-            itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":updated_by}
-            
+            try:
+                itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"budget":itinerary.budget,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":itinerary.updated_by.name}
+            except:
+                itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"budget":itinerary.budget,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":'none'}
+        
             
             return Response (         
                 {'itinerary': itinerary,"collaborators":collaborators,"days":days.data},
@@ -406,7 +436,42 @@ class GetItineraryDetails(APIView):
                 {'error': 'You are not allowed to view this itinerary'},
                 status=status.HTTP_403_FORBIDDEN   
             )
-        
+    
+    def post(self,request,pk):
+        data = request.data
+        user = request.user
+        itinerary = Itinerary.objects.get(id=pk)
+        if itinerary.owner == user or user in itinerary.collaborators.all():
+            itinerary.title = data['title']
+            itinerary.notes = data['notes']
+            itinerary.budget = data['budget']
+            itinerary.updated_by = user
+            itinerary.save()
+            return Response (         
+                {'success': 'Itinerary updated successfully'},
+                status=status.HTTP_200_OK   
+            ) 
+        else:
+            return Response (         
+                {'error': 'You are not allowed to edit this itinerary'},
+                status=status.HTTP_403_FORBIDDEN   
+            )
+
+class DeleteItinerary(APIView):
+    def delete(self, request,pk):
+        user = request.user
+        itinerary = Itinerary.objects.get(id=pk)
+        if itinerary.owner == user:    
+            itinerary.delete()
+            return Response (         
+                {'success': 'Itinerary deleted successfully'},
+                status=status.HTTP_200_OK   
+            )
+        else:
+            return Response (         
+                {'error': 'You are not allowed to delete this itinerary'},
+            )
+           
 class AddRemoveCollaborator(APIView):
     def post(self, request,pk):
         data = request.data
@@ -428,6 +493,7 @@ class AddRemoveCollaborator(APIView):
                     status=status.HTTP_200_OK   
                 )
             
+
 class EditItineraryDay(APIView):
     def post(self, request,pk):
         data = request.data
@@ -449,7 +515,11 @@ class EditItineraryDay(APIView):
             itinerary_day.evening_budget = data['evening_budget']
             itinerary_day.evening_lat = data['evening_lat']
             itinerary_day.evening_long = data['evening_long']
+            
             itinerary_day.save()
+            itinerary.updated_by = user
+            itinerary.save()
+
             return Response (         
                 {'success': 'Itinerary day edited successfully'},
                 status=status.HTTP_200_OK   
@@ -460,17 +530,21 @@ class EditItineraryDay(APIView):
                 {'error': 'You are not allowed to edit this itinerary day'},
             )
 
-class DeleteItinerary(APIView):
-    def delete(self, request,pk):
-        user = request.user
-        itinerary = Itinerary.objects.get(id=pk)
-        if itinerary.owner == user:    
-            itinerary.delete()
-            return Response (         
-                {'success': 'Itinerary deleted successfully'},
-                status=status.HTTP_200_OK   
-            )
-        else:
-            return Response (         
-                {'error': 'You are not allowed to delete this itinerary'},
-            )
+class SearchUsers(APIView):
+    def post(self,request):
+        data = request.data
+        users = User.objects.filter(name__icontains=data['search'])
+        users = UserSerializer(users,many=True)
+        return Response (         
+            {'users': users.data},
+            status=status.HTTP_200_OK   
+        )
+    
+class GetDestinations(APIView):
+    def get(self,request):
+        destinations = Destination.objects.all()
+        destinations = DestinationSerializer(destinations,many=True)
+        return Response (         
+            {'destinations': destinations.data},
+            status=status.HTTP_200_OK   
+        )

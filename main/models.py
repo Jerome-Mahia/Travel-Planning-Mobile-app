@@ -86,6 +86,7 @@ class Itinerary(models.Model):
     collaborators = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='colaborators',blank=True)
     title = models.CharField(max_length=255)
     notes = models.TextField(null=True, blank=True)
+    budget = models.IntegerField(default=0)
     destination = models.CharField(max_length=255)
     start_date = models.DateField()
     end_date = models.DateField()
@@ -114,8 +115,25 @@ class ItineraryDay(models.Model):
     afternoon_long = models.FloatField(null=True, blank=True,default=0.0)
     evening_lat = models.FloatField(null=True, blank=True,default=0.0)
     evening_long = models.FloatField(null=True, blank=True,default=0.0)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    updated_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='day_updated_by',null=True, blank=True)
+    def __str__(self):
+        return self.name
+
+class Destination(models.Model):
+    class Region(models.TextChoices):
+        RIFTVALLEY = 'Rift Valley'
+        EASTERN = 'Eastern'
+        NORTHEASTERN = 'North Eastern'
+        COAST = 'Coast'
+        CENTRAL = 'Central'
+        NAIROBI = 'Nairobi'
+        NYANZA = 'Nyanza'
+        WESTERN = 'Western'
+
+    name = models.CharField(max_length=255)
+    image = CloudinaryField('image',null=True,blank=True)
+    overview = models.TextField(null=True, blank=True)
+    region = models.CharField(max_length=20, choices=Region.choices, default=Region.NAIROBI)
+    county = models.CharField(max_length=255,null=True, blank=True)
+
     def __str__(self):
         return self.name

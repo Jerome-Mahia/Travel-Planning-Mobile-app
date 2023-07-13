@@ -168,10 +168,60 @@ class _TripMapScreenState extends State<TripMapScreen>
                                           ),
                                         ],
                                       ),
-                                      FaIcon(
-                                        FontAwesomeIcons.ellipsis,
-                                        color: Colors.grey[700],
-                                        size: 20,
+                                      GestureDetector(
+                                        onTap: () {
+                                          showDialog(
+                                            useRootNavigator: false,
+                                            context: context,
+                                            builder: (context) {
+                                              return Dialog(
+                                                child: ListView(
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    vertical: 11,
+                                                  ),
+                                                  shrinkWrap: true,
+                                                  children: [
+                                                    'Delete',
+                                                  ]
+                                                      .map(
+                                                        (e) => InkWell(
+                                                          child: Container(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .symmetric(
+                                                              vertical: 12,
+                                                              horizontal: 16,
+                                                            ),
+                                                            child: Text(
+                                                              e,
+                                                              style: TextStyle(
+                                                                  fontSize: 20,
+                                                                  color: Colors
+                                                                      .red[700],
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                          ),
+                                                          onTap: () {
+                                                            Navigator.of(
+                                                                    context)
+                                                                .pop();
+                                                          },
+                                                        ),
+                                                      )
+                                                      .toList(),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: FaIcon(
+                                          FontAwesomeIcons.ellipsis,
+                                          color: Colors.grey[700],
+                                          size: 25,
+                                        ),
                                       ),
                                     ],
                                   ),

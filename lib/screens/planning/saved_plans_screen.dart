@@ -69,8 +69,15 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                             FontAwesomeIcons.spotify),
                                         title: new Text('Play Spotify'),
                                         onTap: () {
-                                          Navigator.push(context, 
-                                          MaterialPageRoute(builder: (context) => NowPlaying()));
+                                          PersistentNavBarNavigator
+                                              .pushNewScreen(
+                                            context,
+                                            screen: NowPlaying(),
+                                            withNavBar:
+                                                false, // OPTIONAL VALUE. True by default.
+                                            pageTransitionAnimation:
+                                                PageTransitionAnimation.slideUp,
+                                          );
                                         },
                                       ),
                                       ListTile(

@@ -71,6 +71,11 @@ dependencies:
   spotify_sdk: ^2.3.1
   logger: ^1.4.0
   flutter_dotenv: ^5.1.0
+  shimmer: ^3.0.0
+  badges: ^3.1.1
+  flutter_quill: ^7.2.11
+  fancy_shimmer_image: ^2.0.3
+  flutter_secure_storage: ^8.0.0
   
 
 dev_dependencies:

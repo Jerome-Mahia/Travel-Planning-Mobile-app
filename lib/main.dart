@@ -12,12 +12,14 @@ Future<void> main() async {
   runApp(ProviderScope(child: const MyApp()));
 }
 
-
 final hideNavBarProvider = StateProvider((ref) => false);
 final accountCreationProvider = StateProvider((ref) => false);
 final datePickedProvider = StateProvider((ref) => '');
 final otpControllerProvider = StateProvider((ref) => '');
 final emailProvider = StateProvider((ref) => '');
+final playTimeProvider = StateProvider((ref) => '');
+final songUriProvider = StateProvider((ref) => '');
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 

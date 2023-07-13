@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:travel_planner_app_cs_project/screens/search/extra_info_screen.dart';
 import 'package:travel_planner_app_cs_project/widgets/destination_search_widget.dart';
 
-
 class SearchDestinationScreen extends StatefulWidget {
   const SearchDestinationScreen({super.key});
 
@@ -20,14 +19,13 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
   final _planFormKey = GlobalKey<FormState>();
   String selectedDestination = ''; // Define selectedDestination as a field
 
-
-  void _doSomething() async {
-    Timer(const Duration(seconds: 2), () {
-      Navigator.push(context, MaterialPageRoute(builder: (context) {
-        return ExtraInfoScreen();
-      }));
-    });
-  }
+  // void _doSomething() async {
+  //   Timer(const Duration(seconds: 2), () {
+  //     Navigator.push(context, MaterialPageRoute(builder: (context) {
+  //       return ExtraInfoScreen();
+  //     }));
+  //   });
+  // }
 
   TextEditingController dateRangeInput = TextEditingController();
   TextEditingController destinationInput = TextEditingController();
@@ -38,6 +36,10 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
     destinationInput.text = "";
     super.initState();
   }
+
+  String destinationTitle = '';
+  String startDate = '';
+  String endDate = '';
 
   @override
   Widget build(BuildContext context) {
@@ -100,6 +102,13 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                           ),
                           readOnly:
                               true, // Set it to true, so that the user cannot edit the text
+                          validator: (value) {
+                            // Validate if the value is not empty
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a destination';
+                            }
+                            return null;
+                          },
                           onTap: () async {
                             final destinationPicked = await showSearch(
                               context: context,
@@ -117,13 +126,14 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                               String selectedDestination = destinationPicked;
                               String destinationValue = selectedDestination;
                               setState(() {
-                                destinationInput.text =
-                                    '$destinationValue'; // Set output date range to TextField value
+                                destinationInput.text = '$destinationValue';
+                                destinationTitle = destinationValue;
                               });
                             }
                           },
                         ),
                         TextFormField(
+                          keyboardType: TextInputType.datetime,
                           controller: dateRangeInput,
                           // Editing controller of this TextField
                           decoration: InputDecoration(
@@ -147,47 +157,37 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                           ),
                           readOnly:
                               true, // Set it to true, so that the user cannot edit the text
+                          validator: (value) {
+                            // Validate if the value is not empty
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a date range';
+                            }
+                            return null;
+                          },
                           onTap: () async {
                             DateTimeRange? pickedDateRange =
                                 await showDateRangePicker(
                               context: context,
                               firstDate: DateTime(1950),
-                              // DateTime.now() - not allowing to choose before today
+                              currentDate: DateTime.now(),
                               lastDate: DateTime(2100),
-                              builder: (context, child) {
-                                final calendarTheme = ThemeData(
-                                  colorScheme: ColorScheme.light(
-                                    surface:
-                                        const Color.fromRGBO(255, 69, 91, 1),
-                                    tertiary:
-                                        const Color.fromRGBO(255, 69, 91, 1),
-                                    surfaceTint:
-                                        const Color.fromRGBO(255, 69, 91, 1),
-                                    primary:
-                                        const Color.fromRGBO(255, 69, 91, 1),
-                                    onPrimary: Colors.white,
-                                    onTertiary: Colors.white,
-                                  ),
-                                  textButtonTheme: TextButtonThemeData(
-                                    style: TextButton.styleFrom(
-                                      primary: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
-                                );
-                                return Theme(
-                                  data: calendarTheme,
-                                  child: child!,
-                                );
-                              },
                             );
                             if (pickedDateRange != null) {
                               String formattedStartDate = DateFormat('MMM d')
                                   .format(pickedDateRange.start);
+                              String jsonStartDate = DateFormat('yyyy-MM-dd')
+                                  .format(pickedDateRange.start);
+
                               String formattedEndDate = DateFormat('MMM d')
                                   .format(pickedDateRange.end);
+                              String jsonEndDate = DateFormat('yyyy-MM-dd')
+                                  .format(pickedDateRange.end);
+
                               setState(() {
                                 dateRangeInput.text =
                                     '$formattedStartDate - $formattedEndDate'; // Set output date range to TextField value
+                                startDate = jsonStartDate;
+                                endDate = jsonEndDate;
                               });
                             }
                           },
@@ -203,12 +203,25 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                             children: [
                               Center(
                                 child: InkWell(
-                                  onTap: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => ExtraInfoScreen(),
-                                    ),
-                                  ),
+                                  onTap: () {
+                                    if (_planFormKey.currentState!.validate()) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => ExtraInfoScreen(
+                                            destination: destinationTitle,
+                                            startDate: startDate,
+                                            endDate: endDate,
+                                          ),
+                                        ),
+                                      );
+
+                                      print(destinationTitle);
+                                      print(startDate);
+                                      print(endDate);
+                                      _planFormKey.currentState!.save();
+                                    }
+                                  },
                                   child: Container(
                                     //width: 100.0,
                                     height: 55.0,
@@ -221,7 +234,7 @@ class _SearchDestinationScreenState extends State<SearchDestinationScreen> {
                                     ),
                                     child: const Center(
                                       child: Text(
-                                        'Start Planning',
+                                        'Continue',
                                         style: TextStyle(
                                           fontSize: 18.0,
                                           fontWeight: FontWeight.bold,

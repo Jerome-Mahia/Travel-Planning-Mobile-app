@@ -4,12 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
+import 'package:travel_planner_app_cs_project/models/create_itinerary.dart';
 import 'package:travel_planner_app_cs_project/models/items.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
 
 class ExtraInfoScreen extends StatefulWidget {
-  const ExtraInfoScreen({super.key});
+  const ExtraInfoScreen(
+      {super.key,
+      required this.destination,
+      required this.startDate,
+      required this.endDate});
+  final String destination;
+  final String startDate;
+  final String endDate;
 
   @override
   State<ExtraInfoScreen> createState() => _ExtraInfoScreenState();
@@ -53,132 +61,96 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    'Select the type of crowd you are travelling with',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey[700],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  GridView.builder(
-                    itemCount: dataList.length,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 1.0,
-                      crossAxisSpacing: 15.0,
-                      mainAxisSpacing: 15.0,
-                    ),
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemBuilder: (BuildContext context, int index) {
-                      final item = dataList[index];
-                      return GestureDetector(
-                        // Add a key to each item
-                        onTap: () {
-                          setState(() {
-                            item.isChosen = !item.isChosen;
-                            if (item.isChosen == true &&
-                                selectedItems.isEmpty) {
-                              selectedItems
-                                  .add(Item(item.image, item.title, true));
-                            } else if (item.isChosen == false) {
-                              selectedItems.removeWhere(
-                                  (element) => element.title == item.title);
-                              if (!selectedItems.contains(item)) {
-                                item.isChosen = false;
-                              }
-                            }
-                          });
-                        },
-                        child: Column(
-                          children: [
-                            Container(
-                              height: MediaQuery.of(context).size.height * 0.18,
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(16.0)),
-                                border: item.isChosen == false
-                                    ? Border.all(
-                                        color: Colors.grey,
-                                        width: 1.0,
-                                      )
-                                    : Border.all(
-                                        color: Theme.of(context).primaryColor,
-                                        width: 1.0,
-                                      ),
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: SvgPicture.asset(
-                                  item.image,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: Text(
-                                item.title,
-                                style: TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.w500,
-                                  color: item.isChosen == false
-                                      ? Colors.grey[700]
-                                      : Theme.of(context).primaryColor,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  // Text(
+                  //   'Select the type of crowd you are travelling with',
+                  //   textAlign: TextAlign.center,
+                  //   style: TextStyle(
+                  //     fontSize: 18.0,
+                  //     fontWeight: FontWeight.w500,
+                  //     color: Colors.grey[700],
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
+                  // GridView.builder(
+                  //   itemCount: dataList.length,
+                  //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  //     crossAxisCount: 2,
+                  //     childAspectRatio: 1.0,
+                  //     crossAxisSpacing: 15.0,
+                  //     mainAxisSpacing: 15.0,
+                  //   ),
+                  //   shrinkWrap: true,
+                  //   physics: NeverScrollableScrollPhysics(),
+                  //   itemBuilder: (BuildContext context, int index) {
+                  //     final item = dataList[index];
+                  //     return GestureDetector(
+                  //       // Add a key to each item
+                  //       onTap: () {
+                  //         setState(() {
+                  //           item.isChosen = !item.isChosen;
+                  //           if (item.isChosen == true &&
+                  //               selectedItems.isEmpty) {
+                  //             selectedItems
+                  //                 .add(Item(item.image, item.title, true));
+                  //           } else if (item.isChosen == false) {
+                  //             selectedItems.removeWhere(
+                  //                 (element) => element.title == item.title);
+                  //             if (!selectedItems.contains(item)) {
+                  //               item.isChosen = false;
+                  //             }
+                  //           }
+                  //         });
+                  //       },
+                  //       child: Column(
+                  //         children: [
+                  //           Container(
+                  //             height: MediaQuery.of(context).size.height * 0.18,
+                  //             decoration: BoxDecoration(
+                  //               borderRadius:
+                  //                   BorderRadius.all(Radius.circular(16.0)),
+                  //               border: item.isChosen == false
+                  //                   ? Border.all(
+                  //                       color: Colors.grey,
+                  //                       width: 1.0,
+                  //                     )
+                  //                   : Border.all(
+                  //                       color: Theme.of(context).primaryColor,
+                  //                       width: 1.0,
+                  //                     ),
+                  //             ),
+                  //             child: Padding(
+                  //               padding: const EdgeInsets.all(4.0),
+                  //               child: SvgPicture.asset(
+                  //                 item.image,
+                  //                 fit: BoxFit.cover,
+                  //               ),
+                  //             ),
+                  //           ),
+                  //           Center(
+                  //             child: Text(
+                  //               item.title,
+                  //               style: TextStyle(
+                  //                 fontSize: 18.0,
+                  //                 fontWeight: FontWeight.w500,
+                  //                 color: item.isChosen == false
+                  //                     ? Colors.grey[700]
+                  //                     : Theme.of(context).primaryColor,
+                  //               ),
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: const Text(
-                          'Customize your trip',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 44, 38, 38),
-                          ),
-                        ),
-                      ),
-                      TextFormField(
-                        controller: destinationInput,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          border: UnderlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            borderSide: const BorderSide(
-                              color: Colors.grey,
-                              width: 0.5,
-                            ),
-                          ),
-                          icon: Icon(
-                            Icons.money,
-                            size: 20.0,
-                          ), // Icon of text field
-                          labelText:
-                              "Your budget (per day)", // Label text of field
-                          labelStyle: TextStyle(
-                              color: Colors.grey[700],
-                              fontSize: 16.0,
-                              letterSpacing: 0.5),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -227,9 +199,9 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                                         color: Colors.black, fontSize: 18),
                                   )),
                               DropdownMenuItem<String>(
-                                  value: 'Adults only',
+                                  value: 'adult focused',
                                   child: Text(
-                                    "Adults only",
+                                    "Adults focused",
                                     style: TextStyle(
                                         color: Colors.black, fontSize: 18),
                                   )),
@@ -281,7 +253,7 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                                         color: Colors.black, fontSize: 18),
                                   )),
                               DropdownMenuItem<String>(
-                                  value: 'Fun',
+                                  value: 'fun',
                                   child: Text(
                                     "Fun",
                                     style: TextStyle(
@@ -342,7 +314,7 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                                         color: Colors.black, fontSize: 18),
                                   )),
                               DropdownMenuItem<String>(
-                                  value: 'Budget friendly',
+                                  value: 'budget friendly',
                                   child: Text(
                                     "Budget friendly",
                                     style: TextStyle(
@@ -370,12 +342,26 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                           children: [
                             Center(
                               child: InkWell(
-                                onTap: () => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => TripDetailScreen(),
-                                  ),
-                                ),
+                                onTap: () {
+                                  createItinerary(
+                                    context,
+                                    'Trip to ${widget.destination}',
+                                    '',
+                                    widget.destination,
+                                    widget.startDate,
+                                    widget.endDate,
+                                    [],
+                                    agetypeDropdownValue,
+                                    excitementtypeDropdownValue,
+                                    budgettypeDropdownValue,
+                                  );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => TripDetailScreen(),
+                                    ),
+                                  );
+                                },
                                 child: Container(
                                   //width: 100.0,
                                   height: 55.0,

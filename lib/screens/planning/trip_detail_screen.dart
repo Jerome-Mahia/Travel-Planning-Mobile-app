@@ -9,11 +9,13 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/data/step_guide.dart';
+import 'package:travel_planner_app_cs_project/models/fetch_itinerary_details.dart';
 import 'package:travel_planner_app_cs_project/screens/home/feed_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/map/trip_map_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/budget_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/itinerary_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/overview_screen.dart';
+import 'package:travel_planner_app_cs_project/screens/spotify/now_playing_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/spotify/spotify_screen.dart';
 import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
 
@@ -27,13 +29,23 @@ class TripDetailScreen extends ConsumerStatefulWidget {
 class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
     with TickerProviderStateMixin {
   bool isLoading = true;
-  void startTimer() {
-    Timer.periodic(const Duration(seconds: 4), (t) {
+  void retrieveItinerary() {
+    if(getItineraryDetails(context) == null){
       setState(() {
-        isLoading = false; //set loading to false
+        isLoading = true;
       });
-      t.cancel(); //stops the timer
-    });
+    }
+    else{
+      setState(() {
+        isLoading = false;
+      });
+    }
+    // Timer.periodic(const Duration(seconds: 4), (t) {
+      // setState(() {
+      //   isLoading = false; //set loading to false
+      // });
+    //   t.cancel(); //stops the timer
+    // });
   }
 
   late AnimationController _animationController;
@@ -42,7 +54,7 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
   bool showTab = true;
   @override
   void initState() {
-    startTimer(); //start the timer on loading
+    retrieveItinerary(); //start the timer on loading
     super.initState();
     _animationController = AnimationController(
       vsync: this,
@@ -140,26 +152,26 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
                               ),
                               label: 'Add Ticket',
                             ),
-                            SpeedDialChild(
-                              shape: const CircleBorder(),
-                              child: IconButton(
-                                onPressed: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SpotifyScreen(),
-                                    ),
-                                  );
-                                  isDialOpen.value = false;
-                                },
-                                icon: FaIcon(
-                                  FontAwesomeIcons.spotify,
-                                  color: Theme.of(context).primaryColor,
-                                  size: 30,
-                                ),
-                              ),
-                              label: 'Add Spotify Playlist',
-                            ),
+                            // SpeedDialChild(
+                            //   shape: const CircleBorder(),
+                            //   child: IconButton(
+                            //     onPressed: () async {
+                            //       Navigator.push(
+                            //         context,
+                            //         MaterialPageRoute(
+                            //           builder: (context) => NowPlaying(),
+                            //         ),
+                            //       );
+                            //       isDialOpen.value = false;
+                            //     },
+                            //     icon: FaIcon(
+                            //       FontAwesomeIcons.spotify,
+                            //       color: Theme.of(context).primaryColor,
+                            //       size: 30,
+                            //     ),
+                            //   ),
+                            //   label: 'Add Spotify Playlist',
+                            // ),
                           ],
                           label: Icon(
                             Icons.add,
@@ -232,7 +244,14 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
                     ),
                   ];
                 },
-                body: OverviewTab(),
+                body: TabBarView(
+                  controller: tabController,
+                  children: [
+                    OverviewTab(),
+                    ItineraryTab(),
+                    BudgetTab(),
+                  ],
+                ),
               ),
       ),
     );

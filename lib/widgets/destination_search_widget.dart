@@ -12,16 +12,16 @@ class DestinationSearchWidget extends SearchDelegate<String> {
   DestinationSearchWidget({required this.onDestinationSelected});
 
   List<String> searchTerms = [
-    'Afghanistan',
-    'Albania',
-    'Algeria',
-    'Australia',
-    'Brazil',
-    'German',
-    'Madagascar',
-    'Mozambique',
-    'Portugal',
-    'Zambia'
+    'Nairobi',
+    'Mombasa',
+    'Kisumu',
+    'Nakuru',
+    'Eldoret',
+    'Nyeri',
+    'Naivasha',
+    'Thika',
+    'Malindi',
+    'Lamu',
   ];
   final TextEditingController destinationController = TextEditingController();
   @override

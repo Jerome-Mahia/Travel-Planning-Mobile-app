@@ -11,7 +11,7 @@ class OverviewTab extends StatefulWidget {
 }
 
 class _OverviewTabState extends State<OverviewTab> {
-  String termsAndConditionsIntro = """
+  String notes = """
 # Tips, To-Dos, and Packing List
 
 ## Tips
@@ -98,7 +98,7 @@ class _OverviewTabState extends State<OverviewTab> {
               Markdown(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                data: termsAndConditionsIntro,
+                data: notes,
                 styleSheet: MarkdownStyleSheet(
                   p: TextStyle(
                       color: Colors.black,

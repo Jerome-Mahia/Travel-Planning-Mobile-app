@@ -1,0 +1,119 @@
+// To parse this JSON data, do
+//
+//     final fetchEveryItinerary = fetchEveryItineraryFromJson(jsonString);
+
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+FetchEveryItinerary fetchEveryItineraryFromJson(String str) =>
+    FetchEveryItinerary.fromJson(json.decode(str));
+
+String fetchEveryItineraryToJson(FetchEveryItinerary data) =>
+    json.encode(data.toJson());
+
+class FetchEveryItinerary {
+  List<Itinerary> itineraries;
+  List<dynamic> collaborating;
+
+  FetchEveryItinerary({
+    required this.itineraries,
+    required this.collaborating,
+  });
+
+  factory FetchEveryItinerary.fromJson(Map<String, dynamic> json) =>
+      FetchEveryItinerary(
+        itineraries: List<Itinerary>.from(
+            json["itineraries"].map((x) => Itinerary.fromJson(x))),
+        collaborating: List<dynamic>.from(json["collaborating"].map((x) => x)),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "itineraries": List<dynamic>.from(itineraries.map((x) => x.toJson())),
+        "collaborating": List<dynamic>.from(collaborating.map((x) => x)),
+      };
+}
+
+class Itinerary {
+  int id;
+  String title;
+  String notes;
+  String destination;
+  DateTime startDate;
+  DateTime endDate;
+  DateTime createdAt;
+  int tokens;
+  DateTime updatedAt;
+  int owner;
+  dynamic updatedBy;
+  List<dynamic> collaborators;
+
+  Itinerary({
+    required this.id,
+    required this.title,
+    required this.notes,
+    required this.destination,
+    required this.startDate,
+    required this.endDate,
+    required this.createdAt,
+    required this.tokens,
+    required this.updatedAt,
+    required this.owner,
+    this.updatedBy,
+    required this.collaborators,
+  });
+
+  factory Itinerary.fromJson(Map<String, dynamic> json) => Itinerary(
+        id: json["id"],
+        title: json["title"],
+        notes: json["notes"],
+        destination: json["destination"],
+        startDate: DateTime.parse(json["start_date"]),
+        endDate: DateTime.parse(json["end_date"]),
+        createdAt: DateTime.parse(json["created_at"]),
+        tokens: json["tokens"],
+        updatedAt: DateTime.parse(json["updated_at"]),
+        owner: json["owner"],
+        updatedBy: json["updated_by"],
+        collaborators: List<dynamic>.from(json["collaborators"].map((x) => x)),
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "title": title,
+        "notes": notes,
+        "destination": destination,
+        "start_date":
+            "${startDate.year.toString().padLeft(4, '0')}-${startDate.month.toString().padLeft(2, '0')}-${startDate.day.toString().padLeft(2, '0')}",
+        "end_date":
+            "${endDate.year.toString().padLeft(4, '0')}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}",
+        "created_at": createdAt.toIso8601String(),
+        "tokens": tokens,
+        "updated_at": updatedAt.toIso8601String(),
+        "owner": owner,
+        "updated_by": updatedBy,
+        "collaborators": List<dynamic>.from(collaborators.map((x) => x)),
+      };
+}
+
+getEveryItinerary(BuildContext context) async {
+  try {
+    final response = await http.get(
+      Uri.parse("https://fari-jcuo.onrender.com/main/create-get-itinerary"),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer ',
+      },
+    );
+    if (response.statusCode == 201) {
+      bool isLoading = false;
+      return isLoading;
+    } else {
+      SnackBar(content: Text('Unable to create itinerary'));
+      return Navigator.pop(context);
+    }
+  } catch (e) {
+    print(e.toString());
+    throw Exception('Failed to retrieve all the itineraries: $e');
+  }
+}

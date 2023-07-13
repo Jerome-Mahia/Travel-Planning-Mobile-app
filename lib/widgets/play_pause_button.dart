@@ -5,11 +5,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 ///with a [VoidCallback]
 ///
 ///
-class SizedIconButton extends StatelessWidget {
-  ///[width] sets the size of the icon
+class PlayPauseButton extends StatelessWidget {
   ///[icon] sets the icon
   /// [onPressed] is the callback
-  const SizedIconButton(
+  const PlayPauseButton(
       {Key? key,
       required this.width,
       required this.icon,
@@ -28,12 +27,17 @@ class SizedIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      height: width,
       width: width,
-      child: TextButton(
-        onPressed: onPressed,
-        child: icon,
-        // Icon(icon)
+      decoration: BoxDecoration(
+            color: Colors.white, borderRadius: BorderRadius.circular(50)),
+      child: Center(
+        child: IconButton(
+          onPressed: onPressed,
+          icon: icon,
+          // Icon(icon)
+        ),
       ),
     );
   }

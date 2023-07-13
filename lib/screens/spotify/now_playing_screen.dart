@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:image_pixels/image_pixels.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:logger/logger.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:spotify_sdk/models/connection_status.dart';
 import 'package:spotify_sdk/models/crossfade_state.dart';
 import 'package:spotify_sdk/models/image_uri.dart';
 import 'package:spotify_sdk/models/player_context.dart';
 import 'package:spotify_sdk/models/player_state.dart';
 import 'package:spotify_sdk/spotify_sdk.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/saved_plans_screen.dart';
+import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
+import 'package:travel_planner_app_cs_project/widgets/play_pause_button.dart';
 import 'package:travel_planner_app_cs_project/widgets/sized_icon_button.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:badges/badges.dart' as badges;
 
-class NowPlaying extends StatefulWidget {
+class NowPlaying extends ConsumerStatefulWidget {
   const NowPlaying({
     Key? key,
     // required this.closeOpen,
@@ -19,10 +29,10 @@ class NowPlaying extends StatefulWidget {
   // final VoidCallback closeOpen;
 
   @override
-  State<NowPlaying> createState() => _NowPlayingState();
+  _NowPlayingState createState() => _NowPlayingState();
 }
 
-class _NowPlayingState extends State<NowPlaying> {
+class _NowPlayingState extends ConsumerState<NowPlaying> {
   bool isLiked = false;
   bool _loading = false;
   bool _connected = false;
@@ -63,51 +73,15 @@ class _NowPlayingState extends State<NowPlaying> {
           if (data != null) {
             _connected = data.connected;
           }
-          return Container(
-              height: MediaQuery.of(context).size.height,
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(stops: const [
-                0.4,
-                //0.4,
-                1
-              ], colors: [
-                Color.fromRGBO(255, 69, 91, 1),
-                Colors.black.withOpacity(0.00001)
-              ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Scaffold(
-                  //backgroundColor: nowPlaying["playerColor"],
-                  backgroundColor: Colors.transparent,
-                  appBar: AppBar(
-                    elevation: 0,
-                    backgroundColor: Colors.transparent,
-                    leading: IconButton(
-                      onPressed: () {
-                        // widget.closeOpen();
-                      },
-                      icon: const FaIcon(
-                        FontAwesomeIcons.chevronDown,
-                        size: 16,
-                      ),
-                    ),
-                    // title: Text(
-                    //   track.album.name,
-                    //   style: const TextStyle(fontSize: 14, color: Colors.white70),
-                    // ),
-                    actions: [
-                      _connected
-                          ? IconButton(
-                              onPressed: disconnect,
-                              icon: const Icon(Icons.exit_to_app,color: Colors.white),
-                            )
-                          : Container()
-                    ],
-                  ),
-                  body: _sampleFlowWidget(context),
-                ),
-              ));
+          return SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height,
+            child: Scaffold(
+              //backgroundColor: nowPlaying["playerColor"],
+              backgroundColor: Colors.transparent,
+              body: _sampleFlowWidget(context),
+            ),
+          );
         },
       ),
     );
@@ -127,190 +101,308 @@ class _NowPlayingState extends State<NowPlaying> {
           );
         }
 
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Flexible(
-              flex: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: AspectRatio(
-                  aspectRatio: 1 / 1,
-                  child: _connected
-                      ? spotifyImageWidget(track.imageUri)
-                      : const Text('Connect to see an image...'),
-                ),
-              ),
-            ),
-            Flexible(
-              flex: 1,
-              fit: FlexFit.loose,
-              child: Column(
-                children: [
-                  Flexible(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 30.0, right: 20),
-                      child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          title: Text(
-                            '${track.name}',
-                            style: const TextStyle(
-                                fontSize: 20, color: Colors.white),
-                          ),
-                          subtitle: Text(
-                            '${track.artist.name}',
-                            style: const TextStyle(
-                                fontSize: 14, color: Colors.white60),
-                          ),
-                          trailing: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                isLiked = !isLiked;
-                              });
-                            },
-                            icon: isLiked
-                                ? FaIcon(
-                                    FontAwesomeIcons.heart,
-                                    size: 16,
-                                    color: Theme.of(context).primaryColor,
-                                  )
-                                : const FaIcon(
-                                    FontAwesomeIcons.heart,
-                                    size: 16,
-                                    color: Colors.white54,
-                                  ),
-                          )),
+        int updatedPlaybackPosition = playerState.playbackPosition;
+
+        String formatMilliseconds(int milliseconds) {
+          int seconds = (milliseconds / 1000).floor();
+          int minutes = (seconds / 60).floor();
+          seconds -= minutes * 60;
+          String formattedSeconds = seconds.toString().padLeft(2, '0');
+          return '$minutes:$formattedSeconds';
+        }
+
+        return Expanded(
+          child: Stack(
+            children: [
+              spotifyBackgroundColor(track.imageUri),
+              // _buildPlayerContextWidget(),
+              Positioned.fill(
+                top: MediaQuery.of(context).size.height * 0.03,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        PersistentNavBarNavigator.pushNewScreen(
+                          context,
+                          screen: BottomNavBar(),
+                          pageTransitionAnimation:
+                              PageTransitionAnimation.scale,
+                        );
+                      },
+                      child: FaIcon(
+                        FontAwesomeIcons.chevronDown,
+                        color: Colors.white54,
+                        size: 40,
+                      ),
                     ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: SliderTheme(
-                        data: const SliderThemeData(
-                            trackHeight: 3,
-                            thumbShape:
-                                RoundSliderThumbShape(enabledThumbRadius: 6)),
-                        child: Slider(
-                          activeColor: Colors.white,
-                          inactiveColor: Colors.white30,
-                          divisions: 100,
-                          value: 20,
-                          onChanged: (value) {},
-                          min: 0,
-                          max: 100,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                    Flexible(
+                      flex: 1,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          width: MediaQuery.of(context).size.width * 0.9,
+                          child: _connected
+                              ? spotifyImageWidget(track.imageUri)
+                              : const Text('Connect to see an image...'),
                         ),
                       ),
                     ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: Padding(
-                        padding: const EdgeInsets.only(left: 30.0, right: 30),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                '${playerState.playbackPosition} ms',
-                                style: TextStyle(
-                                    fontSize: 12, color: Colors.white54),
-                              ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.05,
+                    ),
+                    Flexible(
+                      flex: 1,
+                      fit: FlexFit.loose,
+                      child: Column(
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 30.0, right: 20),
+                              child: ListTile(
+                                  contentPadding: EdgeInsets.zero,
+                                  title: Text(
+                                    '${track.name}',
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  subtitle: Text(
+                                    '${track.artist.name}',
+                                    style: const TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white60,
+                                        fontWeight: FontWeight.w500),
+                                  ),
+                                  trailing: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        isLiked = !isLiked;
+                                      });
+                                    },
+                                    icon: isLiked
+                                        ? SizedIconButton(
+                                            width: 50,
+                                            onPressed: addToLibrary,
+                                            icon: FaIcon(
+                                              FontAwesomeIcons.solidHeart,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
+                                          )
+                                        : SizedIconButton(
+                                            width: 50,
+                                            onPressed: addToLibrary,
+                                            icon: FaIcon(
+                                              FontAwesomeIcons.heart,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
+                                          ),
+                                  )),
                             ),
-                            Text(
-                              '${track.duration} ms',
-                              style: TextStyle(
-                                  fontSize: 12, color: Colors.white54),
-                            )
-                          ],
-                        )),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    child: Padding(
-                        padding: const EdgeInsets.only(left: 20.0, right: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              onPressed: () => skipNext,
-                              icon: FaIcon(
-                                FontAwesomeIcons.forward,
-                                size: 16,
-                                color: Colors.white54,
-                              ),
-                            ),
-                            IconButton(
-                              onPressed: () => skipPrevious,
-                              icon: FaIcon(
-                                FontAwesomeIcons.backward,
-                                size: 16,
-                                color: Colors.white54,
-                              ),
-                            ),
-                            playerState.isPaused
-                                ? IconButton(
-                                    onPressed: () => resume,
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.play,
-                                      size: 16,
-                                      color: Colors.white54,
-                                    ),
-                                  )
-                                : IconButton(
-                                    onPressed: () => pause,
-                                    icon: FaIcon(
-                                      FontAwesomeIcons.pause,
-                                      size: 16,
-                                      color: Colors.white54,
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Wrap(
+                                children: [
+                                  SliderTheme(
+                                    data: const SliderThemeData(
+                                        trackHeight: 3,
+                                        thumbShape: RoundSliderThumbShape(
+                                            enabledThumbRadius: 6)),
+                                    child: Slider(
+                                      activeColor: Colors.white,
+                                      inactiveColor: Colors.white30,
+                                      divisions: 100,
+                                      value: updatedPlaybackPosition.toDouble(),
+                                      onChanged: (value) {
+                                        // Update the separate variable with the new slider value
+                                        setState(() {
+                                          updatedPlaybackPosition =
+                                              value.toInt();
+                                        });
+                                      },
+                                      min: 0.0,
+                                      max: track.duration.toDouble(),
                                     ),
                                   ),
-                            // IconButton(
-                            //   onPressed: () {},
-                            //   icon: const Icon(FluentIcons.next_20_filled),
-                            //   iconSize: 28,
-                            // ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: FaIcon(
-                                FontAwesomeIcons.random,
-                                size: 16,
-                                color: Colors.white54,
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        left: 30.0, right: 30),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Flexible(
+                                          flex: 1,
+                                          child: Text(
+                                            formatMilliseconds(
+                                                playerState.playbackPosition),
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.white54),
+                                          ),
+                                        ),
+                                        Text(
+                                          formatMilliseconds(track.duration),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.white54),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
-                            )
-                          ],
-                        )),
-                  ),
-                  // Flexible(
-                  //   flex: 1,
-                  //   child: Padding(
-                  //       padding: const EdgeInsets.only(left: 20.0, right: 20),
-                  //       child: Row(
-                  //         //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //         children: [
-                  //           IconButton(
-                  //               onPressed: () {},
-                  //               icon: const Icon(FluentIcons
-                  //                   .device_meeting_room_remote_20_regular)),
-                  //           const Spacer(),
-                  //           IconButton(
-                  //             onPressed: () {},
-                  //             icon: const Icon(
-                  //                 FluentIcons.share_ios_20_regular),
-                  //           ),
-                  //           IconButton(
-                  //             onPressed: () {},
-                  //             icon: const Icon(FluentIcons.list_20_regular),
-                  //           ),
-                  //         ],
-                  //       )),
-                  // ),
-                ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 20.0, right: 20, top: 10),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    SizedIconButton(
+                                      width: 50,
+                                      icon: playerState
+                                              .playbackOptions.isShuffling
+                                          ? FaIcon(
+                                              FontAwesomeIcons.random,
+                                              size: 28,
+                                              color: Colors.white,
+                                            )
+                                          : FaIcon(
+                                              FontAwesomeIcons.random,
+                                              size: 28,
+                                              color: Colors.white54,
+                                            ),
+                                      onPressed: toggleShuffle,
+                                    ),
+                                    SizedIconButton(
+                                        width: 50,
+                                        icon: FaIcon(
+                                          FontAwesomeIcons.backward,
+                                          size: 28,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: skipPrevious),
+                                    playerState.isPaused
+                                        ? Container(
+                                            height: 60,
+                                            width: 60,
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(50)),
+                                            child: SizedIconButton(
+                                                width: 60,
+                                                icon: FaIcon(
+                                                  FontAwesomeIcons.play,
+                                                  size: 25,
+                                                  color: Colors.black,
+                                                ),
+                                                onPressed: resume),
+                                          )
+                                        : Container(
+                                            height: 60,
+                                            width: 60,
+                                            decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(50)),
+                                            child: SizedIconButton(
+                                                width: 60,
+                                                icon: FaIcon(
+                                                  FontAwesomeIcons.pause,
+                                                  size: 28,
+                                                  color: Colors.black,
+                                                ),
+                                                onPressed: pause),
+                                          ),
+                                    SizedIconButton(
+                                        width: 50,
+                                        icon: FaIcon(
+                                          FontAwesomeIcons.forward,
+                                          size: 28,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: skipNext),
+                                    SizedIconButton(
+                                      width: 50,
+                                      icon: playerState.playbackOptions
+                                                      .repeatMode.index ==
+                                                  1 ||
+                                              playerState.playbackOptions
+                                                      .repeatMode.index ==
+                                                  2
+                                          ? FaIcon(
+                                              FontAwesomeIcons.repeat,
+                                              size: 28,
+                                              color: Colors.white,
+                                            )
+                                          : FaIcon(
+                                              FontAwesomeIcons.repeat,
+                                              size: 28,
+                                              color: Colors.white54,
+                                            ),
+                                      onPressed: toggleRepeat,
+                                    ),
+                                  ],
+                                )),
+                          ),
+                          // Flexible(
+                          //   flex: 1,
+                          //   child: Padding(
+                          //       padding: const EdgeInsets.only(left: 20.0, right: 20),
+                          //       child: Row(
+                          //         //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //         children: [
+                          //           IconButton(
+                          //               onPressed: () {},
+                          //               icon: const Icon(FluentIcons
+                          //                   .device_meeting_room_remote_20_regular)),
+                          //           const Spacer(),
+                          //           IconButton(
+                          //             onPressed: () {},
+                          //             icon: const Icon(
+                          //                 FluentIcons.share_ios_20_regular),
+                          //           ),
+                          //           IconButton(
+                          //             onPressed: () {},
+                          //             icon: const Icon(FluentIcons.list_20_regular),
+                          //           ),
+                          //         ],
+                          //       )),
+                          // ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            )
-          ],
+            ],
+          ),
         );
       },
     );
@@ -327,78 +419,212 @@ class _NowPlayingState extends State<NowPlaying> {
             child: Text('Not connected'),
           );
         }
-
-        return Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text('Title: ${playerContext.title}'),
-            Text('Subtitle: ${playerContext.subtitle}'),
-            Text('Type: ${playerContext.type}'),
-            Text('Uri: ${playerContext.uri}'),
-          ],
-        );
+        ref.read(songUriProvider.notifier).state = playerContext.uri;
+        // return Column(
+        //   mainAxisAlignment: MainAxisAlignment.start,
+        //   crossAxisAlignment: CrossAxisAlignment.start,
+        //   children: <Widget>[
+        //     Text('Title: ${playerContext.title}'),
+        //     Text('Subtitle: ${playerContext.subtitle}'),
+        //     Text('Type: ${playerContext.type}'),
+        //     Text('Uri: ${playerContext.uri}'),
+        //   ],
+        // );
+        return Container();
       },
     );
   }
 
+  Future<void> addToLibrary() async {
+    try {
+      String songUri = ref.watch(songUriProvider);
+      await SpotifySdk.addToLibrary(spotifyUri: songUri);
+    } on PlatformException catch (e) {
+      setStatus(e.code, message: e.message);
+    } on MissingPluginException {
+      setStatus('not implemented');
+    }
+  }
+
   Widget _sampleFlowWidget(BuildContext context2) {
     return SizedBox(
-      height: MediaQuery.of(context2).size.height,
+      height: MediaQuery.of(context).size.height,
       width: MediaQuery.of(context).size.width,
       child: Column(
-        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _loading
-              ? Container(
-                  color: Colors.black12,
-                  child: const Center(child: CircularProgressIndicator()))
-              : const SizedBox(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              TextButton(
-                onPressed: connectToSpotifyRemote,
-                child: const Icon(Icons.settings_remote),
-              ),
-              TextButton(
-                onPressed: getAccessToken,
-                child: const Text('get auth token '),
-              ),
-            ],
-          ),
-          _connected
-              ? _buildPlayerStateWidget()
-              : const Center(
-                  child: Text('Not connected'),
-                ),
+              ? Center(
+                  child: LoadingAnimationWidget.inkDrop(
+                    color: Colors.white,
+                    size: MediaQuery.of(context).size.height * 0.1,
+                  ),
+                )
+              : _connected
+                  ? _buildPlayerStateWidget()
+                  : Center(
+                      child: Column(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => connectToSpotifyRemote(),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary: Colors.white,
+                              onSurface: Colors.grey,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.spotify,
+                                    color: Colors.green,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Text(
+                                    'Connect to Spotify',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: () => getAccessToken,
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary: Colors.white,
+                              onSurface: Colors.grey,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  FaIcon(
+                                    FontAwesomeIcons.spotify,
+                                    color: Colors.green,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Text(
+                                    'Get Authentication Token',
+                                    style: TextStyle(
+                                        color: Colors.black, fontSize: 20),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
         ],
       ),
     );
+  }
+
+  Widget spotifyBackgroundColor(ImageUri image) {
+    return FutureBuilder(
+        future: SpotifySdk.getImage(
+          imageUri: image,
+        ),
+        builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
+          if (snapshot.hasData) {
+            ImageProvider imageProvider = MemoryImage(snapshot.data!);
+            return ImagePixels(
+              imageProvider: imageProvider,
+              builder: (context, img) {
+                Color backgroundColor =
+                    img.pixelColorAtAlignment!(Alignment.center);
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      stops: const [0.5, 1],
+                      colors: [
+                        backgroundColor,
+                        Colors.black.withOpacity(0.1),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                );
+              },
+            );
+          } else {
+            return Container(
+              height: MediaQuery.of(context).size.height,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  stops: const [0.5, 1],
+                  colors: [
+                    Colors.grey,
+                    Colors.black.withOpacity(0.1),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            );
+          }
+        });
   }
 
   Widget spotifyImageWidget(ImageUri image) {
     return FutureBuilder(
         future: SpotifySdk.getImage(
           imageUri: image,
-          dimension: ImageDimension.medium,
+          dimension: ImageDimension.large,
         ),
         builder: (BuildContext context, AsyncSnapshot<Uint8List?> snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return SizedBox(
+              width: ImageDimension.large.value.toDouble(),
+              height: ImageDimension.large.value.toDouble(),
+              child: Center(
+                child: Shimmer.fromColors(
+                  baseColor: Colors.green,
+                  highlightColor: Colors.greenAccent,
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            );
+          } else if (snapshot.hasData) {
             return Image.memory(snapshot.data!);
           } else if (snapshot.hasError) {
             setStatus(snapshot.error.toString());
             return SizedBox(
               width: ImageDimension.large.value.toDouble(),
               height: ImageDimension.large.value.toDouble(),
-              child: const Center(child: Text('Error getting image')),
+              child: Center(
+                child: Shimmer.fromColors(
+                  baseColor: Colors.red,
+                  highlightColor: Colors.redAccent,
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             );
           } else {
             return SizedBox(
               width: ImageDimension.large.value.toDouble(),
               height: ImageDimension.large.value.toDouble(),
-              child: const Center(child: CircularProgressIndicator()),
+              child: Center(
+                child: Shimmer.fromColors(
+                  baseColor: Colors.white,
+                  highlightColor: Colors.grey[300]!,
+                  child: Container(
+                    color: Colors.white,
+                  ),
+                ),
+              ),
             );
           }
         });
@@ -615,17 +841,6 @@ class _NowPlayingState extends State<NowPlaying> {
   Future<void> seekToRelative() async {
     try {
       await SpotifySdk.seekToRelativePosition(relativeMilliseconds: 20000);
-    } on PlatformException catch (e) {
-      setStatus(e.code, message: e.message);
-    } on MissingPluginException {
-      setStatus('not implemented');
-    }
-  }
-
-  Future<void> addToLibrary() async {
-    try {
-      await SpotifySdk.addToLibrary(
-          spotifyUri: 'spotify:track:58kNJana4w5BIjlZE2wq5m');
     } on PlatformException catch (e) {
       setStatus(e.code, message: e.message);
     } on MissingPluginException {

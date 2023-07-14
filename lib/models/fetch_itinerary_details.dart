@@ -1,11 +1,13 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:travel_planner_app_cs_project/models/login.dart';
+
 // To parse this JSON data, do
 //
 //     final fetchItineraryDetails = fetchItineraryDetailsFromJson(jsonString);
 
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:travel_planner_app_cs_project/models/login.dart';
 
 FetchItineraryDetails fetchItineraryDetailsFromJson(String str) =>
     FetchItineraryDetails.fromJson(json.decode(str));
@@ -54,10 +56,7 @@ class Day {
   double afternoonLong;
   double eveningLat;
   double eveningLong;
-  DateTime createdAt;
-  DateTime updatedAt;
   int itinerary;
-  dynamic updatedBy;
 
   Day({
     required this.id,
@@ -75,10 +74,7 @@ class Day {
     required this.afternoonLong,
     required this.eveningLat,
     required this.eveningLong,
-    required this.createdAt,
-    required this.updatedAt,
     required this.itinerary,
-    this.updatedBy,
   });
 
   factory Day.fromJson(Map<String, dynamic> json) => Day(
@@ -97,10 +93,7 @@ class Day {
         afternoonLong: json["afternoon_long"]?.toDouble(),
         eveningLat: json["evening_lat"]?.toDouble(),
         eveningLong: json["evening_long"]?.toDouble(),
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
         itinerary: json["itinerary"],
-        updatedBy: json["updated_by"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -120,10 +113,7 @@ class Day {
         "afternoon_long": afternoonLong,
         "evening_lat": eveningLat,
         "evening_long": eveningLong,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
         "itinerary": itinerary,
-        "updated_by": updatedBy,
       };
 }
 
@@ -132,16 +122,18 @@ class Itinerary {
   String title;
   String notes;
   String destination;
+  int budget;
   DateTime starDate;
   DateTime endDate;
   String updatedAt;
-  List<dynamic> updatedBy;
+  String updatedBy;
 
   Itinerary({
     required this.id,
     required this.title,
     required this.notes,
     required this.destination,
+    required this.budget,
     required this.starDate,
     required this.endDate,
     required this.updatedAt,
@@ -153,10 +145,11 @@ class Itinerary {
         title: json["title"],
         notes: json["notes"],
         destination: json["destination"],
+        budget: json["budget"],
         starDate: DateTime.parse(json["star_date"]),
         endDate: DateTime.parse(json["end_date"]),
         updatedAt: json["updated_at"],
-        updatedBy: List<dynamic>.from(json["updated_by"].map((x) => x)),
+        updatedBy: json["updated_by"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -164,20 +157,22 @@ class Itinerary {
         "title": title,
         "notes": notes,
         "destination": destination,
+        "budget": budget,
         "star_date":
             "${starDate.year.toString().padLeft(4, '0')}-${starDate.month.toString().padLeft(2, '0')}-${starDate.day.toString().padLeft(2, '0')}",
         "end_date":
             "${endDate.year.toString().padLeft(4, '0')}-${endDate.month.toString().padLeft(2, '0')}-${endDate.day.toString().padLeft(2, '0')}",
         "updated_at": updatedAt,
-        "updated_by": List<dynamic>.from(updatedBy.map((x) => x)),
+        "updated_by": updatedBy,
       };
 }
 
-getItineraryDetails(BuildContext context) async {
+Future<List<Day>> getItineraryDetails(BuildContext context, String id) async {
   try {
     final Accesstoken = await retrieveToken();
     final response = await http.get(
-      Uri.parse("https://fari-jcuo.onrender.com/main/get-itinerary-details/5"),
+      Uri.parse(
+          "https://fari-jcuo.onrender.com/main/get-edit-itinerary-details/$id"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer ${Accesstoken.toString()}',
@@ -196,27 +191,12 @@ getItineraryDetails(BuildContext context) async {
       //   print('Afternoon Activity: $afternoonActivity');
       //   print('Evening Activity: $eveningActivity');
       // }
-      Map<String, dynamic> extractDataFromJson(String json) {
-        final jsonResponse = jsonDecode(json);
-
-        final itinerary = jsonResponse['itinerary'];
-        final collaborators = jsonResponse['collaborators'];
-        final days = jsonResponse['days'];
-
-        return {
-          'itinerary': itinerary,
-          'collaborators': collaborators,
-          'days': days,
-        };
-      }
-
-      final extractedData = extractDataFromJson(response.body);
-
-      print(extractedData);
-      return extractedData;
+      
+      final List result = jsonDecode(response.body)['days'];
+      print(result);
+      return result.map((days) => Day.fromJson(days)).toList();
     } else {
-      SnackBar(content: Text('Unable to fetch itinerary details'));
-      return Navigator.pop(context);
+      return [];
     }
   } catch (e) {
     print(e.toString());

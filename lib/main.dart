@@ -19,6 +19,7 @@ final otpControllerProvider = StateProvider((ref) => '');
 final emailProvider = StateProvider((ref) => '');
 final playTimeProvider = StateProvider((ref) => '');
 final songUriProvider = StateProvider((ref) => '');
+final idProvider = StateProvider((ref) => 0);
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

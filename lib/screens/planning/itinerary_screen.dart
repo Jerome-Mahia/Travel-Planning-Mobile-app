@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:intl/intl.dart';
 import 'package:travel_planner_app_cs_project/data/step_guide.dart';
+import 'package:travel_planner_app_cs_project/models/fetch_itinerary_details.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/note_editing_screen.dart';
 
 class ItineraryTab extends StatefulWidget {
-  const ItineraryTab({super.key});
+  const ItineraryTab({super.key, required this.tripDays});
+  final List<Day>? tripDays;
 
   @override
   State<ItineraryTab> createState() => _ItineraryTabState();
@@ -38,79 +42,79 @@ class _ItineraryTabState extends State<ItineraryTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 10,
-              ),
-              SizedBox(
-                height: 120.0,
-                child: ListView.builder(
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.only(left: 10.0),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: guides.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    StepGuide guide = guides[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => guide.screen,
-                          ),
-                        );
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.all(10.0),
-                        width: MediaQuery.of(context).size.width / 1.5,
-                        decoration: BoxDecoration(
-                          color:
-                              Color.fromARGB(255, 226, 225, 225).withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(15.0),
-                          // border: Border.all(
-                          //   width: 1.0,
-                          //   color: Colors.grey,
-                          // ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                guide.title,
-                                style: const TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 6.0),
-                              Text(
-                                guide.description,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16.0,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Divider(
-                  color: Colors.grey[600],
-                  thickness: 1.0,
-                ),
-              ),
+              // SizedBox(
+              //   height: 10,
+              // ),
+              // SizedBox(
+              //   height: 120.0,
+              //   child: ListView.builder(
+              //     physics: const BouncingScrollPhysics(),
+              //     padding: const EdgeInsets.only(left: 10.0),
+              //     scrollDirection: Axis.horizontal,
+              //     itemCount: guides.length,
+              //     itemBuilder: (BuildContext context, int index) {
+              //       StepGuide guide = guides[index];
+              //       return GestureDetector(
+              //         onTap: () {
+              //           Navigator.push(
+              //             context,
+              //             MaterialPageRoute(
+              //               builder: (_) => guide.screen,
+              //             ),
+              //           );
+              //         },
+              //         child: Container(
+              //           margin: const EdgeInsets.all(10.0),
+              //           width: MediaQuery.of(context).size.width / 1.5,
+              //           decoration: BoxDecoration(
+              //             color: Color.fromARGB(255, 226, 225, 225)
+              //                 .withOpacity(0.4),
+              //             borderRadius: BorderRadius.circular(15.0),
+              //             // border: Border.all(
+              //             //   width: 1.0,
+              //             //   color: Colors.grey,
+              //             // ),
+              //           ),
+              //           child: Padding(
+              //             padding: const EdgeInsets.all(10.0),
+              //             child: Column(
+              //               mainAxisAlignment: MainAxisAlignment.start,
+              //               crossAxisAlignment: CrossAxisAlignment.start,
+              //               children: <Widget>[
+              //                 Text(
+              //                   guide.title,
+              //                   style: const TextStyle(
+              //                     fontSize: 18.0,
+              //                     fontWeight: FontWeight.bold,
+              //                     color: Colors.black,
+              //                   ),
+              //                   overflow: TextOverflow.ellipsis,
+              //                 ),
+              //                 const SizedBox(height: 6.0),
+              //                 Text(
+              //                   guide.description,
+              //                   style: const TextStyle(
+              //                     color: Colors.black,
+              //                     fontSize: 16.0,
+              //                   ),
+              //                   maxLines: 2,
+              //                   overflow: TextOverflow.ellipsis,
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       );
+              //     },
+              //   ),
+              // ),
+              // Padding(
+              //   padding: const EdgeInsets.all(10.0),
+              //   child: Divider(
+              //     color: Colors.grey[600],
+              //     thickness: 1.0,
+              //   ),
+              // ),
               Align(
                 alignment: Alignment.topLeft,
                 child: Text(
@@ -126,24 +130,111 @@ class _ItineraryTabState extends State<ItineraryTab> {
                 height: 5,
               ),
               ListView.builder(
-                itemCount: dates.length,
+                itemCount: widget.tripDays!.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemBuilder: (context, i) {
+                itemBuilder: (context, index) {
+                  Day dailyActivities = widget.tripDays![index];
+                  // Day dailyActivities = widget.tripDays[index];
+                  String formattedDate =
+                      DateFormat.E().add_d().format(dailyActivities.date);
                   return ExpansionTile(
                     maintainState: true,
-                    tilePadding:
-                        EdgeInsets.symmetric(vertical: 10.0),
+                    tilePadding: EdgeInsets.symmetric(vertical: 10.0),
                     title: Text(
-                      dates[i].title,
+                      formattedDate,
                       style: TextStyle(
                         fontSize: 20.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     children: <Widget>[
-                      Column(
-                        children: _buildExpandableContent(dates[i]),
+                      ListTile(
+                        title: Text(
+                          'Morning',
+                          style: TextStyle(fontSize: 17.0),
+                        ),
+                        trailing: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.65,
+                          child: TextField(
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 3,
+                            onTapOutside: (focusNode) {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                            },
+                            style: TextStyle(fontSize: 18.0),
+                            decoration: InputDecoration(
+                              hintText: dailyActivities.morningActivity,
+                              hintStyle: TextStyle(fontSize: 18.0),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 3,
+                                  color: Color.fromARGB(255, 226, 225, 225)
+                                      .withOpacity(0.4),
+                                ),
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(
+                          'Afternoon',
+                          style: TextStyle(fontSize: 17.0),
+                        ),
+                        trailing: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.65,
+                          child: TextField(
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 3,
+                            onTapOutside: (focusNode) {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                            },
+                            style: TextStyle(fontSize: 18.0),
+                            decoration: InputDecoration(
+                              hintText: dailyActivities.afternoonActivity,
+                              hintStyle: TextStyle(fontSize: 18.0),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 3,
+                                  color: Color.fromARGB(255, 226, 225, 225)
+                                      .withOpacity(0.4),
+                                ),
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      ListTile(
+                        title: Text(
+                          'Evening',
+                          style: TextStyle(fontSize: 17.0),
+                        ),
+                        trailing: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.65,
+                          child: TextField(
+                            keyboardType: TextInputType.multiline,
+                            maxLines: 3,
+                            onTapOutside: (focusNode) {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                            },
+                            style: TextStyle(fontSize: 18.0),
+                            decoration: InputDecoration(
+                              hintText: dailyActivities.eveningActivity,
+                              hintStyle: TextStyle(fontSize: 18.0),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  width: 3,
+                                  color: Color.fromARGB(255, 226, 225, 225)
+                                      .withOpacity(0.4),
+                                ),
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   );
@@ -156,13 +247,36 @@ class _ItineraryTabState extends State<ItineraryTab> {
                   thickness: 1.0,
                 ),
               ),
-              Text(
-                'Notes',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 35.0,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(
+                    'Notes',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 35.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(
+                    width: 10.0,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => NoteEditingScreen(),
+                          ),
+                        );
+                    },
+                    icon: Icon(
+                      Icons.edit,
+                      color: Theme.of(context).primaryColor,
+                      size: 30.0,
+                    ),
+                  ),
+                ],
               ),
               SizedBox(
                 height: 10.0,
@@ -183,44 +297,6 @@ class _ItineraryTabState extends State<ItineraryTab> {
         ),
       ),
     );
-  }
-
-  _buildExpandableContent(Date vehicle) {
-    List<Widget> columnContent = [];
-
-    for (String content in vehicle.contents)
-      columnContent.add(
-        ListTile(
-          title: Text(
-            content,
-            style: TextStyle(fontSize: 17.0),
-          ),
-          trailing: SizedBox(
-            width: MediaQuery.of(context).size.width * 0.65,
-            child: TextField(
-              keyboardType: TextInputType.multiline,
-              maxLines: 3,
-              onTapOutside: (focusNode) {
-                FocusScope.of(context).requestFocus(FocusNode());
-              },
-              style: TextStyle(fontSize: 18.0),
-              decoration: InputDecoration(
-                hintText: 'Visit Naivasha National Park',
-                hintStyle: TextStyle(fontSize: 18.0),
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    width: 3,
-                    color: Color.fromARGB(255, 226, 225, 225).withOpacity(0.4),
-                  ),
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-    return columnContent;
   }
 }
 

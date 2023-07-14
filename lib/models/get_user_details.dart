@@ -60,9 +60,8 @@ getUserDetails(BuildContext context) async {
       },
     );
     if (response.statusCode == 200) {
-      final body = json.decode(response.body);
-      return List<GetUserDetails>.from(
-          body.map((x) => GetUserDetails.fromJson(x)));
+      final List result = jsonDecode(response.body);
+      return result.map((userDetails) => GetUserDetails.fromJson(userDetails)).toList();
     } else {
       return SnackBar(content: Text('Unable to retieve user details'));
     }

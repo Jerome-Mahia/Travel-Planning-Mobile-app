@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_planner_app_cs_project/data/data.dart';
+import 'package:travel_planner_app_cs_project/models/delete_itinerary.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:http/http.dart' as http;
 import 'package:travel_planner_app_cs_project/models/fetch_all_itineraries.dart';
@@ -77,10 +78,11 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                           itemCount: itineraries.length,
                           itemBuilder: (context, index) {
                             Itinerary itinerary = itineraries[index];
-                            DateTime firstday=(itinerary.startDate);
-                            String firstDate=DateFormat.MMMd().format(firstday);
-                            DateTime lastday=(itinerary.endDate);
-                            String lastDate=DateFormat.MMMd().format(lastday);
+                            DateTime firstday = (itinerary.startDate);
+                            String firstDate =
+                                DateFormat.MMMd().format(firstday);
+                            DateTime lastday = (itinerary.endDate);
+                            String lastDate = DateFormat.MMMd().format(lastday);
                             return Padding(
                               padding:
                                   const EdgeInsets.only(top: 5.0, bottom: 5.0),
@@ -100,7 +102,9 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                                 PersistentNavBarNavigator
                                                     .pushNewScreen(
                                                   context,
-                                                  screen: TripDetailScreen(),
+                                                  screen: TripDetailScreen(
+                                                    id: itinerary.id,
+                                                  ),
                                                   withNavBar:
                                                       false, // OPTIONAL VALUE. True by default.
                                                   pageTransitionAnimation:
@@ -165,6 +169,22 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                                 //         'Check out this amazing trip to ${itinerary.title} on Fari Travel Planner App!');
                                               },
                                             ),
+                                            ListTile(
+                                              leading: new Icon(
+                                                Icons.delete,
+                                                color: Colors.red,
+                                              ),
+                                              title: new Text(
+                                                'Delete Trip',
+                                                style: TextStyle(
+                                                    color: Colors.red),
+                                              ),
+                                              onTap: () {
+                                                deleteItinerary(
+                                                    context, itinerary.id.toString());
+                                                    setState(() {});
+                                              },
+                                            ),
                                           ],
                                         );
                                       });
@@ -185,7 +205,7 @@ class _SavedPlanScreenState extends State<SavedPlanScreen> {
                                         borderRadius:
                                             BorderRadius.circular(15.0),
                                         child: Image.asset(
-                                          'assets/images/paris.jpg',
+                                          'assets/images/naivasha.jpg',
                                           fit: BoxFit.cover,
                                         ),
                                       ),

@@ -26,11 +26,11 @@ class DeleteItinerary {
         "success": success,
     };
 }
-deleteItinerary(BuildContext context) async {
+deleteItinerary(BuildContext context, String id) async {
   try {
     final Accesstoken = await retrieveToken();
     final response = await http.delete(
-      Uri.parse("https://fari-jcuo.onrender.com/main/delete-itinerary/{id}"),
+      Uri.parse("https://fari-jcuo.onrender.com/main/delete-itinerary/$id"),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer ${Accesstoken.toString()}',

@@ -67,15 +67,10 @@ createItinerary(
     );
     print(Accesstoken.toString());
     if (response.statusCode == 201) {
-      return Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => TripDetailScreen(),
-        ),
-      );
+      return null;
     } else {
       print(response.statusCode);
-      return SnackBar(content: Text('Unable to create itinerary'));
+      throw SnackBar(content: Text('Unable to create itinerary'));
     }
   } catch (e) {
     print(e.toString());

@@ -200,7 +200,9 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                             onTap: () {
                               PersistentNavBarNavigator.pushNewScreen(
                                 context,
-                                screen: TripDetailScreen(),
+                                screen: TripDetailScreen(
+                                  id: 1,
+                                ),
                                 withNavBar:
                                     false, // OPTIONAL VALUE. True by default.
                                 pageTransitionAnimation:
@@ -233,8 +235,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                                   width: 10,
                                 ),
                                 Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Padding(
                                       padding: const EdgeInsets.fromLTRB(
@@ -248,9 +249,8 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                                       ),
                                     ),
                                     Container(
-                                      width:
-                                          MediaQuery.of(context).size.width *
-                                              0.5,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.5,
                                       child: Padding(
                                         padding: const EdgeInsets.fromLTRB(
                                             5, 10, 0, 0),
@@ -271,8 +271,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                                                   'Apr 3 - 8',
                                                   style: TextStyle(
                                                     fontSize: 18.0,
-                                                    fontWeight:
-                                                        FontWeight.w500,
+                                                    fontWeight: FontWeight.w500,
                                                     color: Colors.grey[700],
                                                   ),
                                                 ),
@@ -308,8 +307,7 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                         fontSize: 15,
                         fontWeight: FontWeight.w400,
                       ),
-                      labelPadding:
-                          const EdgeInsets.only(left: 15, right: 15),
+                      labelPadding: const EdgeInsets.only(left: 15, right: 15),
                       indicatorSize: TabBarIndicatorSize.label,
                       isScrollable: true,
                       controller: tabController,
@@ -344,75 +342,91 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                             padding: const EdgeInsets.only(right: 10),
                             child: Stack(
                               children: [
-                                GestureDetector(
-                                  onTap: () =>
-                                      PersistentNavBarNavigator.pushNewScreen(
-                                    context,
-                                    screen: DestinationScreen(
-                                      destination: destination,
-                                    ),
-                                    withNavBar:
-                                        false, // OPTIONAL VALUE. True by default.
-                                    pageTransitionAnimation:
-                                        PageTransitionAnimation.cupertino,
-                                  ),
-                                  child: ClipRRect(
+                                Container(
+                                  height: MediaQuery.of(context).size.height *
+                                      0.35,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15.0),
-                                    child: Hero(
-                                      tag: destination.mainImageUrl,
-                                      child: Image(
-                                        image: AssetImage(
-                                            destination.mainImageUrl),
-                                        height: MediaQuery.of(context)
-                                                .size
-                                                .height *
-                                            0.35,
-                                        width: MediaQuery.of(context)
-                                                .size
-                                                .width *
-                                            0.55,
-                                        fit: BoxFit.cover,
+                                    gradient: LinearGradient(
+                                      begin: Alignment.bottomLeft,
+                                      end: Alignment.bottomRight,
+                                      stops: [0.1, 0.9],
+                                      colors: [
+                                        Colors.black.withOpacity(0.4),
+                                        Colors.black.withOpacity(0.4),
+                                      ],
+                                    ),
+                                  ),
+                                  child: GestureDetector(
+                                    onTap: () =>
+                                        PersistentNavBarNavigator.pushNewScreen(
+                                      context,
+                                      screen: DestinationScreen(
+                                        destination: destination,
+                                      ),
+                                      withNavBar:
+                                          false, // OPTIONAL VALUE. True by default.
+                                      pageTransitionAnimation:
+                                          PageTransitionAnimation.cupertino,
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                      child: Hero(
+                                        tag: destination.mainImageUrl,
+                                        child: Image(
+                                          image: AssetImage(
+                                              destination.mainImageUrl),
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.35,
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.55,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.all(10.0),
                                       child: Container(
                                         alignment: Alignment.bottomLeft,
                                         child: Text(
-                                          '${destination.title} \nStarting at \$${destination.price}',
+                                          '${destination.title}',
                                           style: const TextStyle(
-                                            fontSize: 15,
+                                            fontSize: 18,
                                             color: Colors.white,
+                                            fontWeight: FontWeight.bold,
                                           ),
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(
-                                      width: 10,
-                                    ),
-                                    Container(
-                                      height: 35,
-                                      margin: const EdgeInsets.only(top: 210),
-                                      decoration: const BoxDecoration(
-                                        color: Colors.white,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: IconButton(
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                          Icons.favorite,
-                                          size: 25,
-                                        ),
-                                        color: Theme.of(context).primaryColor,
-                                        iconSize: 20.0,
-                                      ),
-                                    ),
+                                    // const SizedBox(
+                                    //   width: 10,
+                                    // ),
+                                    // Container(
+                                    //   height: 35,
+                                    //   margin: const EdgeInsets.only(top: 210),
+                                    //   decoration: const BoxDecoration(
+                                    //     color: Colors.white,
+                                    //     shape: BoxShape.circle,
+                                    //   ),
+                                    //   child: IconButton(
+                                    //     onPressed: () {},
+                                    //     icon: const Icon(
+                                    //       Icons.favorite,
+                                    //       size: 25,
+                                    //     ),
+                                    //     color: Theme.of(context).primaryColor,
+                                    //     iconSize: 20.0,
+                                    //   ),
+                                    // ),
                                   ],
                                 ),
                               ],

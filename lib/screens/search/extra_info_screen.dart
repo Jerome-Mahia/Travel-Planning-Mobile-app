@@ -5,9 +5,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:travel_planner_app_cs_project/models/create_itinerary.dart';
+import 'package:travel_planner_app_cs_project/models/fetch_itinerary_details.dart';
 import 'package:travel_planner_app_cs_project/models/items.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
+import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 
 class ExtraInfoScreen extends StatefulWidget {
   const ExtraInfoScreen(
@@ -329,6 +331,17 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                                     budgetInt,
                                     agetypeDropdownValue,
                                     excitementtypeDropdownValue,
+                                  );
+                                  
+                                  PersistentNavBarNavigator.pushNewScreen(
+                                    context,
+                                    screen: TripDetailScreen(
+                                      id: 6,
+                                    ),
+                                    withNavBar:
+                                        false, // OPTIONAL VALUE. True by default.
+                                    pageTransitionAnimation:
+                                        PageTransitionAnimation.cupertino,
                                   );
                                 },
                                 child: Container(

@@ -9,6 +9,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/data/step_guide.dart';
+import 'package:travel_planner_app_cs_project/models/delete_itinerary.dart';
 import 'package:travel_planner_app_cs_project/models/fetch_itinerary_details.dart';
 import 'package:travel_planner_app_cs_project/screens/home/feed_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/map/trip_map_screen.dart';
@@ -20,7 +21,8 @@ import 'package:travel_planner_app_cs_project/screens/spotify/spotify_screen.dar
 import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
 
 class TripDetailScreen extends ConsumerStatefulWidget {
-  const TripDetailScreen({super.key});
+  const TripDetailScreen({super.key, required this.id});
+  final int id;
 
   @override
   _TripDetailScreenState createState() => _TripDetailScreenState();
@@ -68,6 +70,7 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
     super.dispose();
   }
 
+  int identification = 0;
   List steps = [];
   ValueNotifier<bool> isDialOpen = ValueNotifier(false);
   @override
@@ -76,183 +79,195 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
 
     TabController tabController = TabController(length: 3, vsync: this);
     return SafeArea(
-      child: Scaffold(
-        floatingActionButton: isLoading == false
-            ? Align(
-                alignment: Alignment.bottomRight,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: SizedBox(
-                        height: 60,
-                        width: 60,
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const TripMapScreen(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: Icon(
-                              Icons.map_rounded,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: SizedBox(
-                        height: 50,
-                        child: SpeedDial(
-                          shape: const CircleBorder(),
-                          backgroundColor: Theme.of(context).primaryColor,
-                          animationCurve: Curves.easeInOut,
-                          overlayColor: Colors.black,
-                          overlayOpacity: 0.4,
-                          openCloseDial: isDialOpen,
-                          children: [
-                            SpeedDialChild(
-                              shape: const CircleBorder(),
-                              child: IconButton(
-                                onPressed: () async {
-                                  isDialOpen.value = false;
-                                },
-                                icon: Icon(
-                                  Icons.airplane_ticket,
+      child: FutureBuilder<List<Day>>(
+        future: getItineraryDetails(context, widget.id.toString()),
+        builder: (context,snapshot) {
+          List<Day>? days = snapshot.data;
+          return Scaffold(
+            floatingActionButton: isLoading == false
+                ? Align(
+                    alignment: Alignment.bottomRight,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child: SizedBox(
+                            height: 60,
+                            width: 60,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TripMapScreen(tripDays: days,),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
                                   color: Theme.of(context).primaryColor,
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                child: Icon(
+                                  Icons.map_rounded,
+                                  color: Colors.white,
                                   size: 30,
                                 ),
                               ),
-                              label: 'Add Flight Ticket',
                             ),
-                            SpeedDialChild(
-                              shape: const CircleBorder(),
-                              child: IconButton(
-                                onPressed: () async {
-                                  isDialOpen.value = false;
-                                },
-                                icon: Icon(
-                                  Icons.local_activity,
-                                  color: Theme.of(context).primaryColor,
-                                  size: 30,
-                                ),
-                              ),
-                              label: 'Add Ticket',
-                            ),
-                            // SpeedDialChild(
-                            //   shape: const CircleBorder(),
-                            //   child: IconButton(
-                            //     onPressed: () async {
-                            //       Navigator.push(
-                            //         context,
-                            //         MaterialPageRoute(
-                            //           builder: (context) => NowPlaying(),
-                            //         ),
-                            //       );
-                            //       isDialOpen.value = false;
-                            //     },
-                            //     icon: FaIcon(
-                            //       FontAwesomeIcons.spotify,
-                            //       color: Theme.of(context).primaryColor,
-                            //       size: 30,
-                            //     ),
-                            //   ),
-                            //   label: 'Add Spotify Playlist',
-                            // ),
-                          ],
-                          label: Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 30,
                           ),
                         ),
-                      ),
+                        // SizedBox(height: 16),
+                        // Align(
+                        //   alignment: Alignment.bottomRight,
+                        //   child: SizedBox(
+                        //     height: 50,
+                        //     child: SpeedDial(
+                        //       shape: const CircleBorder(),
+                        //       backgroundColor: Theme.of(context).primaryColor,
+                        //       animationCurve: Curves.easeInOut,
+                        //       overlayColor: Colors.black,
+                        //       overlayOpacity: 0.4,
+                        //       openCloseDial: isDialOpen,
+                        //       children: [
+                        //         // SpeedDialChild(
+                        //         //   shape: const CircleBorder(),
+                        //         //   child: IconButton(
+                        //         //     onPressed: () async {
+                        //         //       isDialOpen.value = false;
+                        //         //     },
+                        //         //     icon: Icon(
+                        //         //       Icons.airplane_ticket,
+                        //         //       color: Theme.of(context).primaryColor,
+                        //         //       size: 30,
+                        //         //     ),
+                        //         //   ),
+                        //         //   label: 'Add Flight Ticket',
+                        //         // ),
+                        //         // SpeedDialChild(
+                        //         //   shape: const CircleBorder(),
+                        //         //   child: IconButton(
+                        //         //     onPressed: () async {
+                        //         //       isDialOpen.value = false;
+                        //         //     },
+                        //         //     icon: Icon(
+                        //         //       Icons.local_activity,
+                        //         //       color: Theme.of(context).primaryColor,
+                        //         //       size: 30,
+                        //         //     ),
+                        //         //   ),
+                        //         //   label: 'Add Ticket',
+                        //         // ),
+                        //         // SpeedDialChild(
+                        //         //   shape: const CircleBorder(),
+                        //         //   child: IconButton(
+                        //         //     onPressed: () async {
+                        //         //       Navigator.push(
+                        //         //         context,
+                        //         //         MaterialPageRoute(
+                        //         //           builder: (context) => NowPlaying(),
+                        //         //         ),
+                        //         //       );
+                        //         //       isDialOpen.value = false;
+                        //         //     },
+                        //         //     icon: FaIcon(
+                        //         //       FontAwesomeIcons.spotify,
+                        //         //       color: Theme.of(context).primaryColor,
+                        //         //       size: 30,
+                        //         //     ),
+                        //         //   ),
+                        //         //   label: 'Add Spotify Playlist',
+                        //         // ),
+                        //       ],
+                        //       label: Icon(
+                        //         Icons.add,
+                        //         color: Colors.white,
+                        //         size: 30,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
+                      ],
                     ),
-                  ],
-                ),
-              )
-            : Container(),
-        body: isLoading
-            ? SizedBox(
-                height: MediaQuery.of(context).size.height / 1.1,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      LoadingAnimationWidget.inkDrop(
-                        color: Theme.of(context).primaryColor,
-                        size: MediaQuery.of(context).size.height * 0.1,
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'Retrieving your itinerary...',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            : NestedScrollView(
-                scrollBehavior:
-                    const MaterialScrollBehavior().copyWith(scrollbars: false),
-                headerSliverBuilder: (BuildContext context, bool value) {
-                  return <Widget>[
-                    SliverPersistentHeader(
-                      pinned: true,
-                      floating: false,
-                      delegate: CustomSliverDelegate(
-                        expandedHeight: 180,
-                        tabBar: TabBar(
-                          labelStyle: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          labelPadding:
-                              const EdgeInsets.only(left: 15, right: 15),
-                          controller: tabController,
-                          indicatorSize: TabBarIndicatorSize.label,
-                          isScrollable: false,
-                          labelColor: Theme.of(context).primaryColor,
-                          unselectedLabelColor: Colors.grey[600],
-                          indicator: CircleTabIndicator(
+                  )
+                : Container(),
+            body: isLoading
+                ? SizedBox(
+                    height: MediaQuery.of(context).size.height / 1.1,
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          LoadingAnimationWidget.inkDrop(
                             color: Theme.of(context).primaryColor,
-                            radius: 4,
+                            size: MediaQuery.of(context).size.height * 0.1,
                           ),
-                          tabs: const [
-                            Tab(text: "Overview"),
-                            Tab(text: "Itinerary"),
-                            Tab(text: "Budget"),
-                          ],
-                        ),
+                          SizedBox(height: 16),
+                          Text(
+                            'Retrieving your itinerary...',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ];
-                },
-                body: TabBarView(
-                  controller: tabController,
-                  children: [
-                    OverviewTab(),
-                    ItineraryTab(),
-                    BudgetTab(),
-                  ],
-                ),
-              ),
+                  )
+                : NestedScrollView(
+                    scrollBehavior:
+                        const MaterialScrollBehavior().copyWith(scrollbars: false),
+                    headerSliverBuilder: (BuildContext context, bool value) {
+                      return <Widget>[
+                        SliverPersistentHeader(
+                          pinned: true,
+                          floating: false,
+                          delegate: CustomSliverDelegate(
+                            expandedHeight: 180,
+                            tabBar: TabBar(
+                              labelStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
+                              ),
+                              labelPadding:
+                                  const EdgeInsets.only(left: 15, right: 15),
+                              controller: tabController,
+                              indicatorSize: TabBarIndicatorSize.label,
+                              isScrollable: false,
+                              labelColor: Theme.of(context).primaryColor,
+                              unselectedLabelColor: Colors.grey[600],
+                              indicator: CircleTabIndicator(
+                                color: Theme.of(context).primaryColor,
+                                radius: 4,
+                              ),
+                              tabs: const [
+                                Tab(text: "Overview"),
+                                Tab(text: "Itinerary"),
+                                Tab(text: "Budget"),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ];
+                    },
+                    body: TabBarView(
+                            controller: tabController,
+                            children: [
+                              OverviewTab(
+                                tripDays: days,
+                              ),
+                              ItineraryTab(
+                                tripDays: days,
+                              ),
+                              BudgetTab(
+                                tripDays: days,
+                              ),
+                            ],
+                          ),
+                  ),
+          );
+        }
       ),
     );
   }
@@ -292,7 +307,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                 backgroundColor: Colors.white,
                 flexibleSpace: appBarSize > kToolbarHeight
                     ? Image(
-                        image: AssetImage('assets/images/sydney.jpg'),
+                        image: AssetImage('assets/images/naivasha.jpg'),
                         fit: BoxFit.cover,
                         width: double.infinity,
                       )
@@ -389,10 +404,46 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                                 ),
                                               ),
                                               ListTile(
-                                                leading: new Icon(Icons.delete),
-                                                title: new Text('Delete trip'),
+                                                leading: new Icon(
+                                                  Icons.delete,
+                                                  color: Colors.red,
+                                                ),
+                                                title: new Text(
+                                                  'Delete trip',
+                                                  style: TextStyle(
+                                                      color: Colors.red),
+                                                ),
                                                 onTap: () {
-                                                  Navigator.pop(context);
+                                                  showDialog(
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return AlertDialog(
+                                                          title: Text(
+                                                              'Delete Trip'),
+                                                          content: Text(
+                                                              'Are you sure you want to delete this trip?'),
+                                                          actions: <Widget>[
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                Navigator.pop(
+                                                                    context);
+                                                              },
+                                                              child: Text(
+                                                                  'Cancel'),
+                                                            ),
+                                                            TextButton(
+                                                              onPressed: () {
+                                                                
+                                                                deleteItinerary(
+                                                                    context,
+                                                                    6.toString());
+                                                              },
+                                                              child: Text(
+                                                                  'Delete'),
+                                                            ),
+                                                          ],
+                                                        );
+                                                      });
                                                 },
                                               ),
                                             ],

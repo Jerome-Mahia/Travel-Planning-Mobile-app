@@ -1,14 +1,30 @@
 # travel_planner_app_cs_project
 
-A Django and Flutter project.
+## Introduction
 
+This mobile application combines the power of Flutter for the frontend and Django for the backend to create a seamless and intuitive experience for generating itineraries powered by ChatGPT
+## Features
+* ChatGPT Integration: The core functionality of this application is based on integrating ChatGPT which allows users to generate  personalized itineraries.
+* Intuitive User Interface: The app provides a user-friendly interface, designed with Flutter, that enables seamless interaction and a smooth experience for generating 
+  itineraries.
+* Backend powered by Django: The Django backend handles the communication between the Flutter frontend and the ChatGPT model. It ensures smooth data flow and manages the 
+  logic for generating the itineraries.
+* Personalized Recommendations: Using ChatGPT's natural language processing capabilities, the app takes into account user preferences, interests, and constraints to 
+  provide personalized itinerary recommendations.
+* Flexible and Customizable: The app allows users to customize their preferences, such as desired attractions, budget, time constraints, and transportation options, to 
+  generate tailored itineraries that meet their specific needs.
+* Seamless Integration with External APIs: The application seamlessly integrates with external APIs to retrieve real-time data, such as  transportation 
+  schedules, and attraction details, to enhance the accuracy and relevance of the generated itineraries.
+* Save and Share Itineraries: Users can save their generated itineraries and share them with friends and family. They can also modify and refine their itineraries based on 
+  feedback and suggestions from others.
+  
 ## <u>Technologies</u>
 The project is created with:
    
-   * Programming Languages: 
-      * Dart
-      * Python
-      * HTML/CSS
+* Programming Languages: 
+  * Dart
+  * Python
+  * HTML/CSS
       
 * Front-End Frameworks and Libraries:
    * Flutter
@@ -24,7 +40,7 @@ The project is created with:
 
 ## <u>Setup flutter frontend<u/>
 
-#Prerequisites
+# Prerequisites
 
 * Flutter SDK: Download and install the Flutter SDK from the official Flutter website. Follow the installation instructions specific to your operating system: Flutter         Installation Guide
 
@@ -54,15 +70,15 @@ The project is created with:
 
 * Wait for the application to build and launch on the selected device. The first build may take a while, but subsequent builds will be faster.
 
-## <ul>Setting up Django <ul/>
+## <ul>Setting up Django backend<ul/>
 
-#Prerequisites
+# Prerequisites
 
 * Python (version 3.6 or higher)
 * pip (Python package manager)
 * virtualenv (optional but recommended)
 
-#Setup virtual env
+# Setup virtual env
 * Open a terminal or command prompt.
 * Navigate to your project directory.
 * Run the following command to create a virtual environment:
@@ -71,7 +87,7 @@ The project is created with:
     myenv\Scripts\activate
    
   ```
-#Install Requirements
+# Install Requirements
 
 * Ensure your virtual environment is activated (if you created one).
 * Run the following command to install Django using pip:
@@ -80,6 +96,29 @@ The project is created with:
   pip install -r requirements.txt
 
   ```
+
+* Run migrations using
+```
+
+python manage.py migrate
+
+```
+
+* Run locally using
+
+```
+
+python manage.py runserver
+
+```
+
+# Django Resources
+* Django Official Documentation: The official documentation provides comprehensive information about Django, including tutorials, guides, and references for different 
+  aspects of web development with Django.['https://docs.djangoproject.com/en/4.2/']
+* Python Packages['https://pypi.org/)https://pypi.org/']
+  
+# Flutter resources
+* Flutter Official Documentation:['https://docs.flutter.dev/']
 
 
 

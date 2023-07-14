@@ -383,25 +383,24 @@ class CreateGetItinerary(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        collaborators1 = []
         for user in itinerary.collaborators.all():
             collaborator = {"name":user.name,"id":user.id}
-            collaborators.append(collaborator)
+            collaborators1.append(collaborator)
             
-            updated_at = itinerary.updated_at.strftime("%d-%m-%Y, %H:%M:%S")
+        updated_at = itinerary.updated_at.strftime("%d-%m-%Y, %H:%M:%S")
             
-            days = ItineraryDay.objects.filter(itinerary=itinerary).order_by('date')
-            days = ItineraryDaySerializer(days,many=True)
+        days = ItineraryDay.objects.filter(itinerary=itinerary).order_by('date')
+        days = ItineraryDaySerializer(days,many=True)
 
-            try:
-                itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"budget":itinerary.budget,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":itinerary.updated_by.name}
-            except:
-                itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"budget":itinerary.budget,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":'none'}
-        
-        return Response (
-            
-                {'success': 'Itinerary created successfully','itinerary': itinerary,"collaborators":collaborators,"days":days.data},
-                status=status.HTTP_201_CREATED
-        
+        try:
+            itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"budget":itinerary.budget,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":itinerary.updated_by.name}
+        except:
+            itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"budget":itinerary.budget,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":'none'}
+    
+        return Response (           
+                {'itinerary': itinerary,"collaborators":collaborators1,"days":days.data},
+                status=status.HTTP_201_CREATED       
             ) 
     
     def get(self, request):

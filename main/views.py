@@ -369,7 +369,7 @@ class CreateGetItinerary(APIView):
                 it_date = datetime.strptime(start_date, '%Y-%m-%d').date() + timedelta(days=i)
                 day_name = 'day'+str(i+1)
                 try:
-                    itinerary_day = ItineraryDay(itinerary=itinerary,date=it_date,name='day_name',morning_activity=content[day_name][0]['activity'],morning_budget=content[day_name][0]['budget'],morning_lat=content[day_name][0]['location']['latitude'],morning_long=content[day_name][0]['location']['longitude'],afternoon_activity=content[day_name][1]['activity'],afternoon_budget=content[day_name][1]['budget'],afternoon_lat=content[day_name][1]['location']['latitude'],afternoon_long=content[day_name][1]['location']['longitude'],evening_activity=content[day_name][2]['activity'],evening_budget=content[day_name][2]['budget'],evening_lat=content[day_name][2]['location']['latitude'],evening_long=content[day_name][2]['location']['longitude'])
+                    itinerary_day = ItineraryDay(itinerary=itinerary,date=it_date,name=day_name,morning_activity=content[day_name][0]['activity'],morning_budget=content[day_name][0]['budget'],morning_lat=content[day_name][0]['location']['latitude'],morning_long=content[day_name][0]['location']['longitude'],afternoon_activity=content[day_name][1]['activity'],afternoon_budget=content[day_name][1]['budget'],afternoon_lat=content[day_name][1]['location']['latitude'],afternoon_long=content[day_name][1]['location']['longitude'],evening_activity=content[day_name][2]['activity'],evening_budget=content[day_name][2]['budget'],evening_lat=content[day_name][2]['location']['latitude'],evening_long=content[day_name][2]['location']['longitude'])
                 except:
                     return Response (
                         {'error': 'Something went wrong'},
@@ -383,9 +383,23 @@ class CreateGetItinerary(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
+        for user in itinerary.collaborators.all():
+            collaborator = {"name":user.name,"id":user.id}
+            collaborators.append(collaborator)
+            
+            updated_at = itinerary.updated_at.strftime("%d-%m-%Y, %H:%M:%S")
+            
+            days = ItineraryDay.objects.filter(itinerary=itinerary).order_by('date')
+            days = ItineraryDaySerializer(days,many=True)
+
+            try:
+                itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"budget":itinerary.budget,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":itinerary.updated_by.name}
+            except:
+                itinerary = {"id":itinerary.id,"title":itinerary.title,"notes":itinerary.notes,"destination":itinerary.destination,"budget":itinerary.budget,"star_date":itinerary.start_date,"end_date":itinerary.end_date,"updated_at":updated_at,"updated_by":'none'}
+        
         return Response (
             
-                {'success': 'Itinerary created successfully'},
+                {'success': 'Itinerary created successfully','itinerary': itinerary,"collaborators":collaborators,"days":days.data},
                 status=status.HTTP_201_CREATED
         
             ) 

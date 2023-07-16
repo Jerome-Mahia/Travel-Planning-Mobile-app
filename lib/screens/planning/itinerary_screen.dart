@@ -149,18 +149,26 @@ class _ItineraryTabState extends State<ItineraryTab> {
                       ),
                     ),
                     children: <Widget>[
-                      ListTile(
-                        title: Text(
-                          'Morning',
-                          style: TextStyle(fontSize: 17.0),
-                        ),
-                        trailing: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.65,
-                          child: TextField(
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Morning',
+                              style: TextStyle(
+                                fontSize: 17.0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          TextField(
                             keyboardType: TextInputType.multiline,
                             maxLines: 3,
                             onTapOutside: (focusNode) {
-                              FocusScope.of(context).requestFocus(FocusNode());
+                              FocusScope.of(context)
+                                  .requestFocus(FocusNode());
                             },
                             style: TextStyle(fontSize: 18.0),
                             decoration: InputDecoration(
@@ -176,20 +184,31 @@ class _ItineraryTabState extends State<ItineraryTab> {
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      ListTile(
-                        title: Text(
-                          'Afternoon',
-                          style: TextStyle(fontSize: 17.0),
-                        ),
-                        trailing: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.65,
-                          child: TextField(
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Afternoon',
+                              style: TextStyle(
+                                fontSize: 17.0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          TextField(
                             keyboardType: TextInputType.multiline,
                             maxLines: 3,
                             onTapOutside: (focusNode) {
-                              FocusScope.of(context).requestFocus(FocusNode());
+                              FocusScope.of(context)
+                                  .requestFocus(FocusNode());
                             },
                             style: TextStyle(fontSize: 18.0),
                             decoration: InputDecoration(
@@ -205,20 +224,31 @@ class _ItineraryTabState extends State<ItineraryTab> {
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                      ListTile(
-                        title: Text(
-                          'Evening',
-                          style: TextStyle(fontSize: 17.0),
-                        ),
-                        trailing: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.65,
-                          child: TextField(
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              'Evening',
+                              style: TextStyle(
+                                fontSize: 17.0,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          TextField(
                             keyboardType: TextInputType.multiline,
                             maxLines: 3,
                             onTapOutside: (focusNode) {
-                              FocusScope.of(context).requestFocus(FocusNode());
+                              FocusScope.of(context)
+                                  .requestFocus(FocusNode());
                             },
                             style: TextStyle(fontSize: 18.0),
                             decoration: InputDecoration(
@@ -234,7 +264,10 @@ class _ItineraryTabState extends State<ItineraryTab> {
                               ),
                             ),
                           ),
-                        ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10.0,
                       ),
                     ],
                   );
@@ -258,24 +291,24 @@ class _ItineraryTabState extends State<ItineraryTab> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(
-                    width: 10.0,
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => NoteEditingScreen(),
-                          ),
-                        );
-                    },
-                    icon: Icon(
-                      Icons.edit,
-                      color: Theme.of(context).primaryColor,
-                      size: 30.0,
-                    ),
-                  ),
+                  // SizedBox(
+                  //   width: 10.0,
+                  // ),
+                  // IconButton(
+                  //   onPressed: () {
+                  //     Navigator.push(
+                  //         context,
+                  //         MaterialPageRoute(
+                  //           builder: (_) => NoteEditingScreen(),
+                  //         ),
+                  //       );
+                  //   },
+                  //   icon: Icon(
+                  //     Icons.edit,
+                  //     color: Theme.of(context).primaryColor,
+                  //     size: 30.0,
+                  //   ),
+                  // ),
                 ],
               ),
               SizedBox(

@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 import 'package:travel_planner_app_cs_project/models/create_itinerary.dart';
+import 'package:travel_planner_app_cs_project/models/fetch_all_itineraries.dart';
 import 'package:travel_planner_app_cs_project/models/fetch_itinerary_details.dart';
 import 'package:travel_planner_app_cs_project/models/items.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
@@ -315,57 +316,53 @@ class _ExtraInfoScreenState extends State<ExtraInfoScreen> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            Center(
-                              child: InkWell(
-                                onTap: () {
-                                  var budget = budgetInput.text;
-                                  int budgetInt = int.parse(budget);
-                                  createItinerary(
-                                    context,
-                                    'Trip to ${widget.destination}',
-                                    '',
-                                    widget.destination,
-                                    widget.startDate,
-                                    widget.endDate,
-                                    [],
-                                    budgetInt,
-                                    agetypeDropdownValue,
-                                    excitementtypeDropdownValue,
-                                  );
-                                  
-                                  PersistentNavBarNavigator.pushNewScreen(
-                                    context,
-                                    screen: TripDetailScreen(
-                                      id: 6,
-                                    ),
-                                    withNavBar:
-                                        false, // OPTIONAL VALUE. True by default.
-                                    pageTransitionAnimation:
-                                        PageTransitionAnimation.cupertino,
-                                  );
-                                },
-                                child: Container(
-                                  //width: 100.0,
-                                  height: 55.0,
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
-                                    border: Border.all(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                    borderRadius: BorderRadius.circular(15.0),
-                                  ),
-                                  child: const Center(
-                                    child: Text(
-                                      'Start planning',
-                                      style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                            FutureBuilder(
+                              future: getEveryItinerary(context),
+                              builder: (context,snapshot) {
+                                return Center(
+                                  child: InkWell(
+                                    onTap: () {
+                                      var budget = budgetInput.text;
+                                      int budgetInt = int.parse(budget);
+                                      var id=createItinerary(
+                                        context,
+                                        'Trip to ${widget.destination}',
+                                        '',
+                                        widget.destination,
+                                        widget.startDate,
+                                        widget.endDate,
+                                        [],
+                                        budgetInt,
+                                        agetypeDropdownValue,
+                                        excitementtypeDropdownValue,
+                                      );
+                                      
+                                      
+                                    },
+                                    child: Container(
+                                      //width: 100.0,
+                                      height: 55.0,
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).primaryColor,
+                                        border: Border.all(
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                        borderRadius: BorderRadius.circular(15.0),
+                                      ),
+                                      child: const Center(
+                                        child: Text(
+                                          'Start planning',
+                                          style: TextStyle(
+                                            fontSize: 18.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ),
+                                );
+                              }
                             ),
                           ],
                         ),

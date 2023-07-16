@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_planner_app_cs_project/main.dart';
@@ -42,7 +43,7 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
     //     isLoading = false;
     //   });
     // }
-    Timer.periodic(const Duration(seconds: 4), (t) {
+    Timer.periodic(const Duration(seconds: 5), (t) {
       setState(() {
         isLoading = false; //set loading to false
       });
@@ -79,196 +80,214 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
 
     TabController tabController = TabController(length: 3, vsync: this);
     return SafeArea(
-      child: FutureBuilder<List<Day>>(
-        future: getItineraryDetails(context, widget.id.toString()),
-        builder: (context,snapshot) {
-          List<Day>? days = snapshot.data;
-          return Scaffold(
-            floatingActionButton: isLoading == false
-                ? Align(
-                    alignment: Alignment.bottomRight,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: SizedBox(
-                            height: 60,
-                            width: 60,
-                            child: GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TripMapScreen(tripDays: days,),
+      child: FutureBuilder<FetchItineraryDetails>(
+          future: getItineraryDetails(context, widget.id.toString()),
+          builder: (context, snapshot) {
+            FetchItineraryDetails? details = snapshot.data;
+            Itinerary itinerary = details!.itinerary;
+            List<dynamic> collaborators = details.collaborators;
+            List<Day> days = details.days;
+
+            String title = itinerary.title;
+            int budget = itinerary.budget;
+
+            String formattedStartDate =
+                DateFormat.MMMd().format(itinerary.starDate);
+            String formattedEndDate =
+                DateFormat.yMMMd().format(itinerary.endDate);
+
+            return Scaffold(
+              floatingActionButton: isLoading == false
+                  ? Align(
+                      alignment: Alignment.bottomRight,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: SizedBox(
+                              height: 60,
+                              width: 60,
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TripMapScreen(
+                                        tripDays: days,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColor,
+                                    borderRadius: BorderRadius.circular(30),
                                   ),
-                                );
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).primaryColor,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                child: Icon(
-                                  Icons.map_rounded,
-                                  color: Colors.white,
-                                  size: 30,
+                                  child: Icon(
+                                    Icons.map_rounded,
+                                    color: Colors.white,
+                                    size: 30,
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        // SizedBox(height: 16),
-                        // Align(
-                        //   alignment: Alignment.bottomRight,
-                        //   child: SizedBox(
-                        //     height: 50,
-                        //     child: SpeedDial(
-                        //       shape: const CircleBorder(),
-                        //       backgroundColor: Theme.of(context).primaryColor,
-                        //       animationCurve: Curves.easeInOut,
-                        //       overlayColor: Colors.black,
-                        //       overlayOpacity: 0.4,
-                        //       openCloseDial: isDialOpen,
-                        //       children: [
-                        //         // SpeedDialChild(
-                        //         //   shape: const CircleBorder(),
-                        //         //   child: IconButton(
-                        //         //     onPressed: () async {
-                        //         //       isDialOpen.value = false;
-                        //         //     },
-                        //         //     icon: Icon(
-                        //         //       Icons.airplane_ticket,
-                        //         //       color: Theme.of(context).primaryColor,
-                        //         //       size: 30,
-                        //         //     ),
-                        //         //   ),
-                        //         //   label: 'Add Flight Ticket',
-                        //         // ),
-                        //         // SpeedDialChild(
-                        //         //   shape: const CircleBorder(),
-                        //         //   child: IconButton(
-                        //         //     onPressed: () async {
-                        //         //       isDialOpen.value = false;
-                        //         //     },
-                        //         //     icon: Icon(
-                        //         //       Icons.local_activity,
-                        //         //       color: Theme.of(context).primaryColor,
-                        //         //       size: 30,
-                        //         //     ),
-                        //         //   ),
-                        //         //   label: 'Add Ticket',
-                        //         // ),
-                        //         // SpeedDialChild(
-                        //         //   shape: const CircleBorder(),
-                        //         //   child: IconButton(
-                        //         //     onPressed: () async {
-                        //         //       Navigator.push(
-                        //         //         context,
-                        //         //         MaterialPageRoute(
-                        //         //           builder: (context) => NowPlaying(),
-                        //         //         ),
-                        //         //       );
-                        //         //       isDialOpen.value = false;
-                        //         //     },
-                        //         //     icon: FaIcon(
-                        //         //       FontAwesomeIcons.spotify,
-                        //         //       color: Theme.of(context).primaryColor,
-                        //         //       size: 30,
-                        //         //     ),
-                        //         //   ),
-                        //         //   label: 'Add Spotify Playlist',
-                        //         // ),
-                        //       ],
-                        //       label: Icon(
-                        //         Icons.add,
-                        //         color: Colors.white,
-                        //         size: 30,
-                        //       ),
-                        //     ),
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                  )
-                : Container(),
-            body: isLoading
-                ? SizedBox(
-                    height: MediaQuery.of(context).size.height / 1.1,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          LoadingAnimationWidget.inkDrop(
-                            color: Theme.of(context).primaryColor,
-                            size: MediaQuery.of(context).size.height * 0.1,
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'Retrieving your itinerary...',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                          // SizedBox(height: 16),
+                          // Align(
+                          //   alignment: Alignment.bottomRight,
+                          //   child: SizedBox(
+                          //     height: 50,
+                          //     child: SpeedDial(
+                          //       shape: const CircleBorder(),
+                          //       backgroundColor: Theme.of(context).primaryColor,
+                          //       animationCurve: Curves.easeInOut,
+                          //       overlayColor: Colors.black,
+                          //       overlayOpacity: 0.4,
+                          //       openCloseDial: isDialOpen,
+                          //       children: [
+                          //         // SpeedDialChild(
+                          //         //   shape: const CircleBorder(),
+                          //         //   child: IconButton(
+                          //         //     onPressed: () async {
+                          //         //       isDialOpen.value = false;
+                          //         //     },
+                          //         //     icon: Icon(
+                          //         //       Icons.airplane_ticket,
+                          //         //       color: Theme.of(context).primaryColor,
+                          //         //       size: 30,
+                          //         //     ),
+                          //         //   ),
+                          //         //   label: 'Add Flight Ticket',
+                          //         // ),
+                          //         // SpeedDialChild(
+                          //         //   shape: const CircleBorder(),
+                          //         //   child: IconButton(
+                          //         //     onPressed: () async {
+                          //         //       isDialOpen.value = false;
+                          //         //     },
+                          //         //     icon: Icon(
+                          //         //       Icons.local_activity,
+                          //         //       color: Theme.of(context).primaryColor,
+                          //         //       size: 30,
+                          //         //     ),
+                          //         //   ),
+                          //         //   label: 'Add Ticket',
+                          //         // ),
+                          //         // SpeedDialChild(
+                          //         //   shape: const CircleBorder(),
+                          //         //   child: IconButton(
+                          //         //     onPressed: () async {
+                          //         //       Navigator.push(
+                          //         //         context,
+                          //         //         MaterialPageRoute(
+                          //         //           builder: (context) => NowPlaying(),
+                          //         //         ),
+                          //         //       );
+                          //         //       isDialOpen.value = false;
+                          //         //     },
+                          //         //     icon: FaIcon(
+                          //         //       FontAwesomeIcons.spotify,
+                          //         //       color: Theme.of(context).primaryColor,
+                          //         //       size: 30,
+                          //         //     ),
+                          //         //   ),
+                          //         //   label: 'Add Spotify Playlist',
+                          //         // ),
+                          //       ],
+                          //       label: Icon(
+                          //         Icons.add,
+                          //         color: Colors.white,
+                          //         size: 30,
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                        ],
+                      ),
+                    )
+                  : Container(),
+              body: isLoading
+                  ? SizedBox(
+                      height: MediaQuery.of(context).size.height / 1.1,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            LoadingAnimationWidget.inkDrop(
+                              color: Theme.of(context).primaryColor,
+                              size: MediaQuery.of(context).size.height * 0.1,
                             ),
+                            SizedBox(height: 16),
+                            Text(
+                              'Retrieving your itinerary...',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  : NestedScrollView(
+                      scrollBehavior: const MaterialScrollBehavior()
+                          .copyWith(scrollbars: false),
+                      headerSliverBuilder: (BuildContext context, bool value) {
+                        return <Widget>[
+                          SliverPersistentHeader(
+                            pinned: true,
+                            floating: false,
+                            delegate: CustomSliverDelegate(
+                              expandedHeight: 180,
+                              tabBar: TabBar(
+                                labelStyle: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                labelPadding:
+                                    const EdgeInsets.only(left: 15, right: 15),
+                                controller: tabController,
+                                indicatorSize: TabBarIndicatorSize.label,
+                                isScrollable: false,
+                                labelColor: Theme.of(context).primaryColor,
+                                unselectedLabelColor: Colors.grey[600],
+                                indicator: CircleTabIndicator(
+                                  color: Theme.of(context).primaryColor,
+                                  radius: 4,
+                                ),
+                                tabs: const [
+                                  Tab(text: "Overview"),
+                                  Tab(text: "Itinerary"),
+                                  Tab(text: "Budget"),
+                                ],
+                              ),
+                              tabController: tabController,
+                              title: title,
+                              startDate: formattedStartDate,
+                              endDate: formattedEndDate,
+                            ),
+                          ),
+                        ];
+                      },
+                      body: TabBarView(
+                        controller: tabController,
+                        children: [
+                          OverviewTab(
+                            tripDays: days,
+                          ),
+                          ItineraryTab(
+                            tripDays: days,
+                          ),
+                          BudgetTab(
+                            tripDays: days,
+                            budget: budget,
                           ),
                         ],
                       ),
                     ),
-                  )
-                : NestedScrollView(
-                    scrollBehavior:
-                        const MaterialScrollBehavior().copyWith(scrollbars: false),
-                    headerSliverBuilder: (BuildContext context, bool value) {
-                      return <Widget>[
-                        SliverPersistentHeader(
-                          pinned: true,
-                          floating: false,
-                          delegate: CustomSliverDelegate(
-                            expandedHeight: 180,
-                            tabBar: TabBar(
-                              labelStyle: const TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w400,
-                              ),
-                              labelPadding:
-                                  const EdgeInsets.only(left: 15, right: 15),
-                              controller: tabController,
-                              indicatorSize: TabBarIndicatorSize.label,
-                              isScrollable: false,
-                              labelColor: Theme.of(context).primaryColor,
-                              unselectedLabelColor: Colors.grey[600],
-                              indicator: CircleTabIndicator(
-                                color: Theme.of(context).primaryColor,
-                                radius: 4,
-                              ),
-                              tabs: const [
-                                Tab(text: "Overview"),
-                                Tab(text: "Itinerary"),
-                                Tab(text: "Budget"),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ];
-                    },
-                    body: TabBarView(
-                            controller: tabController,
-                            children: [
-                              OverviewTab(
-                                tripDays: days,
-                              ),
-                              ItineraryTab(
-                                tripDays: days,
-                              ),
-                              BudgetTab(
-                                tripDays: days,
-                              ),
-                            ],
-                          ),
-                  ),
-          );
-        }
-      ),
+            );
+          }),
     );
   }
 }
@@ -277,11 +296,19 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final bool hideTitleWhenExpanded;
   final TabBar tabBar;
+  final TabController tabController;
+  final String? title;
+  final String? startDate;
+  final String? endDate;
 
   const CustomSliverDelegate({
     required this.expandedHeight,
     this.hideTitleWhenExpanded = true,
     required this.tabBar,
+    required this.tabController,
+    required this.title,
+    required this.startDate,
+    required this.endDate,
   });
 
   @override
@@ -331,9 +358,32 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                 elevation: 0.0,
                 title: Opacity(
                   opacity: hideTitleWhenExpanded ? 1.0 - percent : 1.0,
-                  child: Text("Trip to Naivasha"),
+                  child: Text("$title"),
                 ),
-                bottom: appBarSize < kToolbarHeight ? tabBar : null,
+                bottom: appBarSize < kToolbarHeight
+                    ? TabBar(
+                        labelStyle: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        labelPadding:
+                            const EdgeInsets.only(left: 15, right: 15),
+                        controller: tabController,
+                        indicatorSize: TabBarIndicatorSize.label,
+                        isScrollable: false,
+                        labelColor: Theme.of(context).primaryColor,
+                        unselectedLabelColor: Colors.grey[600],
+                        indicator: CircleTabIndicator(
+                          color: Theme.of(context).primaryColor,
+                          radius: 4,
+                        ),
+                        tabs: const [
+                          Tab(text: "Overview"),
+                          Tab(text: "Itinerary"),
+                          Tab(text: "Budget"),
+                        ],
+                      )
+                    : null,
               ),
             ),
           ),
@@ -375,7 +425,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  "Trip to Naivasha",
+                                  "$title",
                                   style: TextStyle(
                                     fontSize: 25,
                                     fontWeight: FontWeight.bold,
@@ -433,7 +483,6 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                                             ),
                                                             TextButton(
                                                               onPressed: () {
-                                                                
                                                                 deleteItinerary(
                                                                     context,
                                                                     6.toString());
@@ -469,7 +518,7 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                 ),
                                 SizedBox(width: 10),
                                 Text(
-                                  "12th - 14th June 2021",
+                                  "${startDate} - ${endDate}",
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,

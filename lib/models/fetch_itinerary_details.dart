@@ -167,7 +167,7 @@ class Itinerary {
       };
 }
 
-Future<List<Day>> getItineraryDetails(BuildContext context, String id) async {
+Future<FetchItineraryDetails> getItineraryDetails(BuildContext context, String id) async {
   try {
     final Accesstoken = await retrieveToken();
     final response = await http.get(
@@ -192,11 +192,11 @@ Future<List<Day>> getItineraryDetails(BuildContext context, String id) async {
       //   print('Evening Activity: $eveningActivity');
       // }
       
-      final List result = jsonDecode(response.body)['days'];
+      final result = jsonDecode(response.body);
       print(result);
-      return result.map((days) => Day.fromJson(days)).toList();
+      return FetchItineraryDetails.fromJson(result);
     } else {
-      return [];
+      throw Exception('Failed to fetch itinerary details');
     }
   } catch (e) {
     print(e.toString());

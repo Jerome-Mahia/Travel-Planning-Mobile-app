@@ -5,15 +5,16 @@ import 'package:travel_planner_app_cs_project/data/expenses.dart';
 import 'package:travel_planner_app_cs_project/models/fetch_itinerary_details.dart';
 
 class BudgetTab extends StatefulWidget {
-  const BudgetTab({super.key, required this.tripDays});
+  const BudgetTab({super.key, required this.tripDays, required this.budget});
   final List<Day>? tripDays;
+  final int budget;
   @override
   State<BudgetTab> createState() => _BudgetTabState();
 }
 
 class _BudgetTabState extends State<BudgetTab> {
   int totalBudget = 0;
-
+  final formatter = NumberFormat.decimalPattern();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +51,7 @@ class _BudgetTabState extends State<BudgetTab> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'Ksh. 15,000',
+                          'Ksh. ${formatter.format(widget.budget).toString()}',
                           style: TextStyle(
                             fontSize: 25,
                             fontWeight: FontWeight.w600,
@@ -124,7 +125,8 @@ class _BudgetTabState extends State<BudgetTab> {
                             lineHeight: 30.0,
                             percent: 0.8,
                             center: Text(
-                              "Ksh" + ' 12,000',
+                              "Ksh" +
+                                  ' ${formatter.format(totalBudget).toString()}',
                               style: TextStyle(
                                   fontSize: 14.0,
                                   fontWeight: FontWeight.w600,
@@ -152,77 +154,77 @@ class _BudgetTabState extends State<BudgetTab> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  // ElevatedButton(
-                  //   style: ButtonStyle(
-                  //     maximumSize: MaterialStateProperty.all<Size>(
-                  //       Size(155, 40),
-                  //     ),
-                  //     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  //       RoundedRectangleBorder(
-                  //         borderRadius: BorderRadius.circular(18.0),
-                  //       ),
-                  //     ),
-                  //     backgroundColor: MaterialStateProperty.all<Color>(
-                  //         Theme.of(context).primaryColor),
-                  //   ),
-                  //   onPressed: () {
-                  //     showModalBottomSheet(
-                  //         constraints: BoxConstraints(
-                  //           maxHeight: MediaQuery.of(context).size.height * 0.9,
-                  //           minHeight: MediaQuery.of(context).size.height * 0.9,
-                  //         ),
-                  //         context: context,
-                  //         builder: (context) {
-                  //           return Column(
-                  //             mainAxisSize: MainAxisSize.min,
-                  //             children: <Widget>[
-                  //               Padding(
-                  //                 padding: const EdgeInsets.all(8.0),
-                  //                 child: Text(
-                  //                   "Edit Budget",
-                  //                   style: TextStyle(
-                  //                     fontSize: 18,
-                  //                     fontWeight: FontWeight.bold,
-                  //                   ),
-                  //                 ),
-                  //               ),
-                  //               SizedBox(
-                  //                 height: 20,
-                  //               ),
-                  //               Padding(
-                  //                 padding: const EdgeInsets.all(10.0),
-                  //                 child: TextField(
-                  //                   decoration: InputDecoration(
-                  //                     border: UnderlineInputBorder(),
-                  //                     labelText: 'Budget',
-                  //                   ),
-                  //                 ),
-                  //               ),
-                  //               SizedBox(
-                  //                 height: 10,
-                  //               ),
-                  //             ],
-                  //           );
-                  //         });
-                  //   },
-                  //   child: Row(
-                  //     children: [
-                  //       Icon(
-                  //         Icons.add,
-                  //         size: 20,
-                  //         color: Colors.white,
-                  //       ),
-                  //       Text(
-                  //         'Add expense',
-                  //         style: TextStyle(
-                  //           fontSize: 14.0,
-                  //           fontWeight: FontWeight.w600,
-                  //           color: Colors.white,
-                  //         ),
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      maximumSize: MaterialStateProperty.all<Size>(
+                        Size(155, 40),
+                      ),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                        ),
+                      ),
+                      backgroundColor: MaterialStateProperty.all<Color>(
+                          Theme.of(context).primaryColor),
+                    ),
+                    onPressed: () {
+                      showModalBottomSheet(
+                          constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height * 0.9,
+                            minHeight: MediaQuery.of(context).size.height * 0.9,
+                          ),
+                          context: context,
+                          builder: (context) {
+                            return Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    "Edit Budget",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      border: UnderlineInputBorder(),
+                                      labelText: 'Budget',
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                              ],
+                            );
+                          });
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.add,
+                          size: 20,
+                          color: Colors.white,
+                        ),
+                        Text(
+                          'Add expense',
+                          style: TextStyle(
+                            fontSize: 14.0,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(
@@ -238,9 +240,14 @@ class _BudgetTabState extends State<BudgetTab> {
                   String formattedDate =
                       DateFormat.E().add_d().format(dailyActivities.date);
 
-                  // for(int i = 0; i < widget.tripDays!.length; i++) {
-                  //   print(widget.tripDays![i].morningActivity);
-                  // }
+                  for (int i = 0; i <= widget.tripDays!.length; ) {
+                    totalBudget = dailyActivities.morningBudget +
+                        dailyActivities.afternoonBudget +
+                        dailyActivities.eveningBudget;
+                   continue;
+                  }
+
+                  print('total budget is $totalBudget');
 
                   return Column(
                     children: [

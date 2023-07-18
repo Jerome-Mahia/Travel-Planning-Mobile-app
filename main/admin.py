@@ -60,7 +60,7 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ('is_staff',)
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
-        ('Personal info', {'fields': ('name','phone','dob','image','last_login')}),
+        ('Personal info', {'fields': ('name','phone','dob','image','friends','last_login')}),
         ('Permissions', {'fields': ('is_staff','is_superuser', )}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
@@ -90,6 +90,10 @@ class ItineraryDayAdmin(admin.ModelAdmin):
 class DestinationAdmin(admin.ModelAdmin):
     list_display = ('name','id')
 
+class RequestAdmin(admin.ModelAdmin):
+    list_display = ("sent_to","sent_by","status","id")
+
+admin.site.register(Request,RequestAdmin)
 admin.site.register(User, UserAdmin,)
 admin.site.register(VerificationCode, VerificationCodeAdmin,)
 admin.site.register(Itinerary,ItineraryAdmin)

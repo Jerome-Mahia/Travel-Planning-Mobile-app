@@ -17,4 +17,6 @@ urlpatterns = [
     path('edit-itinerary-day/<str:pk>', EditItineraryDay.as_view()),
     path('search-users', SearchUsers.as_view()),
     path('get-destinations', GetDestinations.as_view()),
+    path('handle-requests', HandleRequests.as_view()),
+    path('handle-friends', HandleFriends.as_view()),
 ]

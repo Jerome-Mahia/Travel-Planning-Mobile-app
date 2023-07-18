@@ -22,3 +22,8 @@ class DestinationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Destination
         fields = '__all__'
+
+class RequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        models = Request
+        fields = '__all__'

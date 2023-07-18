@@ -50,6 +50,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     image = CloudinaryField('image',null=True,blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    friends = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='user_friends',blank=True)
     
 
 
@@ -137,3 +138,17 @@ class Destination(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+class Request(models.Model):
+    class Status(models.TextChoices):
+        DENIED = 'Denied'
+        ACCEPTED = 'Accepted'
+        PENDING = 'Pending'
+        
+    sent_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='by')
+    sent_to = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE , related_name='to')
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
+    
+    def __str__(self):
+       return  "{}".format(self.pk)

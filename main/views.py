@@ -560,3 +560,86 @@ class GetDestinations(APIView):
             {'destinations': destinations.data},
             status=status.HTTP_200_OK   
         )
+    def post(self,request):
+        search = request.data['search']
+        destinations = Destination.objects.filter(name__icontains=search)
+        destinations = DestinationSerializer(destinations,many=True)
+        return Response (
+            {'destinations': destinations.data},
+        ) 
+    
+class HandleRequests(APIView):
+    def get(self,request):
+        user = request.user
+        requests = Request.objects.filter(sent_to=user, status='Pending')
+      
+        queryset = []
+        for request in requests:
+            username1=request.sent_by.name
+            
+            queryset.append({"id":request.id, "sent_by":username1})
+        
+        return Response (         
+            {'requests': queryset},
+            status=status.HTTP_200_OK   
+        )
+    
+    def post(self,request):
+        data = request.data
+        sent_to = data['sent_to']
+        sent_to = User.objects.get(id=sent_to)
+        sent_by = request.user
+       
+        if not Request.objects.filter(sent_to=sent_to, sent_by=sent_by,status='Pending').exists():
+            request = Request.objects.create(sent_to=sent_to, sent_by=sent_by, status='Pending')
+            return Response(
+                                {'success': ' Request created '},
+                                status=status.HTTP_201_CREATED
+                            )
+        else:
+            return Response(
+                            {'error': 'Request already created'},
+                            status=status.HTTP_400_BAD_REQUEST
+                        )
+        
+    def put(self,request):
+        data = request.data
+        id = data['id']
+        user = request.user
+        try:
+            request  =  Request.objects.get(id=id, sent_to=user, status='Pending')
+        except:
+            return Response(
+                    {'error': 'Request not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        
+        user.friends.add(request.sent_by)
+        request.status = 'Accepted'
+        request.save()
+
+        return Response(
+                            {'success': ' Request updated '},
+                            status=status.HTTP_200_OK
+                        )
+    
+class HandleFriends(APIView):
+    def get(self,request):
+        user = request.user
+        friends = user.friends.all()
+        friends = UserSerializer(friends,many=True)
+        return Response (         
+            {'friends': friends.data},
+            status=status.HTTP_200_OK   
+        )
+    
+    def delete(self,request):
+        data = request.data
+        friend_id = data['friend_id']
+        friend = User.objects.get(id=friend_id)
+        user = request.user
+        user.friends.remove(friend)
+        return Response (         
+            {'success': 'Friend removed successfully'},
+            status=status.HTTP_200_OK   
+        )

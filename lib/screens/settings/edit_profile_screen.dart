@@ -1,20 +1,26 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:rounded_loading_button/rounded_loading_button.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
+import 'package:travel_planner_app_cs_project/models/edit_user_details.dart';
+import 'package:travel_planner_app_cs_project/models/login.dart';
 import 'package:travel_planner_app_cs_project/screens/settings/view_profile_screen.dart';
+import 'package:http/http.dart' as http;
 
-class EditProfileScreen extends StatefulWidget {
+class EditProfileScreen extends ConsumerStatefulWidget {
   const EditProfileScreen({super.key});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  _EditProfileScreenState createState() => _EditProfileScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   bool _isEnabled = true;
   final _editProfileFormKey = GlobalKey<FormState>();
   final TextEditingController usernameController = TextEditingController();
@@ -23,36 +29,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   final RoundedLoadingButtonController editProfileBtnController =
       RoundedLoadingButtonController();
-
-  void _doSomething(RoundedLoadingButtonController controller) async {
-    try {
-      // if (_loginFormKey.currentState!.validate()) {
-      //   loginUser(context, emailController.text, passwordController.text);
-      //   final startTime = DateTime.now();
-      //   final endTime = DateTime.now();
-      //   final executionDuration = endTime.difference(startTime);
-      //   if (executionDuration > Duration(seconds: 10)) {
-      //     controller.error();
-      //     controller.reset();
-      //     return;
-      //   }
-      // }
-      Timer(const Duration(seconds: 2), () {
-        // makePlanBtnController.success();
-        if (_editProfileFormKey.currentState!.validate()) {
-          controller.success();
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ViewProfileScreen()),
-          ); // ref.read(authProvider.notifier).state = true;
-        } else {
-          controller.error();
-        }
-      });
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
 
   XFile? _image;
   bool passToggle = true;
@@ -108,6 +84,66 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    editUserDetails(BuildContext context, String name, String phone,
+        DateTime dob, String image, int id) async {
+      try {
+        final Accesstoken = await retrieveToken();
+        final response = await http.post(
+          Uri.parse("https://fari-jcuo.onrender.com/main/user-details"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Bearer ${Accesstoken.toString()}',
+          },
+          body: jsonEncode(<String, String>{
+            'name': name,
+            'phone': phone,
+            'dob': dob.toString(),
+            'image': image,
+            'id': id.toString(),
+          }),
+        );
+        if (response.statusCode == 200) {
+          final body = json.decode(response.body);
+          ref.read(usernameProvider.notifier).state = body['name'];
+          ref.read(useremailProvider.notifier).state = body['email'];
+          ref.read(userphoneProvider.notifier).state = body['phone'];
+          ref.read(userimageProvider.notifier).state = body['image'];
+          ref.read(useridProvider.notifier).state = body['id'];
+          return Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ViewProfileScreen()),
+          );
+        } else {
+          return SnackBar(content: Text('Unable to edit user details'));
+        }
+      } catch (e) {
+        print(e.toString());
+        throw Exception('Failed to edit user details: $e');
+      }
+    }
+
+    void _doSomething(RoundedLoadingButtonController controller) async {
+      try {
+        String dob= ref.watch(userdobProvider).toString();
+        if (_editProfileFormKey.currentState!.validate()) {
+          // editUserDetails(context, usernameController.text,
+          //     phoneController.text, dob, _image!.path, 1);
+          final startTime = DateTime.now();
+          final endTime = DateTime.now();
+          final executionDuration = endTime.difference(startTime);
+          if (executionDuration > Duration(seconds: 10)) {
+            controller.error();
+            controller.reset();
+            return;
+          }
+        } else {
+          controller.error();
+        }
+      } catch (e) {
+        throw Exception(e);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.black,
@@ -194,66 +230,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               size: 20.0,
                             ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 20.0,
-                        ),
-                        TextFormField(
-                          controller: emailController,
-                          enabled: _isEnabled,
-                          keyboardType: TextInputType.emailAddress,
-                          validator: (value) {
-                            if (value == null || !value.contains('@')) {
-                              return 'Please provide a valid email address';
-                            } else {
-                              return null;
-                            }
-                          },
-                          decoration: InputDecoration(
-                            contentPadding:
-                                const EdgeInsets.symmetric(vertical: 15.0),
-                            border: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: const BorderSide(
-                                width: 0.5,
-                              ),
-                            ),
-                            enabledBorder: UnderlineInputBorder(
-                              borderRadius: BorderRadius.circular(10.0),
-                              borderSide: const BorderSide(
-                                width: 0.5,
-                                color: Colors.grey,
-                              ),
-                            ),
-                            hintText: 'Email',
-                            prefixIcon: const Icon(
-                              Icons.email_rounded,
-                              size: 20.0,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10.0,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.info_outline_rounded,
-                              size: 20.0,
-                              color: const Color.fromARGB(255, 0, 104, 190),
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              'Password must be at least 8 characters',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                color: const Color.fromARGB(255, 0, 104, 190),
-                              ),
-                            ),
-                          ],
                         ),
                         const SizedBox(
                           height: 20,

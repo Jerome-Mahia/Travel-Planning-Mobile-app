@@ -1,11 +1,19 @@
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:travel_planner_app_cs_project/main.dart';
 
-class HomeAppBar extends StatelessWidget {
+class HomeAppBar extends ConsumerStatefulWidget {
   const HomeAppBar({
     Key? key,
   }) : super(key: key);
 
+  @override
+  _HomeAppBarState createState() => _HomeAppBarState();
+}
+
+class _HomeAppBarState extends ConsumerState<HomeAppBar> {
   @override
   Widget build(BuildContext context) {
     String greeting() {
@@ -53,11 +61,14 @@ class HomeAppBar extends StatelessWidget {
                 onTap: () {},
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(8.0),
-                  child: Image.asset(
-                    "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                  child: FancyShimmerImage(
+                    imageUrl:
+                        'https://res.cloudinary.com/dgcbtjq3c/${ref.watch(userimageProvider)}',
+                    shimmerBaseColor: Colors.grey[300],
+                    shimmerHighlightColor: Colors.grey[100],
                     width: 45,
                     height: 45,
-                    fit: BoxFit.fitWidth,
+                    boxFit: BoxFit.cover,
                   ),
                 ),
               ),

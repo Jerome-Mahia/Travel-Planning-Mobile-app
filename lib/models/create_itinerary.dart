@@ -201,8 +201,7 @@ createItinerary(
 
     if (response.statusCode == 201) {
       var id = jsonDecode(response.body)['itinerary']['id'];
-      print(id);
-      sleep(Duration(seconds: 4));
+      
       return PersistentNavBarNavigator.pushNewScreen(
         context,
         screen: TripDetailScreen(

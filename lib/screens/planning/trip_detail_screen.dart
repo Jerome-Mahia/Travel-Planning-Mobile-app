@@ -1,25 +1,30 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/data/step_guide.dart';
 import 'package:travel_planner_app_cs_project/models/delete_itinerary.dart';
 import 'package:travel_planner_app_cs_project/models/fetch_itinerary_details.dart';
+import 'package:travel_planner_app_cs_project/models/login.dart';
+import 'package:travel_planner_app_cs_project/models/search_friends.dart';
 import 'package:travel_planner_app_cs_project/screens/home/feed_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/map/trip_map_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/budget_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/itinerary_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/overview_screen.dart';
-import 'package:travel_planner_app_cs_project/screens/spotify/now_playing_screen.dart';
-import 'package:travel_planner_app_cs_project/screens/spotify/spotify_screen.dart';
 import 'package:travel_planner_app_cs_project/widgets/bottom_navbar_widget.dart';
+import 'package:http/http.dart' as http;
 
 class TripDetailScreen extends ConsumerStatefulWidget {
   const TripDetailScreen({super.key, required this.id});
@@ -31,25 +36,25 @@ class TripDetailScreen extends ConsumerStatefulWidget {
 
 class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
     with TickerProviderStateMixin {
-  bool isLoading = true;
-  void retrieveItinerary() {
-    // if(getItineraryDetails(context) == null){
-    //   setState(() {
-    //     isLoading = true;
-    //   });
-    // }
-    // else{
-    //   setState(() {
-    //     isLoading = false;
-    //   });
-    // }
-    Timer.periodic(const Duration(seconds: 5), (t) {
-      setState(() {
-        isLoading = false; //set loading to false
-      });
-      t.cancel(); //stops the timer
-    });
-  }
+  // bool isLoading = true;
+  // void retrieveItinerary() {
+  //   // if(getItineraryDetails(context) == null){
+  //   //   setState(() {
+  //   //     isLoading = true;
+  //   //   });
+  //   // }
+  //   // else{
+  //   //   setState(() {
+  //   //     isLoading = false;
+  //   //   });
+  //   // }
+  //   Timer.periodic(const Duration(seconds: 5), (t) {
+  //     setState(() {
+  //       isLoading = false; //set loading to false
+  //     });
+  //     t.cancel(); //stops the timer
+  //   });
+  // }
 
   late AnimationController _animationController;
 
@@ -57,7 +62,7 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
   bool showTab = true;
   @override
   void initState() {
-    retrieveItinerary(); //start the timer on loading
+    // retrieveItinerary(); //start the timer on loading
     super.initState();
     _animationController = AnimationController(
       vsync: this,
@@ -96,198 +101,469 @@ class _TripDetailScreenState extends ConsumerState<TripDetailScreen>
             String formattedEndDate =
                 DateFormat.yMMMd().format(itinerary.endDate);
 
-            return Scaffold(
-              floatingActionButton: isLoading == false
-                  ? Align(
-                      alignment: Alignment.bottomRight,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: SizedBox(
-                              height: 60,
-                              width: 60,
-                              child: GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => TripMapScreen(
-                                        tripDays: days,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).primaryColor,
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  child: Icon(
-                                    Icons.map_rounded,
-                                    color: Colors.white,
-                                    size: 30,
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Scaffold(
+                body: SizedBox(
+                  height: MediaQuery.of(context).size.height / 1.1,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        LoadingAnimationWidget.inkDrop(
+                          color: Theme.of(context).primaryColor,
+                          size: MediaQuery.of(context).size.height * 0.1,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Retrieving your itinerary...',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            } else if (snapshot.hasData) {
+              return Scaffold(
+                floatingActionButton: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: SizedBox(
+                          height: 60,
+                          width: 60,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TripMapScreen(
+                                    tripDays: days,
                                   ),
                                 ),
+                              );
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                              child: Icon(
+                                Icons.map_rounded,
+                                color: Colors.white,
+                                size: 30,
                               ),
                             ),
                           ),
-                          // SizedBox(height: 16),
-                          // Align(
-                          //   alignment: Alignment.bottomRight,
-                          //   child: SizedBox(
-                          //     height: 50,
-                          //     child: SpeedDial(
-                          //       shape: const CircleBorder(),
-                          //       backgroundColor: Theme.of(context).primaryColor,
-                          //       animationCurve: Curves.easeInOut,
-                          //       overlayColor: Colors.black,
-                          //       overlayOpacity: 0.4,
-                          //       openCloseDial: isDialOpen,
-                          //       children: [
-                          //         // SpeedDialChild(
-                          //         //   shape: const CircleBorder(),
-                          //         //   child: IconButton(
-                          //         //     onPressed: () async {
-                          //         //       isDialOpen.value = false;
-                          //         //     },
-                          //         //     icon: Icon(
-                          //         //       Icons.airplane_ticket,
-                          //         //       color: Theme.of(context).primaryColor,
-                          //         //       size: 30,
-                          //         //     ),
-                          //         //   ),
-                          //         //   label: 'Add Flight Ticket',
-                          //         // ),
-                          //         // SpeedDialChild(
-                          //         //   shape: const CircleBorder(),
-                          //         //   child: IconButton(
-                          //         //     onPressed: () async {
-                          //         //       isDialOpen.value = false;
-                          //         //     },
-                          //         //     icon: Icon(
-                          //         //       Icons.local_activity,
-                          //         //       color: Theme.of(context).primaryColor,
-                          //         //       size: 30,
-                          //         //     ),
-                          //         //   ),
-                          //         //   label: 'Add Ticket',
-                          //         // ),
-                          //         // SpeedDialChild(
-                          //         //   shape: const CircleBorder(),
-                          //         //   child: IconButton(
-                          //         //     onPressed: () async {
-                          //         //       Navigator.push(
-                          //         //         context,
-                          //         //         MaterialPageRoute(
-                          //         //           builder: (context) => NowPlaying(),
-                          //         //         ),
-                          //         //       );
-                          //         //       isDialOpen.value = false;
-                          //         //     },
-                          //         //     icon: FaIcon(
-                          //         //       FontAwesomeIcons.spotify,
-                          //         //       color: Theme.of(context).primaryColor,
-                          //         //       size: 30,
-                          //         //     ),
-                          //         //   ),
-                          //         //   label: 'Add Spotify Playlist',
-                          //         // ),
-                          //       ],
-                          //       label: Icon(
-                          //         Icons.add,
-                          //         color: Colors.white,
-                          //         size: 30,
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
-                        ],
-                      ),
-                    )
-                  : Container(),
-              body: isLoading
-                  ? SizedBox(
-                      height: MediaQuery.of(context).size.height / 1.1,
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            LoadingAnimationWidget.inkDrop(
-                              color: Theme.of(context).primaryColor,
-                              size: MediaQuery.of(context).size.height * 0.1,
-                            ),
-                            SizedBox(height: 16),
-                            Text(
-                              'Retrieving your itinerary...',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    )
-                  : NestedScrollView(
-                      scrollBehavior: const MaterialScrollBehavior()
-                          .copyWith(scrollbars: false),
-                      headerSliverBuilder: (BuildContext context, bool value) {
-                        return <Widget>[
-                          SliverPersistentHeader(
-                            pinned: true,
-                            floating: false,
-                            delegate: CustomSliverDelegate(
-                              expandedHeight: 180,
-                              tabBar: TabBar(
-                                labelStyle: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w400,
-                                ),
-                                labelPadding:
-                                    const EdgeInsets.only(left: 15, right: 15),
-                                controller: tabController,
-                                indicatorSize: TabBarIndicatorSize.label,
-                                isScrollable: false,
-                                labelColor: Theme.of(context).primaryColor,
-                                unselectedLabelColor: Colors.grey[600],
-                                indicator: CircleTabIndicator(
-                                  color: Theme.of(context).primaryColor,
-                                  radius: 4,
-                                ),
-                                tabs: const [
-                                  Tab(text: "Overview"),
-                                  Tab(text: "Itinerary"),
-                                  Tab(text: "Budget"),
-                                ],
+                      // SizedBox(height: 16),
+                      // Align(
+                      //   alignment: Alignment.bottomRight,
+                      //   child: SizedBox(
+                      //     height: 50,
+                      //     child: SpeedDial(
+                      //       shape: const CircleBorder(),
+                      //       backgroundColor: Theme.of(context).primaryColor,
+                      //       animationCurve: Curves.easeInOut,
+                      //       overlayColor: Colors.black,
+                      //       overlayOpacity: 0.4,
+                      //       openCloseDial: isDialOpen,
+                      //       children: [
+                      //         // SpeedDialChild(
+                      //         //   shape: const CircleBorder(),
+                      //         //   child: IconButton(
+                      //         //     onPressed: () async {
+                      //         //       isDialOpen.value = false;
+                      //         //     },
+                      //         //     icon: Icon(
+                      //         //       Icons.airplane_ticket,
+                      //         //       color: Theme.of(context).primaryColor,
+                      //         //       size: 30,
+                      //         //     ),
+                      //         //   ),
+                      //         //   label: 'Add Flight Ticket',
+                      //         // ),
+                      //         // SpeedDialChild(
+                      //         //   shape: const CircleBorder(),
+                      //         //   child: IconButton(
+                      //         //     onPressed: () async {
+                      //         //       isDialOpen.value = false;
+                      //         //     },
+                      //         //     icon: Icon(
+                      //         //       Icons.local_activity,
+                      //         //       color: Theme.of(context).primaryColor,
+                      //         //       size: 30,
+                      //         //     ),
+                      //         //   ),
+                      //         //   label: 'Add Ticket',
+                      //         // ),
+                      //         // SpeedDialChild(
+                      //         //   shape: const CircleBorder(),
+                      //         //   child: IconButton(
+                      //         //     onPressed: () async {
+                      //         //       Navigator.push(
+                      //         //         context,
+                      //         //         MaterialPageRoute(
+                      //         //           builder: (context) => NowPlaying(),
+                      //         //         ),
+                      //         //       );
+                      //         //       isDialOpen.value = false;
+                      //         //     },
+                      //         //     icon: FaIcon(
+                      //         //       FontAwesomeIcons.spotify,
+                      //         //       color: Theme.of(context).primaryColor,
+                      //         //       size: 30,
+                      //         //     ),
+                      //         //   ),
+                      //         //   label: 'Add Spotify Playlist',
+                      //         // ),
+                      //       ],
+                      //       label: Icon(
+                      //         Icons.add,
+                      //         color: Colors.white,
+                      //         size: 30,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ),
+                body: NestedScrollView(
+                  scrollBehavior: const MaterialScrollBehavior()
+                      .copyWith(scrollbars: false),
+                  headerSliverBuilder: (BuildContext context, bool value) {
+                    return <Widget>[
+                      SliverPersistentHeader(
+                        pinned: true,
+                        floating: false,
+                        delegate: CustomSliverDelegate(
+                            expandedHeight: 180,
+                            tabBar: TabBar(
+                              labelStyle: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w400,
                               ),
-                              tabController: tabController,
-                              title: title,
-                              startDate: formattedStartDate,
-                              endDate: formattedEndDate,
+                              labelPadding:
+                                  const EdgeInsets.only(left: 15, right: 15),
+                              controller: tabController,
+                              indicatorSize: TabBarIndicatorSize.label,
+                              isScrollable: false,
+                              labelColor: Theme.of(context).primaryColor,
+                              unselectedLabelColor: Colors.grey[600],
+                              indicator: CircleTabIndicator(
+                                color: Theme.of(context).primaryColor,
+                                radius: 4,
+                              ),
+                              tabs: const [
+                                Tab(text: "Overview"),
+                                Tab(text: "Itinerary"),
+                                Tab(text: "Budget"),
+                              ],
                             ),
+                            tabController: tabController,
+                            title: title,
+                            startDate: formattedStartDate,
+                            endDate: formattedEndDate,
+                            image: ref.watch(userimageProvider),
+                            id: itinerary.id.toString(),
+                            name: ref.watch(usernameProvider),
+                            page: InviteFriendsWidget(
+                                tripId: itinerary.id.toString())),
+                      ),
+                    ];
+                  },
+                  body: TabBarView(
+                    controller: tabController,
+                    children: [
+                      OverviewTab(
+                        tripDays: days,
+                      ),
+                      ItineraryTab(
+                        tripDays: days,
+                        id: itinerary.id.toString(),
+                      ),
+                      BudgetTab(
+                        tripDays: days,
+                        budget: budget,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          }),
+    );
+  }
+}
+
+class InviteFriendsWidget extends StatefulWidget {
+  const InviteFriendsWidget({
+    Key? key,
+    required this.tripId,
+  }) : super(key: key);
+  final String? tripId;
+
+  @override
+  State<InviteFriendsWidget> createState() => _InviteFriendsWidgetState();
+}
+
+class _InviteFriendsWidgetState extends State<InviteFriendsWidget> {
+  @override
+  Widget build(BuildContext context) {
+    final TextEditingController friendUserNameController =
+        TextEditingController();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 16),
+          Text(
+            "Invite Friends",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            "Invite your friends to join this trip",
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            constraints: const BoxConstraints(maxWidth: double.infinity),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: friendUserNameController,
+                    keyboardType: TextInputType.text,
+                    onSubmitted: (value) {},
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.search),
+                      prefixIconColor: Colors.grey[800],
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 15.0,
+                        horizontal: 20,
+                      ),
+                      fillColor: Colors.grey[200],
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        borderSide: const BorderSide(width: 0.8),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        borderSide: const BorderSide(
+                          width: 0.8,
+                          color: Color.fromRGBO(255, 238, 238, 1),
+                        ),
+                      ),
+                      hintText: 'Enter friends username',
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                InkWell(
+                  onTap: () {},
+                  child: Container(
+                    width: 80.0,
+                    height: 40.0,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      border: Border.all(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      borderRadius: BorderRadius.circular(15.0),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Center(
+                        child: Text(
+                          'Search',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500,
                           ),
-                        ];
-                      },
-                      body: TabBarView(
-                        controller: tabController,
-                        children: [
-                          OverviewTab(
-                            tripDays: days,
-                          ),
-                          ItineraryTab(
-                            tripDays: days,
-                          ),
-                          BudgetTab(
-                            tripDays: days,
-                            budget: budget,
-                          ),
-                        ],
+                        ),
                       ),
                     ),
-            );
-          }),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // const SizedBox(height: 16),
+          // Container(
+          //   height: 50,
+          //   decoration: BoxDecoration(
+          //     color: Theme.of(context).primaryColor,
+          //     borderRadius: BorderRadius.circular(30),
+          //   ),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.center,
+          //     children: [
+          //       const Icon(
+          //         Icons.person_add,
+          //         color: Colors.white,
+          //         size: 30,
+          //       ),
+          //       const SizedBox(width: 10),
+          //       const Text(
+          //         "Invite Friends",
+          //         style: TextStyle(
+          //           fontSize: 15,
+          //           fontWeight: FontWeight.w400,
+          //           color: Colors.white,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          const SizedBox(height: 16),
+          const Text(
+            "Invite Friends",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          FutureBuilder<List<User>>(
+              future: searchFriends(context, friendUserNameController.text),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                      child:
+                          CircularProgressIndicator()); // Show a loading indicator while data is being fetched
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else if (snapshot.data!.isEmpty) {
+                } else if (snapshot.hasData) {
+                  final friends = snapshot.data;
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: friends!.length,
+                    itemBuilder: (context, index) {
+                      User friend = friends[index];
+                      return Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: ListTile(
+                          title: Text(
+                            friend.name,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          subtitle: Text(
+                            friend.email,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                          trailing: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).primaryColor,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: IconButton(
+                              onPressed: () async {
+                                addCollaborator(BuildContext context,
+                                    String tripId, int friendId) async {
+                                  try {
+                                    final Accesstoken = await retrieveToken();
+                                    final response = await http.post(
+                                      Uri.parse(
+                                          "https://fari-jcuo.onrender.com/main/add-remove-collaborator/$tripId"),
+                                      headers: <String, String>{
+                                        'Content-Type':
+                                            'application/json; charset=UTF-8',
+                                        'Authorization':
+                                            'Bearer ${Accesstoken.toString()}',
+                                      },
+                                      body: jsonEncode(<String, dynamic>{
+                                        'collaborator': friendId,
+                                        'action': 'add'
+                                      }),
+                                    );
+
+                                    if (response.statusCode == 200) {
+                                      Navigator.pop(context);
+                                      return SnackBar(
+                                          content: Text(
+                                              'Successfully added collaborator'));
+                                    } else {
+                                      return SnackBar(
+                                          content: Text(
+                                              'Unable to add collaborator'));
+                                    }
+                                  } catch (e) {
+                                    print(e.toString());
+                                    throw Exception(
+                                        'Failed to add collaborator: ${e.toString()}');
+                                  }
+                                }
+
+                                setState(() {
+                                  addCollaborator(context,
+                                      widget.tripId.toString(), friend.id);
+                                  collaborator_list.add(
+                                    User(
+                                      id: friend.id,
+                                      name: friend.name,
+                                      email: friend.email,
+                                      phone: friend.phone,
+                                    ),
+                                  );
+                                });
+                              },
+                              icon: Icon(
+                                Icons.person_add,
+                                color: Colors.white,
+                                size: 20,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return Center(
+                  child: const Text(
+                    "You have not invited any friends yet",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                );
+              }),
+        ],
+      ),
     );
   }
 }
@@ -300,6 +576,10 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
   final String? title;
   final String? startDate;
   final String? endDate;
+  final String? image;
+  final String? id;
+  final String? name;
+  final Widget page;
 
   const CustomSliverDelegate({
     required this.expandedHeight,
@@ -309,6 +589,10 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
     required this.title,
     required this.startDate,
     required this.endDate,
+    required this.image,
+    required this.id,
+    required this.name,
+    required this.page,
   });
 
   @override
@@ -485,7 +769,9 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                                               onPressed: () {
                                                                 deleteItinerary(
                                                                     context,
-                                                                    6.toString());
+                                                                    id.toString());
+                                                                Navigator.pop(
+                                                                    context);
                                                               },
                                                               child: Text(
                                                                   'Delete'),
@@ -534,8 +820,21 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                               children: [
                                 ElevatedButton(
                                   onPressed: () async {
-                                    await Share.share(
-                                        'check out our website https://fari-jcuo.onrender.com/');
+                                    String url =
+                                        'https://res.cloudinary.com/dgcbtjq3c/${image}';
+                                    http.Response response = await http.get(
+                                      Uri.parse(url),
+                                    );
+                                    final directory =
+                                        await getTemporaryDirectory();
+                                    final path = directory.path;
+                                    final file = File('$path/image.png');
+                                    file.writeAsBytes(response.bodyBytes);
+                                    await Share.shareFiles(['$path/image.png'],
+                                        text:
+                                            'Check out this amazing ${title} on Fari Travel Planner App!');
+                                    // await Share.share(
+                                    //     'check out our website https://fari-jcuo.onrender.com/');
                                   },
                                   child: Text(
                                     'Share Trip',
@@ -584,28 +883,174 @@ class CustomSliverDelegate extends SliverPersistentHeaderDelegate {
                                                           FontWeight.w600,
                                                     )),
                                                 onTap: () {
-                                                  Navigator.pop(context);
+                                                  showModalBottomSheet(
+                                                      context: context,
+                                                      builder: (context) =>
+                                                          page);
+                                                },
+                                              ),
+                                              ListView.builder(
+                                                itemCount:
+                                                    collaborator_list.length,
+                                                shrinkWrap: true,
+                                                itemBuilder: (context, index) {
+                                                  User user =
+                                                      collaborator_list[index];
+                                                  return Column(
+                                                    children: [
+                                                      Divider(),
+                                                      ListTile(
+                                                        leading: Container(
+                                                          height: 35,
+                                                          width: 35,
+                                                          child: ClipOval(
+                                                            child:
+                                                                FancyShimmerImage(
+                                                              imageUrl:
+                                                                  'https://res.cloudinary.com/dgcbtjq3c/${image}',
+                                                              boxFit:
+                                                                  BoxFit.cover,
+                                                              shimmerBaseColor:
+                                                                  Colors.grey[
+                                                                      300],
+                                                              shimmerHighlightColor:
+                                                                  Colors.grey[
+                                                                      100],
+                                                            ),
+                                                          ),
+                                                        ),
+                                                        title: Text(
+                                                          '${user.name}',
+                                                          style: TextStyle(
+                                                            fontSize: 18,
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                          ),
+                                                        ),
+                                                        trailing: Container(
+                                                          width: 40,
+                                                          height: 40,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                                  shape: BoxShape
+                                                                      .circle,
+                                                                  color: Colors
+                                                                      .red),
+                                                          child: Center(
+                                                            child: IconButton(
+                                                              icon: Icon(
+                                                                Icons.delete,
+                                                                color: Colors
+                                                                    .white,
+                                                              ),
+                                                              onPressed: () {
+                                                                showDialog(
+                                                                    context:
+                                                                        context,
+                                                                    builder:
+                                                                        (context) {
+                                                                      return AlertDialog(
+                                                                        title: Text(
+                                                                            'Remove Collaborator'),
+                                                                        content:
+                                                                            Text('Are you sure you want to remove this collaborator?'),
+                                                                        actions: <Widget>[
+                                                                          TextButton(
+                                                                            onPressed:
+                                                                                () {
+                                                                              Navigator.pop(context);
+                                                                            },
+                                                                            child:
+                                                                                Text('Cancel'),
+                                                                          ),
+                                                                          TextButton(
+                                                                            onPressed:
+                                                                                () {
+                                                                              removeCollaborator(BuildContext context, String tripId, int friendId) async {
+                                                                                try {
+                                                                                  final Accesstoken = await retrieveToken();
+                                                                                  final response = await http.post(
+                                                                                    Uri.parse("https://fari-jcuo.onrender.com/main/add-remove-collaborator/$tripId"),
+                                                                                    headers: <String, String>{
+                                                                                      'Content-Type': 'application/json; charset=UTF-8',
+                                                                                      'Authorization': 'Bearer ${Accesstoken.toString()}',
+                                                                                    },
+                                                                                    body: jsonEncode(<String, dynamic>{
+                                                                                      'collaborator': friendId,
+                                                                                      'action': 'remove'
+                                                                                    }),
+                                                                                  );
+
+                                                                                  if (response.statusCode == 200) {
+                                                                                    Navigator.pop(context);
+                                                                                    return SnackBar(content: Text('Successfully added collaborator'));
+                                                                                  } else {
+                                                                                    return SnackBar(content: Text('Unable to add collaborator'));
+                                                                                  }
+                                                                                } catch (e) {
+                                                                                  print(e.toString());
+                                                                                  throw Exception('Failed to add collaborator: ${e.toString()}');
+                                                                                }
+                                                                              }
+
+                                                                              removeCollaborator(context, id.toString(), user.id);
+                                                                              collaborator_list.removeAt(index);
+                                                                              Navigator.pop(context);
+                                                                            },
+                                                                            child:
+                                                                                Text('Remove', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                                                                          ),
+                                                                        ],
+                                                                      );
+                                                                    });
+                                                              },
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  );
                                                 },
                                               ),
                                               ListTile(
-                                                leading: CircleAvatar(
-                                                  radius: 16,
-                                                  backgroundImage: AssetImage(
-                                                    "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                                                leading: Container(
+                                                  height: 35,
+                                                  width: 35,
+                                                  child: ClipOval(
+                                                    child: FancyShimmerImage(
+                                                      imageUrl:
+                                                          'https://res.cloudinary.com/dgcbtjq3c/${image}',
+                                                      boxFit: BoxFit.cover,
+                                                      shimmerBaseColor:
+                                                          Colors.grey[300],
+                                                      shimmerHighlightColor:
+                                                          Colors.grey[100],
+                                                    ),
                                                   ),
                                                 ),
                                                 title: Text(
-                                                  'John Doe (You)',
+                                                  '${name} (You)',
+                                                  style: TextStyle(
+                                                    fontSize: 18,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
                                                 ),
                                               ),
                                             ],
                                           );
                                         });
                                   },
-                                  child: CircleAvatar(
-                                    radius: 18,
-                                    backgroundImage: AssetImage(
-                                      "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                                  child: Container(
+                                    height: 40,
+                                    width: 40,
+                                    child: ClipOval(
+                                      child: FancyShimmerImage(
+                                        imageUrl:
+                                            'https://res.cloudinary.com/dgcbtjq3c/${image}',
+                                        boxFit: BoxFit.cover,
+                                        shimmerBaseColor: Colors.grey[300],
+                                        shimmerHighlightColor: Colors.grey[100],
+                                      ),
                                     ),
                                   ),
                                 ),

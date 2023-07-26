@@ -2,18 +2,22 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' hide Text;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
 
-class NoteEditingScreen extends StatefulWidget {
-  const NoteEditingScreen({super.key});
+class NoteEditingScreen extends ConsumerStatefulWidget {
+  const NoteEditingScreen({super.key, required this.id});
+  final String? id;
 
   @override
-  State<NoteEditingScreen> createState() => _NoteEditingScreenState();
+  _NoteEditingScreenState createState() => _NoteEditingScreenState();
 }
 
-class _NoteEditingScreenState extends State<NoteEditingScreen> {
+class _NoteEditingScreenState extends ConsumerState<NoteEditingScreen> {
   QuillController _controller = QuillController.basic();
   @override
   Widget build(BuildContext context) {
+    String? tripId = widget.id!.toString();
     return WillPopScope(
       onWillPop: () async {
         return await showDialog(
@@ -49,8 +53,21 @@ class _NoteEditingScreenState extends State<NoteEditingScreen> {
             actions: [
               TextButton(
                 onPressed: () {
-                  var json = jsonEncode(_controller.document.toPlainText());
-                  Navigator.pop(context, json);
+                  void _navigateToOtherPage() async {
+                    var jsonNote =
+                        jsonEncode(_controller.document.toPlainText());
+                    print(jsonNote);
+
+
+                    // Pass the jsonNote as a result to the other page and wait for the result.
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => TripDetailScreen(
+                                id: int.parse(tripId),
+                              )),
+                    );
+                  }
                 },
                 child: Text(
                   'Save',

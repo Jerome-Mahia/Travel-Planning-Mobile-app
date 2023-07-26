@@ -49,7 +49,7 @@ class GetUserDetails {
       };
 }
 
-getUserDetails(BuildContext context) async {
+Future<GetUserDetails> getUserDetails(BuildContext context) async {
   try {
     final Accesstoken = await retrieveToken();
     final response = await http.get(
@@ -60,10 +60,10 @@ getUserDetails(BuildContext context) async {
       },
     );
     if (response.statusCode == 200) {
-      final List result = jsonDecode(response.body);
-      return result.map((userDetails) => GetUserDetails.fromJson(userDetails)).toList();
+      final result = jsonDecode(response.body);
+      return GetUserDetails.fromJson(result);
     } else {
-      return SnackBar(content: Text('Unable to retieve user details'));
+      throw Exception('Failed to retrieve user details');
     }
   } catch (e) {
     print(e.toString());

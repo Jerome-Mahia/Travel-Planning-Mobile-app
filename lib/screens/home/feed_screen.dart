@@ -1,3 +1,4 @@
+import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,8 +8,8 @@ import 'package:travel_planner_app_cs_project/main.dart';
 import 'package:travel_planner_app_cs_project/models/destination.dart';
 import 'package:travel_planner_app_cs_project/screens/home/destination_screens.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/trip_detail_screen.dart';
-import 'package:travel_planner_app_cs_project/widgets/home_appbar_widget.dart';
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
+import 'package:travel_planner_app_cs_project/widgets/home_appbar_widget.dart';
 
 class FeedScreen extends ConsumerStatefulWidget {
   const FeedScreen({super.key});
@@ -258,10 +259,19 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                                           children: [
                                             Wrap(
                                               children: [
-                                                CircleAvatar(
-                                                  radius: 15,
-                                                  backgroundImage: AssetImage(
-                                                    "assets/images/joseph-gonzalez-iFgRcqHznqg-unsplash.jpg",
+                                                Container(
+                                                  height: 30,
+                                                  width: 30,
+                                                  child: ClipOval(
+                                                    child: FancyShimmerImage(
+                                                      imageUrl:
+                                                          'https://res.cloudinary.com/dgcbtjq3c/${ref.watch(userimageProvider)}',
+                                                      boxFit: BoxFit.cover,
+                                                      shimmerBaseColor:
+                                                          Colors.grey[300],
+                                                      shimmerHighlightColor:
+                                                          Colors.grey[100],
+                                                    ),
                                                   ),
                                                 ),
                                                 SizedBox(
@@ -343,8 +353,8 @@ class _FeedScreenState extends ConsumerState<FeedScreen>
                             child: Stack(
                               children: [
                                 Container(
-                                  height: MediaQuery.of(context).size.height *
-                                      0.35,
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.35,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15.0),
                                     gradient: LinearGradient(

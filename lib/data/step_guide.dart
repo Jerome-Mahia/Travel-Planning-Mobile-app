@@ -14,8 +14,8 @@ class StepGuide {
   });
 }
 
-final _guide1 = StepGuide(
-    title: 'Add a note', description: 'Jot down anything about your trip', screen: NoteEditingScreen());
+// final _guide1 = StepGuide(
+//     title: 'Add a note', description: 'Jot down anything about your trip', screen: NoteEditingScreen());
 
 // final _guide2 = StepGuide(
 //     title: 'Add a flight ticket',
@@ -26,7 +26,7 @@ final _guide1 = StepGuide(
 //     description: 'Save your bus or any other ticket in one place', screen: TripDetailScreen());
 
 List<StepGuide> guides = [
-  _guide1,
+  // _guide1,
   // _guide2,
   // _guide3,
 ];

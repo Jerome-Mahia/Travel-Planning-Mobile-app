@@ -49,32 +49,3 @@ class EditUserDetails {
       };
 }
 
-editUserDetails(BuildContext context, String name, String phone, DateTime dob,String image, int id) async {
-  try {
-    final Accesstoken = await retrieveToken();
-    final response = await http.post(
-      Uri.parse("https://fari-jcuo.onrender.com/main/user-details"),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer ${Accesstoken.toString()}',
-      },
-      body: jsonEncode(<String, String>{
-        'name': name,
-        'phone': phone,
-        'dob': dob.toString(),
-        'image': image,
-        'id': id.toString(),
-      }),
-    );
-    if (response.statusCode == 200) {
-      final body = json.decode(response.body);
-      return List<EditUserDetails>.from(
-          body.map((x) => EditUserDetails.fromJson(x)));
-    } else {
-      return SnackBar(content: Text('Unable to edi user details'));
-    }
-  } catch (e) {
-    print(e.toString());
-    throw Exception('Failed to edit user details: $e');
-  }
-}

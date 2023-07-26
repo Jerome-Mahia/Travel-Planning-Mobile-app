@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:travel_planner_app_cs_project/main.dart';
+import 'package:travel_planner_app_cs_project/models/get_user_details.dart';
 import 'package:travel_planner_app_cs_project/models/login.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/registration_screen.dart';
 import 'package:travel_planner_app_cs_project/screens/authentication/reset_password_screen.dart';
@@ -30,24 +33,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final TextEditingController passwordController = TextEditingController();
   final RoundedLoadingButtonController makePlanBtnController =
       RoundedLoadingButtonController();
-
-  void _doSomething(RoundedLoadingButtonController controller) async {
-    try {
-      if (_loginFormKey.currentState!.validate()) {
-        loginUser(context, emailController.text, passwordController.text);
-        final startTime = DateTime.now();
-        final endTime = DateTime.now();
-        final executionDuration = endTime.difference(startTime);
-        if (executionDuration > Duration(seconds: 10)) {
-          controller.error();
-          controller.reset();
-          return;
-        }
-      }
-    } catch (e) {
-      throw Exception(e);
-    }
-  }
 
   bool passToggle = true;
 
@@ -102,6 +87,70 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       bool isAccountPresent = mode.getBool('isAccountPresent') ?? false;
       // print('isAccountPresent: $isAccountPresent');
       return isAccountPresent;
+    }
+
+    loginUser(BuildContext context, String email, String password) async {
+      try {
+        final response = await http.post(
+          Uri.parse("https://fari-jcuo.onrender.com/api/token/"),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, dynamic>{
+            'email': email,
+            'password': password,
+          }),
+        );
+        if (response.statusCode == 200) {
+          var token = jsonDecode(response.body)['access'];
+
+          // Write value
+          await storage.write(key: 'access token', value: token);
+
+          Future<GetUserDetails> userDetails = getUserDetails(context);
+          GetUserDetails userDetailsData = await userDetails;
+          String dob=userDetailsData.dob.toString();
+          ref.read(usernameProvider.notifier).state=userDetailsData.name;
+          ref.read(useremailProvider.notifier).state=userDetailsData.email;
+          ref.read(userphoneProvider.notifier).state=userDetailsData.phone;
+          ref.read(userdobProvider.notifier).state=dob;
+          ref.read(userimageProvider.notifier).state=userDetailsData.image;
+          ref.read(useridProvider.notifier).state=userDetailsData.id.toString();
+
+          return Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const BottomNavBar()),
+            (Route<dynamic> route) => false,
+          );
+        } else {
+          return SnackBar(content: Text('Login timed out'));
+        }
+      } catch (e) {
+        print(e.toString());
+        throw Exception('Failed to login user: $e');
+      }
+    }
+
+    _doSomething(RoundedLoadingButtonController controller) async {
+      try {
+        if (_loginFormKey.currentState!.validate()) {
+          loginUser(context, emailController.text, passwordController.text);
+
+          final startTime = DateTime.now();
+          final endTime = DateTime.now();
+          final executionDuration = endTime.difference(startTime);
+          if (executionDuration > Duration(seconds: 10)) {
+            SnackBar snackBar = customSnackBar(
+                content: 'Please check your internet connection and try again');
+
+            controller.error();
+            controller.reset();
+            return ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+        }
+      } catch (e) {
+        throw Exception(e);
+      }
     }
 
     bool isCreated = ref.watch(accountCreationProvider);

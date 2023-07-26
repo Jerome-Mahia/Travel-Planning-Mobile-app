@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:intl/intl.dart';
 import 'package:travel_planner_app_cs_project/data/step_guide.dart';
+import 'package:travel_planner_app_cs_project/models/edit_itinerary.dart';
 import 'package:travel_planner_app_cs_project/models/fetch_itinerary_details.dart';
 import 'package:travel_planner_app_cs_project/screens/planning/note_editing_screen.dart';
 
 class ItineraryTab extends StatefulWidget {
-  const ItineraryTab({super.key, required this.tripDays});
+  const ItineraryTab({super.key, required this.tripDays, required this.id});
   final List<Day>? tripDays;
+  final String? id;
 
   @override
   State<ItineraryTab> createState() => _ItineraryTabState();
@@ -32,8 +34,23 @@ class _ItineraryTabState extends State<ItineraryTab> {
 - Electronics: Smartphone, charger, adapters.
 - Travel Essentials: Passport, wallet, itinerary, locks.
 - Miscellaneous: Laundry detergent, snacks, umbrella.""";
+
   @override
   Widget build(BuildContext context) {
+    Map<String, TextEditingController> textEditingControllers = {};
+    
+    var textFields = <TextField>[];
+    widget.tripDays!.forEach((str) {
+      var textEditingController =
+          new TextEditingController(text: str.morningActivity);
+      textEditingControllers.putIfAbsent(str.name, () => textEditingController);
+      print(textEditingControllers[str.name]);
+      return textFields.add(TextField(controller: textEditingController));
+    });
+    TextEditingController _morningActivityController = TextEditingController();
+    TextEditingController _afternoonActivityController =
+        TextEditingController();
+    TextEditingController _eveningActivityController = TextEditingController();
     return Scaffold(
       body: SingleChildScrollView(
         physics: NeverScrollableScrollPhysics(),
@@ -115,16 +132,52 @@ class _ItineraryTabState extends State<ItineraryTab> {
               //     thickness: 1.0,
               //   ),
               // ),
-              Align(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  'Itinerary',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 35.0,
-                    fontWeight: FontWeight.bold,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      'Itinerary',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 35.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
+                  TextButton(
+                    onPressed: () {
+                      print(
+                          'Morning: ${_morningActivityController.text}, Afternoon: ${_afternoonActivityController.text}, Evening: ${_eveningActivityController.text}'
+                      );
+                      editItineraryDay(
+                          context,
+                          '${widget.id}',
+                          'day 1',
+                          _morningActivityController.text,
+                          _afternoonActivityController.text,
+                          _eveningActivityController.text,
+                          10000,
+                          10000,
+                          3000,
+                          -4.2494,
+                          39.34,
+                          -4.2761,
+                          39.5944,
+                          -4.2806,
+                          39.57);
+                    },
+                    child: Text(
+                      'Save',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(
                 height: 5,
@@ -135,7 +188,36 @@ class _ItineraryTabState extends State<ItineraryTab> {
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, index) {
                   Day dailyActivities = widget.tripDays![index];
-                  // Day dailyActivities = widget.tripDays[index];
+
+                  @override
+                  void initState() {
+                    super.initState();
+                    _morningActivityController.text =
+                        dailyActivities.morningActivity;
+                    _afternoonActivityController.text =
+                        dailyActivities.afternoonActivity;
+                    _eveningActivityController.text =
+                        dailyActivities.eveningActivity;
+                  }
+
+                  // If the dailyActivities.morningActivity changes from external sources, update the controller accordingly
+                  @override
+                  void didUpdateWidget(Widget oldWidget) {
+                    if (_morningActivityController.text !=
+                        dailyActivities.morningActivity) {
+                      _morningActivityController.text =
+                          dailyActivities.morningActivity;
+                    } else if (_afternoonActivityController.text !=
+                        dailyActivities.afternoonActivity) {
+                      _afternoonActivityController.text =
+                          dailyActivities.afternoonActivity;
+                    } else if (_eveningActivityController.text !=
+                        dailyActivities.eveningActivity) {
+                      _eveningActivityController.text =
+                          dailyActivities.eveningActivity;
+                    }
+                  }
+
                   String formattedDate =
                       DateFormat.E().add_d().format(dailyActivities.date);
                   return ExpansionTile(
@@ -164,11 +246,16 @@ class _ItineraryTabState extends State<ItineraryTab> {
                             ),
                           ),
                           TextField(
-                            keyboardType: TextInputType.multiline,
+                            controller: _morningActivityController,
+                            onSubmitted: (value) {
+                              setState(() {
+                                dailyActivities.morningActivity = value;
+                              });
+                            },
+                            keyboardType: TextInputType.text,
                             maxLines: 3,
                             onTapOutside: (focusNode) {
-                              FocusScope.of(context)
-                                  .requestFocus(FocusNode());
+                              FocusScope.of(context).requestFocus(FocusNode());
                             },
                             style: TextStyle(fontSize: 18.0),
                             decoration: InputDecoration(
@@ -204,11 +291,17 @@ class _ItineraryTabState extends State<ItineraryTab> {
                             ),
                           ),
                           TextField(
-                            keyboardType: TextInputType.multiline,
+                            controller: _afternoonActivityController,
+                            onSubmitted: (value) {
+                              setState(() {
+                                dailyActivities.afternoonActivity =
+                                    _afternoonActivityController.text;
+                              });
+                            },
+                            keyboardType: TextInputType.text,
                             maxLines: 3,
                             onTapOutside: (focusNode) {
-                              FocusScope.of(context)
-                                  .requestFocus(FocusNode());
+                              FocusScope.of(context).requestFocus(FocusNode());
                             },
                             style: TextStyle(fontSize: 18.0),
                             decoration: InputDecoration(
@@ -244,11 +337,17 @@ class _ItineraryTabState extends State<ItineraryTab> {
                             ),
                           ),
                           TextField(
-                            keyboardType: TextInputType.multiline,
+                            controller: _eveningActivityController,
+                            onSubmitted: (value) {
+                              setState(() {
+                                dailyActivities.eveningActivity =
+                                    _eveningActivityController.text;
+                              });
+                            },
+                            keyboardType: TextInputType.text,
                             maxLines: 3,
                             onTapOutside: (focusNode) {
-                              FocusScope.of(context)
-                                  .requestFocus(FocusNode());
+                              FocusScope.of(context).requestFocus(FocusNode());
                             },
                             style: TextStyle(fontSize: 18.0),
                             decoration: InputDecoration(
@@ -291,24 +390,24 @@ class _ItineraryTabState extends State<ItineraryTab> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  // SizedBox(
-                  //   width: 10.0,
-                  // ),
-                  // IconButton(
-                  //   onPressed: () {
-                  //     Navigator.push(
-                  //         context,
-                  //         MaterialPageRoute(
-                  //           builder: (_) => NoteEditingScreen(),
-                  //         ),
-                  //       );
-                  //   },
-                  //   icon: Icon(
-                  //     Icons.edit,
-                  //     color: Theme.of(context).primaryColor,
-                  //     size: 30.0,
-                  //   ),
-                  // ),
+                  SizedBox(
+                    width: 10.0,
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => NoteEditingScreen(id: widget.id),
+                          ),
+                        );
+                    },
+                    icon: Icon(
+                      Icons.edit,
+                      color: Theme.of(context).primaryColor,
+                      size: 30.0,
+                    ),
+                  ),
                 ],
               ),
               SizedBox(

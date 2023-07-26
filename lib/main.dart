@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,7 +21,15 @@ final otpControllerProvider = StateProvider((ref) => '');
 final emailProvider = StateProvider((ref) => '');
 final playTimeProvider = StateProvider((ref) => '');
 final songUriProvider = StateProvider((ref) => '');
-final idProvider = StateProvider((ref) => 0);
+
+final usernameProvider = StateProvider((ref) => '');
+final useremailProvider = StateProvider((ref) => '');
+final userphoneProvider = StateProvider((ref) => '');
+final useridProvider = StateProvider((ref) => '');
+final userimageProvider = StateProvider((ref) => 'null');
+final userdobProvider = StateProvider((ref) => '');
+
+final notesProvider = StateProvider((ref) => jsonDecode('[]'));
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

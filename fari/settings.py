@@ -107,7 +107,7 @@ DATABASES = {
 DATABASES = {
    'default': dj_database_url.config(
          #Feel free to alter this value to suit your needs.
-       default='postgresql://postgres:postgres@localhost:5432/mysite',
+       default='postgres://fari_db_user:llRks5vLuPfHveNmQuebZw2dAaYAEnjA@dpg-cl72glph9grs73ea8b10-a.frankfurt-postgres.render.com/fari_db',
       conn_max_age=600
   )
 }

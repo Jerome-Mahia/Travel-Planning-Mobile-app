@@ -106,9 +106,9 @@ DATABASES = {
 
 DATABASES = {
    'default': dj_database_url.config(
-         #Feel free to alter this value to suit your needs.
-       default='postgres://fari_db_361r_user:LITbyeIzst9hNltwFcWv6DvLrEA3WAwF@dpg-cl90v4v6e7vc73abvntg-a/fari_db_361r',
-      conn_max_age=600
+    #Feel free to alter this value to suit your needs.
+    default='postgres://fari_db_361r_user:LITbyeIzst9hNltwFcWv6DvLrEA3WAwF@dpg-cl90v4v6e7vc73abvntg-a/fari_db_361r',
+    conn_max_age=600
   )
 }
 

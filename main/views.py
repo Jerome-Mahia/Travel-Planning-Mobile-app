@@ -54,11 +54,12 @@ class RegisterSuperView(APIView):
         password = data['password']
         phone = data['phone']
         dob = data['dob']
-        image=['image']
+        #image=['image']
 
-        user = User.objects.create_superuser(name=name, image=image,email=email, password=password,phone=phone,dob=dob)
+        user = User.objects.create_superuser(name=name, email=email, password=password,phone=phone,dob=dob)
         refresh = RefreshToken.for_user(user)
-
+        print(user)
+        print('testing')
         return Response (
             {
             'refresh': str(refresh),

@@ -10,7 +10,7 @@ from datetime import datetime,timedelta,time,date
 #custom user manager
 class UserAccountManager(BaseUserManager):
 
-    def create_user(self, email, name,phone,dob,image ,password=None):
+    def create_user(self, email, name,phone,dob ,password=None):
         if not email:
             raise ValueError('Users must have email address')
 
@@ -24,7 +24,7 @@ class UserAccountManager(BaseUserManager):
             name = name,
             phone=phone,
             dob=dob,
-            image=image,
+            #image=image,
         )
         user.set_password(password)
         user.save()
@@ -32,7 +32,7 @@ class UserAccountManager(BaseUserManager):
         return user
     
    
-    def create_superuser(self, email, name,phone,dob,image, password=None):
+    def create_superuser(self, email, name,phone,dob, password=None):
         user = self.create_user(email, name,phone,dob, password)
         user.is_superuser = True
         user.is_staff = True
